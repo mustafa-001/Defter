@@ -17,6 +17,10 @@ class BookmarksViewModel internal constructor(bookmarksrepo: BookmarksRepository
        return bookmarksrepo.insertBookmark(url)
    }
 
+    fun deleteBookmark(url: String){
+        bookmarksrepo.deleteBookmarm(url)
+    }
+
    private fun loadBookmarks(){
       //fetch users from database.
    }

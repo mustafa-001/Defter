@@ -11,6 +11,10 @@ class BookmarksRepository private constructor(private val bookmarksDao: Bookmark
         bookmarksDao.insertBookmark(Bookmark(url))
     }
 
+    fun deleteBookmarm(url: String){
+        bookmarksDao.deleteBookmark(url)
+    }
+
     companion object {
 
         @Volatile private var instance: BookmarksRepository? = null

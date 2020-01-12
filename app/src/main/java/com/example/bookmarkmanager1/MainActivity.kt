@@ -21,6 +21,7 @@ import layout.BookmarkAdapter
 
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener, BookmarkAdapter.OnBookmarkContextMenuListener{
     private lateinit var bookmarksView: RecyclerView
+    private lateinit var bookmarksViewModel: BookmarksViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(applicationContext).bookmarksDao()
         )
-        val bookmarksViewModel: BookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 //        val bookmarksViewModel = ViewModelProviders.of(this)[BookmarksViewModel::class.java]
 
 
@@ -84,9 +85,9 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    //TODO implement onBookmarkDeleteClicked
     override fun onBookmarkDeleteClicked(url: String) {
         Log.d("activity delete", url)
+        bookmarksViewModel.deleteBookmark(url)
     }
 
     //TODO implement onBookmarkChangeTagsCLicked

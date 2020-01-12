@@ -20,4 +20,7 @@ interface BookmarksDao{
     @Query("SELECT * FROM bookmark WHERE url = :url")
     fun getBookmark(url: String): LiveData<Bookmark>
 
+    @Query("DELETE FROM bookmark WHERE url = :url")
+    fun deleteBookmark(url: String)
+
 }
