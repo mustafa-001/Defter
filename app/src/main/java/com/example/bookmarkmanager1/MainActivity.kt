@@ -2,6 +2,7 @@ package com.example.bookmarkmanager1
 
 import android.net.Uri
 import android.os.Bundle
+import android.content.Intent
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
@@ -19,7 +20,7 @@ import com.example.bookmarkmanager1.viewmodels.BookmarksViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import layout.BookmarkAdapter
 
-class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener, BookmarkAdapter.OnBookmarkContextMenuListener{
+class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener, BookmarkAdapter.OnBookmarkContextMenuListener {
     private lateinit var bookmarksView: RecyclerView
     private lateinit var bookmarksViewModel: BookmarksViewModel
 
@@ -34,33 +35,42 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(applicationContext).bookmarksDao()
         )
-        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+        bookmarksViewModel =
+            BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 //        val bookmarksViewModel = ViewModelProviders.of(this)[BookmarksViewModel::class.java]
 
 
         val viewManager = LinearLayoutManager(this)
         val bookmarkAdapter = BookmarkAdapter()
 
+        bookmarksView = findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
+            layoutManager = viewManager
+            adapter = bookmarkAdapter
+        }
+        bookmarkAdapter.setOnBookmarkContextMenuListener(this)
+
         //when vm.bookmarks changes, ViewModel(in future database) calls this function
         //TODO Dont use notifyDataSetChanged(), use diffutils or something.
-        //TODO is observing whole list is good or can we do better.
+        //TODO is observing whole list is good or can we do better?
         bookmarksViewModel.bookmarks.observe(this, Observer<List<Bookmark>> { newBookmarks ->
             bookmarkAdapter.bookmarks = newBookmarks
             bookmarkAdapter.notifyDataSetChanged()
         })
 
-        bookmarksView = findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
-            layoutManager = viewManager
-            adapter = bookmarkAdapter
-        }
-        bookmarkAdapter.notifyDataSetChanged()
-        bookmarkAdapter.setOnBookmarkContextMenuListener(this)
-
-
         fab.setOnClickListener(View.OnClickListener {
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
-            addBookmarkDialogFragment.show(this.supportFragmentManager, "add_bookmark_dialog_fragment")
+            addBookmarkDialogFragment.show(
+                this.supportFragmentManager,
+                "add_bookmark_dialog_fragment"
+            )
         })
+
+        intent = getIntent()
+        when{
+            intent.action == Intent.ACTION_SEND -> {
+                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT)))
+            }
+        }
 
     }
 
@@ -86,12 +96,20 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
     }
 
     override fun onBookmarkDeleteClicked(url: String) {
-        Log.d("activity delete", url)
         bookmarksViewModel.deleteBookmark(url)
     }
 
     //TODO implement onBookmarkChangeTagsCLicked
-    override fun onBookmarkChangeTagsClicked(url: String){
-        Log.d("activitiy add tag", url)
+    override fun onBookmarkClicked(url: String) {
+        val openLinkIntent = Intent().apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse(url)
+        }
+        startActivity(openLinkIntent)
     }
+
+    override fun onBookmarkChangeTagsClicked(url: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }
