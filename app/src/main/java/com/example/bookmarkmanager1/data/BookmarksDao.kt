@@ -7,8 +7,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 
 /**
-*Data Access Object for Bookmark class
-*/
+ *Data Access Object for Bookmark class
+ */
 @Dao
 interface BookmarksDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)

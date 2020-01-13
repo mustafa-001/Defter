@@ -1,10 +1,13 @@
 package layout
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import com.example.bookmarkmanager1.R
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookmarkmanager1.data.Bookmark
@@ -19,18 +22,9 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>(){
         this.callbacks = callbacks
     }
 
-    class BmViewHolder(v: View): RecyclerView.ViewHolder(v), View.OnClickListener{
+    class BmViewHolder(v: View): RecyclerView.ViewHolder(v){
         val titleTextView: TextView = v.findViewById(R.id.bookmark_title_text)
         val urlTextView: TextView = v.findViewById(R.id.bookmark_url_text)
-
-        //TODO Move this block to Adapter's onBind
-        init {
-            v.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View) {
-            Log.d("+recyclerview", "CLıck")
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarkAdapter.BmViewHolder {
@@ -45,6 +39,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>(){
     override fun onBindViewHolder(holder: BookmarkAdapter.BmViewHolder, position: Int) {
         holder.titleTextView.text = bookmarks.get(position).title
         holder.urlTextView.text = bookmarks.get(position).url
+
         //Android will call this function when creating context menu.
         //menu: context menu being build
         //v: view for which context menu being build
@@ -63,6 +58,9 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>(){
             }
         }
 
+        holder.itemView.setOnClickListener {
+            callbacks.onBookmarkClicked(bookmarks.get(position).url)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -73,5 +71,6 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>(){
     interface OnBookmarkContextMenuListener{
         fun onBookmarkDeleteClicked(url: String)
         fun onBookmarkChangeTagsClicked(url: String)
+        fun onBookmarkClicked(url: String)
     }
 }
