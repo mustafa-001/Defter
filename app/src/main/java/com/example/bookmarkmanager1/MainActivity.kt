@@ -33,8 +33,11 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
 
         //This is a workaround to not use sunflower InjectorUtils methoo.
         val bookmarksrepo = BookmarksRepository.getInstance(
-            BookmarksDatabase.getInstance(applicationContext).bookmarksDao()
+            BookmarksDatabase.getInstance(applicationContext).bookmarkDao(),
+            BookmarksDatabase.getInstance(applicationContext).tagDao(),
+            BookmarksDatabase.getInstance(applicationContext).bookmarkTagPairDao()
         )
+
         bookmarksViewModel =
             BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 //        val bookmarksViewModel = ViewModelProviders.of(this)[BookmarksViewModel::class.java]
@@ -52,7 +55,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         //when vm.bookmarks changes, ViewModel(in future database) calls this function
         //TODO Dont use notifyDataSetChanged(), use diffutils or something.
         //TODO is observing whole list is good or can we do better?
-        bookmarksViewModel.bookmarks.observe(this, Observer<List<Bookmark>> { newBookmarks ->
+        bookmarksViewModel.bookmarks.observe(this, Observer<Array<Bookmark>> { newBookmarks ->
             bookmarkAdapter.bookmarks = newBookmarks
             bookmarkAdapter.notifyDataSetChanged()
         })

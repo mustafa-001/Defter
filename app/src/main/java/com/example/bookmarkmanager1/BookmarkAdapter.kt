@@ -14,7 +14,7 @@ import com.example.bookmarkmanager1.data.Bookmark
 
 class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>(){
 
-    lateinit var bookmarks: List<Bookmark>
+    lateinit var bookmarks: Array<Bookmark>
     lateinit var callbacks: OnBookmarkContextMenuListener
 
     //TODO Document this

@@ -10,15 +10,15 @@ import androidx.room.OnConflictStrategy
  *Data Access Object for Bookmark class
  */
 @Dao
-interface BookmarksDao{
+interface BookmarkDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBookmark(vararg bookmarks: Bookmark)
 
     @Query("SELECT * FROM bookmark")
-    fun getBookmarks(): LiveData<List<Bookmark>>
+    fun getBookmarks(): LiveData<Array<Bookmark>>
 
     @Query("SELECT * FROM bookmark WHERE url = :url")
-    fun getBookmark(url: String): LiveData<Bookmark>
+    fun getBookmark(url: String): Bookmark
 
     @Query("DELETE FROM bookmark WHERE url = :url")
     fun deleteBookmark(url: String)

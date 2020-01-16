@@ -63,7 +63,9 @@ class AddBookmarkDialogFragment : DialogFragment() {
         //TODO Make sure this way of getting activity's ViewModel is safe and proper way.
         //Commented part is old default ViewModelFactory method.
         val bookmarksrepo = BookmarksRepository.getInstance(
-            BookmarksDatabase.getInstance(requireContext()).bookmarksDao()
+            BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
+            BookmarksDatabase.getInstance(requireContext()).tagDao(),
+            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao()
         )
         bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 //        bookmarksViewModel = activity?.run{

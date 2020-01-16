@@ -7,9 +7,11 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@Database(entities = [(Bookmark::class)], version = 1, exportSchema = false)
+@Database(entities = [Bookmark::class,Tag::class,BookmarkTagPair::class], version = 2, exportSchema = false)
 abstract class BookmarksDatabase : RoomDatabase(){
-    abstract fun bookmarksDao(): BookmarksDao
+    abstract fun bookmarkDao(): BookmarkDao
+    abstract fun tagDao(): TagDao
+    abstract fun bookmarkTagPairDao(): BookmarkTagPairDao
 
     companion object {
 

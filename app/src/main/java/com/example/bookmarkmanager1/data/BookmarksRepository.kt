@@ -1,27 +1,41 @@
 package com.example.bookmarkmanager1.data
 
-//TODO Fetch url title and favicon if they dont exist in database.
-class BookmarksRepository private constructor(private val bookmarksDao: BookmarksDao){
+//TODO Fetch url title and favicon if they don't exist in database.
+class BookmarksRepository private constructor(
+    private val bookmarksDao: BookmarkDao,
+    private val tagDao: TagDao,
+    private val bookmarkTagPairDao: BookmarkTagPairDao){
 
     fun getBookmarks() = bookmarksDao.getBookmarks()
 
     fun getBookmark(url: String) = bookmarksDao.getBookmark(url)
 
     fun insertBookmark(url: String) {
-        bookmarksDao.insertBookmark(Bookmark(url))
+        bookmarksDao.insertBookmark(Bookmark(null, url))
     }
 
-    fun deleteBookmarm(url: String){
+    fun deleteBookmark(url: String){
         bookmarksDao.deleteBookmark(url)
     }
+
+    fun addBookmarkTagPair(url: String, tag: String){
+        bookmarkTagPairDao.addBookmarkTagPair(url, tag)
+    }
+
+    fun addTag(tag: String){
+        val t = Tag(tId = 0, tagName = tag)
+        tagDao.insertTag(t)
+    }
+
+    fun getTags() = tagDao.getTagNames()
 
     companion object {
 
         @Volatile private var instance: BookmarksRepository? = null
 
-        fun getInstance(bookmarksDao: BookmarksDao): BookmarksRepository{
+        fun getInstance(bookmarksDao: BookmarkDao, tagDao: TagDao, bookmarkTagPairDao: BookmarkTagPairDao): BookmarksRepository{
             return instance ?: synchronized(this){
-                instance ?:BookmarksRepository(bookmarksDao).also { instance = it }
+                instance ?:BookmarksRepository(bookmarksDao, tagDao, bookmarkTagPairDao).also { instance = it }
             }
         }
     }

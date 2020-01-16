@@ -5,11 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Bookmark(
-    @PrimaryKey val url: String,
+    @PrimaryKey(autoGenerate = true) val bId: Long?,
+    val url: String,
     val title: String = url, // this.fetchTitle()
-    val favicon: String = "asd",
-    //TODO Find a way to store tags.
-    val tags: String = "implement tags" //emptySet<String>()
+    val favicon: String = "asd"
 ){
     override fun toString() = url
 }
