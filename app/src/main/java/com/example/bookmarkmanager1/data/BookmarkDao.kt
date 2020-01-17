@@ -11,14 +11,17 @@ import androidx.room.OnConflictStrategy
  */
 @Dao
 interface BookmarkDao{
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBookmark(vararg bookmarks: Bookmark)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insertBookmark(bookmark: Bookmark)
 
     @Query("SELECT * FROM bookmark")
     fun getBookmarks(): LiveData<Array<Bookmark>>
 
     @Query("SELECT * FROM bookmark WHERE url = :url")
     fun getBookmark(url: String): Bookmark
+
+    @Query("select bId from bookmark where url = :url")
+    fun getBookmarkId(url: String): Int
 
     @Query("DELETE FROM bookmark WHERE url = :url")
     fun deleteBookmark(url: String)

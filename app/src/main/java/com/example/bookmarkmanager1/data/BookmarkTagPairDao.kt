@@ -32,14 +32,17 @@ interface BookmarkTagPairDao {
                 "AND bt.tagid = t.tid " +
                 "GROUP BY t.tid"
     )
-    fun getTagsWithBookmark(url: String): LiveData<List<String>>
+    fun getTagsWithBookmark(url: String): List<String>
 
     @Query(
-        "INSERT INTO bookmarktagpair (bookmarkid, tagid) " +
+        "INSERT INTO bookmarktagpair ( bookmarkid, tagid) " +
                 "VALUES ("+
                 "(SELECT bookmark.bid FROM bookmark WHERE url = :url), "+
                 "(SELECT tag.tid FROM tag WHERE tagname = :tag)"+
                 ")"
     )
     fun addBookmarkTagPair(url: String, tag: String)
+
+    @Query("select bookmarkId from bookmarktagpair where tagId = :tagId")
+    fun getBookmarkIdByTagId(tagId: Int): Int
 }

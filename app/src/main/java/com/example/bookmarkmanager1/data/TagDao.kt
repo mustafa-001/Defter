@@ -9,11 +9,14 @@ import androidx.room.*
 
 @Dao
 interface TagDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTag(vararg tag: Tag)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insertTag(tag: Tag)
 
     @Query("DELETE FROM tag WHERE tagname = :tag_")
     fun deleteTagByName(tag_: String)
+
+    @Query("SELECT tId from tag where tagName = :tagName")
+    fun getTagId(tagName: String): Int
 
     @Query("SELECT tagName FROM tag")
     fun getTagNames(): Array<String>
