@@ -10,7 +10,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.example.bookmarkmanager1"
+        applicationId 'com.ktleaf.leaf'
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -56,4 +56,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.1.0'
+    androidTestImplementation "androidx.arch.core:core-testing:2.0.0"
 }

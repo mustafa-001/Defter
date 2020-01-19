@@ -1,4 +1,4 @@
-package com.example.bookmarkmanager1
+package com.ktdefter.defter
 
 import org.junit.Test
 

@@ -6,39 +6,42 @@
     android:layout_width="match_parent"
     android:layout_height="50dp">
 
+    <!--        app:autoSizeTextType="uniform"-->
+    <!--        app:autoSizeMinTextSize="12dp"-->
+    <!--        app:autoSizeMaxTextSize="14dp"-->
+    <!--        app:autoSizeStepGranularity="2dp"-->
+
     <TextView
         android:id="@+id/bookmark_title_text"
         android:layout_width="0dp"
-        android:layout_height="28dp"
-        android:singleLine="true"
+        android:layout_height="20dp"
         android:ellipsize="middle"
+        android:singleLine="true"
         android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@+id/bookmark_url_text"
-        app:layout_constraintEnd_toStartOf="@+id/tags_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/date/day_of_week" />
-<!--        app:autoSizeTextType="uniform"-->
-<!--        app:autoSizeMinTextSize="12dp"-->
-<!--        app:autoSizeMaxTextSize="14dp"-->
-<!--        app:autoSizeStepGranularity="2dp"-->
+
+    <!--        app:autoSizeTextType="uniform"-->
+    <!--        app:autoSizeMinTextSize="13dp"-->
+    <!--        app:autoSizeMaxTextSize="15dp"-->
+    <!--        app:autoSizeStepGranularity="2dp"-->
 
     <TextView
         android:id="@+id/bookmark_url_text"
         android:layout_width="0dp"
-        android:layout_height="22dp"
+        android:layout_height="15dp"
         android:ellipsize="middle"
         android:singleLine="true"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_title_text"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/bookmark_title_text"
         tools:text="@tools:sample/date/ddmmyy" />
-<!--        app:autoSizeTextType="uniform"-->
-<!--        app:autoSizeMinTextSize="13dp"-->
-<!--        app:autoSizeMaxTextSize="15dp"-->
-<!--        app:autoSizeStepGranularity="2dp"-->
 
     <ImageView
         android:id="@+id/imageView"
@@ -51,12 +54,15 @@
 
     <TextView
         android:id="@+id/tags_text_view"
-        android:layout_width="70dp"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="15dp"
         android:text="bookmark doesn't have any tags"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.479"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/bookmark_url_text"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

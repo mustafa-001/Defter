@@ -1,9 +1,8 @@
-package com.example.bookmarkmanager1
+package com.ktdefter.defter
 
 import android.net.Uri
 import android.os.Bundle
 import android.content.Intent
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -11,11 +10,11 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bookmarkmanager1.data.Bookmark
-import com.example.bookmarkmanager1.data.BookmarksDatabase
-import com.example.bookmarkmanager1.data.BookmarksRepository
-import com.example.bookmarkmanager1.viewmodels.BookmarksViewModelFactory
-import com.example.bookmarkmanager1.viewmodels.BookmarksViewModel
+import com.ktdefter.defter.data.Bookmark
+import com.ktdefter.defter.data.BookmarksDatabase
+import com.ktdefter.defter.data.BookmarksRepository
+import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
+import com.ktdefter.defter.viewmodels.BookmarksViewModel
 
 import kotlinx.android.synthetic.main.activity_main.*
 import layout.BookmarkAdapter
@@ -50,12 +49,13 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
             layoutManager = viewManager
             adapter = bookmarkAdapter
         }
+
         bookmarkAdapter.setOnBookmarkContextMenuListener(this)
 
         //when vm.bookmarks changes, ViewModel(in future database) calls this function
         //TODO Dont use notifyDataSetChanged(), use diffutils or something.
         //TODO is observing whole list is good or can we do better?
-        bookmarksViewModel.bookmarks.observe(this, Observer<Array<Bookmark>> { newBookmarks ->
+        bookmarksViewModel.bookmarks.observe(this, Observer<List<Bookmark>> { newBookmarks ->
             bookmarkAdapter.bookmarks = newBookmarks
             bookmarkAdapter.notifyDataSetChanged()
         })

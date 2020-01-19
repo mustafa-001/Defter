@@ -1,10 +1,7 @@
-package com.example.bookmarkmanager1.data
+package com.ktdefter.defter.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.bookmarkmanager1.data.BookmarkDao
-import com.example.bookmarkmanager1.data.TagDao
-import com.example.bookmarkmanager1.data.Tag
+import androidx.lifecycle.LiveData
 
 @Dao
 interface BookmarkTagPairDao {
@@ -22,17 +19,17 @@ interface BookmarkTagPairDao {
                 "AND b.bid = bt.bookmarkid " +
                 "GROUP BY b.bid"
     )
-    fun getBookmarksWithTag(tag: String): List<Bookmark>
+    fun getBookmarksWithTag(tag: String): LiveData<List<Bookmark>>
 
     @Query(
-        "SELECT t.tagname  " +
+        "SELECT t.*  " +
                 "FROM tag t, bookmark b, bookmarktagpair bt " +
                 "WHERE b.bid = bt.bookmarkid " +
                 "AND b.url = :url " +
                 "AND bt.tagid = t.tid " +
                 "GROUP BY t.tid"
     )
-    fun getTagsWithBookmark(url: String): List<String>
+    fun getTagsWithBookmark(url: String): LiveData<List<Tag>>
 
     @Query(
         "INSERT INTO bookmarktagpair ( bookmarkid, tagid) " +

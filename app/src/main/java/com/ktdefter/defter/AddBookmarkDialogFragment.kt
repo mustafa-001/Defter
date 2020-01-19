@@ -1,4 +1,4 @@
-package com.example.bookmarkmanager1
+package com.ktdefter.defter
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -10,12 +10,10 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
-import com.example.bookmarkmanager1.data.BookmarksDatabase
-import com.example.bookmarkmanager1.data.BookmarksRepository
-import com.example.bookmarkmanager1.viewmodels.BookmarksViewModel
-import com.example.bookmarkmanager1.viewmodels.BookmarksViewModelFactory
-import java.lang.Exception
+import com.ktdefter.defter.data.BookmarksDatabase
+import com.ktdefter.defter.data.BookmarksRepository
+import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import java.lang.IllegalStateException
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

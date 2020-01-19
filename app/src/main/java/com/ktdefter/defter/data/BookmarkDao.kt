@@ -1,4 +1,4 @@
-package com.example.bookmarkmanager1.data
+package com.ktdefter.defter.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -11,11 +11,11 @@ import androidx.room.OnConflictStrategy
  */
 @Dao
 interface BookmarkDao{
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun insertBookmark(bookmark: Bookmark)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBookmark(vararg  bookmark: Bookmark)
 
     @Query("SELECT * FROM bookmark")
-    fun getBookmarks(): LiveData<Array<Bookmark>>
+    fun getBookmarks(): LiveData<List<Bookmark>>
 
     @Query("SELECT * FROM bookmark WHERE url = :url")
     fun getBookmark(url: String): Bookmark

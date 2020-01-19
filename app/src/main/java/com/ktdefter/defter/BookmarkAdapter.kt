@@ -1,20 +1,16 @@
 package layout
 
-import android.content.Intent
-import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
-import com.example.bookmarkmanager1.R
+import com.ktdefter.defter.R
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bookmarkmanager1.data.Bookmark
+import com.ktdefter.defter.data.Bookmark
 
 class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>(){
 
-    lateinit var bookmarks: Array<Bookmark>
+    lateinit var bookmarks: List<Bookmark>
     lateinit var callbacks: OnBookmarkContextMenuListener
 
     //TODO Document this
@@ -49,11 +45,11 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>(){
         holder.itemView.setOnCreateContextMenuListener { menu, v, menuInfo ->
             menu.add("Delete").setOnMenuItemClickListener {
 //                Log.d("OnContextMenu", "Pressed for item at of ${v.bookmark_url_text.text} ")
-                callbacks?.onBookmarkDeleteClicked(bookmarks.get(position).url)
+                callbacks.onBookmarkDeleteClicked(bookmarks.get(position).url)
                 true
             }
             menu.add("Choose tags").setOnMenuItemClickListener {
-                callbacks?.onBookmarkChangeTagsClicked(bookmarks.get(position).url)
+                callbacks.onBookmarkChangeTagsClicked(bookmarks.get(position).url)
                 true
             }
         }

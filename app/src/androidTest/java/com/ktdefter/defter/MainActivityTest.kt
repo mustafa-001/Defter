@@ -1,9 +1,7 @@
-package com.example.bookmarkmanager1
+package com.ktdefter.defter
 
 import org.junit.After
 import org.junit.Before
-
-import org.junit.Assert.*
 
 class MainActivityTest {
 

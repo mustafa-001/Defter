@@ -1,8 +1,8 @@
-package com.example.bookmarkmanager1.viewmodels
+package com.ktdefter.defter.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.bookmarkmanager1.data.BookmarksRepository
+import com.ktdefter.defter.data.BookmarksRepository
 
 /**
  * Factory for creating a [BookmarksViewModel] with a constructor that takes a [BookmarksRepository].

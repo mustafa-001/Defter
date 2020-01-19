@@ -1,15 +1,14 @@
-package com.example.bookmarkmanager1.viewmodels
+package com.ktdefter.defter.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.example.bookmarkmanager1.data.Bookmark
-import com.example.bookmarkmanager1.data.BookmarksRepository
+import com.ktdefter.defter.data.Bookmark
+import com.ktdefter.defter.data.BookmarksRepository
 
 class BookmarksViewModel internal constructor(private val bookmarksRepository: BookmarksRepository): ViewModel(){
    private var position = 0
 
-    val bookmarks: LiveData<Array<Bookmark>> = bookmarksRepository.getBookmarks()
+    val bookmarks: LiveData<List<Bookmark>> = bookmarksRepository.getBookmarks()
 
 //    fun
 
@@ -21,7 +20,4 @@ class BookmarksViewModel internal constructor(private val bookmarksRepository: B
         bookmarksRepository.deleteBookmark(url)
     }
 
-   private fun loadBookmarks(){
-      //fetch users from database.
-   }
 }

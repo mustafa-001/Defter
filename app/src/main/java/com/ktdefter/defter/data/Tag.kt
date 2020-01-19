@@ -1,4 +1,4 @@
-package com.example.bookmarkmanager1.data
+package com.ktdefter.defter.data
 import  androidx.room.Entity
 import androidx.room.PrimaryKey
 

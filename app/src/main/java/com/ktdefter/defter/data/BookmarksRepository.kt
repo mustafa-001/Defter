@@ -1,4 +1,4 @@
-package com.example.bookmarkmanager1.data
+package com.ktdefter.defter.data
 
 //TODO Fetch url title and favicon if they don't exist in database.
 class BookmarksRepository private constructor(
@@ -18,16 +18,20 @@ class BookmarksRepository private constructor(
         bookmarksDao.deleteBookmark(url)
     }
 
-    fun addBookmarkTagPair(url: String, tag: String){
-        bookmarkTagPairDao.addBookmarkTagPair(url, tag)
-    }
-
     fun addTag(tag: String){
         val t = Tag(tId = 0, tagName = tag)
         tagDao.insertTag(t)
     }
 
-    fun getTags() = tagDao.getTagNames()
+    fun getTags() = tagDao.getTags()
+
+    fun deleteTag(tagName: String){
+        tagDao.deleteTagByName(tagName)
+    }
+
+    fun addBookmarkTagPair(url: String, tag: String){
+        bookmarkTagPairDao.addBookmarkTagPair(url, tag)
+    }
 
     companion object {
 
