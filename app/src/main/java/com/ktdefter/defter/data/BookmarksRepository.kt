@@ -11,27 +11,32 @@ class BookmarksRepository private constructor(
     fun getBookmark(url: String) = bookmarksDao.getBookmark(url)
 
     fun insertBookmark(url: String) {
-        bookmarksDao.insertBookmark(Bookmark(null, url))
+        bookmarksDao.insertBookmark(Bookmark( url))
     }
 
-    fun deleteBookmark(url: String){
-        bookmarksDao.deleteBookmark(url)
-    }
+    fun deleteBookmark(url: String) = bookmarksDao.deleteBookmark(url)
 
-    fun addTag(tag: String){
-        val t = Tag(tId = 0, tagName = tag)
-        tagDao.insertTag(t)
-    }
+    fun insertTag(tag: String) = tagDao.insertTag(Tag(tag))
 
     fun getTags() = tagDao.getTags()
 
-    fun deleteTag(tagName: String){
-        tagDao.deleteTagByName(tagName)
-    }
+    fun getTagsSync() = tagDao.getTagsSync()
+
+    fun deleteTag(tagName: String) = tagDao.deleteTag(tagName)
 
     fun addBookmarkTagPair(url: String, tag: String){
         bookmarkTagPairDao.addBookmarkTagPair(url, tag)
     }
+    fun deleteBookmarkTagPair(url: String, tag: String) = bookmarkTagPairDao.deletePair(url, tag)
+
+    fun getTagsOfBookmark(url: String) = bookmarkTagPairDao.getTagsWithBookmark(url)
+
+    fun getTagsOfBookmarkSync(url: String) = bookmarkTagPairDao.getTagsWithBookmarkList(url)
+
+    fun getBookmarksOfTag(tag: String) = bookmarkTagPairDao.getBookmarksWithTag(tag)
+
+    fun getBookmarksOfTagSync(tag: String) = bookmarkTagPairDao.getBookmarksWithTagSync(tag)
+
 
     companion object {
 

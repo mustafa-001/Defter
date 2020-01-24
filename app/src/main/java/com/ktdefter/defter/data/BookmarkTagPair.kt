@@ -7,12 +7,12 @@ import androidx.room.PrimaryKey
 
 @Entity(foreignKeys = [ForeignKey(
         entity = Bookmark::class,
-        parentColumns = ["bId"],
+        parentColumns = ["url"],
         childColumns  = ["bookmarkId"],
         onDelete = CASCADE),
                         ForeignKey(
         entity = Tag::class,
-        parentColumns = ["tId"],
+        parentColumns = ["tagName"],
         childColumns = ["tagId"],
         onDelete = CASCADE)])
 data class BookmarkTagPair(

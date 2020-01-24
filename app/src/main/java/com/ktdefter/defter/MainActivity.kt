@@ -7,9 +7,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.navigation.NavigationView
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
@@ -19,7 +28,8 @@ import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import layout.BookmarkAdapter
 
-class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener, BookmarkAdapter.OnBookmarkContextMenuListener {
+class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
+SelectTagDialogFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener{
     private lateinit var bookmarksView: RecyclerView
     private lateinit var bookmarksViewModel: BookmarksViewModel
 
@@ -27,8 +37,14 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
+        val navController = Navigation.findNavController(findViewById(R.id.coordinator))
+        findViewById<NavigationView>(R.id.nav_view)
+            .setupWithNavController(navController)
+
+
         //TODO implement action bar cleanly or remove it.
-        setSupportActionBar(toolbar)
+//        setSupportActionBar(toolbar)
 
         //This is a workaround to not use sunflower InjectorUtils methoo.
         val bookmarksrepo = BookmarksRepository.getInstance(
@@ -44,38 +60,38 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
 
         val viewManager = LinearLayoutManager(this)
         val bookmarkAdapter = BookmarkAdapter()
+        bookmarkAdapter.viewModel = bookmarksViewModel
+
+        //when vm.bookmarks changes, ViewModel(in future database) calls this function
+        //TODO Dont use notifyDataSetChanged(), use diffutils or something.
+        //TODO is observing whole list is good or can we do better?
+        bookmarksViewModel.bookmarksToShow.observe(this, Observer<List<Bookmark>> { newBookmarks ->
+            bookmarkAdapter.bookmarks = newBookmarks
+            bookmarkAdapter.notifyDataSetChanged()
+        })
 
         bookmarksView = findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
             layoutManager = viewManager
             adapter = bookmarkAdapter
         }
 
-        bookmarkAdapter.setOnBookmarkContextMenuListener(this)
-
-        //when vm.bookmarks changes, ViewModel(in future database) calls this function
-        //TODO Dont use notifyDataSetChanged(), use diffutils or something.
-        //TODO is observing whole list is good or can we do better?
-        bookmarksViewModel.bookmarks.observe(this, Observer<List<Bookmark>> { newBookmarks ->
-            bookmarkAdapter.bookmarks = newBookmarks
-            bookmarkAdapter.notifyDataSetChanged()
-        })
 
         fab.setOnClickListener(View.OnClickListener {
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
             addBookmarkDialogFragment.show(
                 this.supportFragmentManager,
-                "add_bookmark_dialog_fragment"
+                "add_bookmark_fragment"
             )
         })
 
-        intent = getIntent()
         when{
-            intent.action == Intent.ACTION_SEND -> {
+            getIntent().action == Intent.ACTION_SEND -> {
                 bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT)))
             }
         }
 
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -93,25 +109,12 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         }
     }
 
-    //TODO why without this AddBookmarkDialogFragment doesn't work.
-    override fun onFragmentInteraction(uri: Uri) {
+    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onBookmarkDeleteClicked(url: String) {
-        bookmarksViewModel.deleteBookmark(url)
-    }
-
-    //TODO implement onBookmarkChangeTagsCLicked
-    override fun onBookmarkClicked(url: String) {
-        val openLinkIntent = Intent().apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(url)
-        }
-        startActivity(openLinkIntent)
-    }
-
-    override fun onBookmarkChangeTagsClicked(url: String) {
+    //TODO why without this AddBookmarkDialogFragment doesn't work.
+    override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

@@ -2,88 +2,111 @@ package com.ktdefter.defter
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.CLIPBOARD_SERVICE
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
-import android.view.WindowManager
-import android.widget.Button
 import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
+import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
-import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.*
-import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.view.*
+import kotlinx.android.synthetic.*
+import kotlinx.android.synthetic.main.fragment_select_tag_dialog.view.*
+import kotlinx.android.synthetic.main.fragment_select_tag_dialog.*
 import java.lang.IllegalStateException
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [AddBookmarkDialogFragment.OnFragmentInteractionListener] interface
+ * [SelectTagDialogFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [AddBookmarkDialogFragment.newInstance] factory method to
+ * Use the [SelectTagDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AddBookmarkDialogFragment : DialogFragment() {
-    // TODO: Rename and change types of parameters.
+class SelectTagDialogFragment : DialogFragment() {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var bookmarksViewModel: BookmarksViewModel
+    lateinit var selectedBookmark: Bookmark
+    lateinit var tags: List<Tag>
+    lateinit var allTags: List<Tag>
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let{
-            AlertDialog.Builder(it).let {
-                val view = requireActivity()
-                    .layoutInflater
-                    .inflate(R.layout.fragment_add_bookmark_dialog, null)
+        super.onCreateDialog(savedInstanceState)
+        return activity?.let {
+            val view = it
+                .layoutInflater
+                .inflate(R.layout.fragment_select_tag_dialog, null)
 
-                it.setView(view)
-                it.setTitle("Add new bookmark")
-                it.setNegativeButton("Cancel",
+            val selectedTags = allTags.map { tags.contains(it) }
+            val adapter: ArrayAdapter<String> = ArrayAdapter(view.context, android.R.layout.simple_dropdown_item_1line, allTags.map { it.tagName })
+            Log.d("Defter", "all tags are: ${allTags.map { it.tagName }}")
+            view.new_tag_text.setAdapter(adapter)
+            view.new_tag_text.threshold = 1
+            val changes: MutableMap<String, Boolean> = mutableMapOf()
+
+            AlertDialog.Builder(it)
+                .setView(view)
+                .setMultiChoiceItems(allTags.map{it.tagName}.toTypedArray(),
+                    allTags.map { tags.contains(it) }.toBooleanArray(),
+                    DialogInterface.OnMultiChoiceClickListener{dialog, which, isChecked ->
+                        changes.put(allTags.map { it.tagName }.get(which), isChecked)
+                        })
+                .setTitle("Select new tag")
+                .setNegativeButton("Cancel",
                     DialogInterface.OnClickListener { _, _ ->
                         getDialog()?.cancel()
                     })
-                it.setPositiveButton("Add",
+                .setPositiveButton("Add",
                     DialogInterface.OnClickListener { _, _ ->
-                        onPositiveClick(view.findViewById<EditText>(R.id.url_text)?.text.toString())
+                        changes.mapKeys {
+                            if (it.value == true) {
+                                bookmarksViewModel.addBookmarkTagPair(selectedBookmark.url, it.key)
+                            } else {
+                            bookmarksViewModel.deleteBookmarkTagPair(selectedBookmark.url, it.key)
+                            }
+                        }
+                        onPositiveClick(view.findViewById<AutoCompleteTextView>(R.id.new_tag_text)?.text.toString())
                     })
-                view.paste_clipboard_button.setOnClickListener {
-                    val clipboard = context?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                    if (clipboard.hasPrimaryClip()) {
-                        view.url_text.append(clipboard.primaryClip!!.getItemAt(0).text)
-                    }
-                }
-                it.create()
-            }
-            .apply {
-                this.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-            }
+                .create()
         } ?: throw IllegalStateException("Main Activity cannot be null")
     }
 
-    private fun onPositiveClick(url: String){
-        Log.d("url is: ", url)
-        bookmarksViewModel.addBookmark(url)
+    fun onPositiveClick(tag: String){
+        if (tag != "") {
+            bookmarksViewModel.addBookmarkTagPair(selectedBookmark.url, tag)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //TODO Make sure this way of getting activity's ViewModel is safe and proper way.
+        //Commented part is old default ViewModelFactory method.
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
             BookmarksDatabase.getInstance(requireContext()).tagDao(),
             BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao()
         )
         bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+        allTags = bookmarksViewModel.getTagsSync()
+        tags = bookmarksViewModel.getTagsOfBookmarkSync(selectedBookmark.url)
+    }
+
+
+    // TODO: Rename method, update argument and hook method into UI event
+    fun onButtonPressed(uri: Uri) {
+        listener?.onFragmentInteraction(uri)
     }
 
     override fun onAttach(context: Context) {
@@ -112,6 +135,7 @@ class AddBookmarkDialogFragment : DialogFragment() {
      * for more information.
      */
     interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 
@@ -122,14 +146,16 @@ class AddBookmarkDialogFragment : DialogFragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment AddBookmarkDialogFragment.
+         * @return A new instance of fragment SelectTagDialogFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddBookmarkDialogFragment().apply {
+        fun newInstance() =
+            SelectTagDialogFragment().apply {
                 arguments = Bundle().apply {
                 }
             }
     }
 }
+
+

@@ -7,6 +7,13 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".AddBookmarkDialogFragment">
 
+    <Button
+        android:id="@+id/paste_clipboard_button"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:drawableBottom="?attr/actionModeCopyDrawable" />
+
     <EditText
         android:id="@+id/url_text"
         android:layout_width="match_parent"

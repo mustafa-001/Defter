@@ -20,8 +20,6 @@ interface BookmarkDao{
     @Query("SELECT * FROM bookmark WHERE url = :url")
     fun getBookmark(url: String): Bookmark
 
-    @Query("select bId from bookmark where url = :url")
-    fun getBookmarkId(url: String): Int
 
     @Query("DELETE FROM bookmark WHERE url = :url")
     fun deleteBookmark(url: String)

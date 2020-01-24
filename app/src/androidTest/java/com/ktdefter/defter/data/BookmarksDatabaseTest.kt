@@ -51,11 +51,11 @@ class BookmarksDatabaseTest {
     }
 
     private fun insBm(url: String = "test.com", title: String = "TestTitle"){
-        bookmarkDao.insertBookmark(Bookmark(null, url, title))
+        bookmarkDao.insertBookmark(Bookmark( url, title))
     }
 
     private fun insTag(tagname: String = "test_tag"){
-        tagDao.insertTag(Tag(null, tagname))
+        tagDao.insertTag(Tag( tagname))
     }
 
     private fun insPair(url: String, tag: String ){
@@ -64,14 +64,14 @@ class BookmarksDatabaseTest {
 
     @Test
     fun shouldInsertNewBookmark(){
-        bookmarkDao.insertBookmark(Bookmark(null, "test.com", "Test Page"))
+        bookmarkDao.insertBookmark(Bookmark( "test.com", "Test Page"))
         val bm = bookmarkDao.getBookmark("test.com")
         assertNotNull(bm)
     }
 
     @Test
     fun shouldDeleteBookmark(){
-        bookmarkDao.insertBookmark(Bookmark(null,"test.com"))
+        bookmarkDao.insertBookmark(Bookmark("test.com"))
         bookmarkDao.deleteBookmark("test.com")
         assertNull(bookmarkDao.getBookmark("test.com"))
     }
@@ -81,7 +81,7 @@ class BookmarksDatabaseTest {
         insBm()
         bookmarkDao.getBookmark("test.com").let {
             bookmarkDao
-                .insertBookmark(Bookmark(it.bId, it.url, "New Title"))
+                .insertBookmark(Bookmark(it.url, "New Title"))
             assertEquals(bookmarkDao.getBookmark("test.com").title, "New Title")
         }
     }
@@ -89,10 +89,12 @@ class BookmarksDatabaseTest {
     @Test
     fun shouldInsertMultipleBookmark(){
         bookmarkDao.insertBookmark(
-            Bookmark(null, "test1.com", title = "test1title"),
-            Bookmark(null, "test2.com", title = "test2title"))
-        assertNotNull(bookmarkDao.getBookmark("test2.com"))
-        assertEquals(bookmarkDao.getBookmark("test2.com").title, "test2title")
+            Bookmark( "test1.com", title = "test1title"),
+            Bookmark( "test2.com", title = "test2title"))
+        bookmarkDao.getBookmark("test2.com").let {
+            assertNotNull(it)
+            assertEquals(it.title, "test2title")
+        }
     }
 
 
@@ -104,9 +106,9 @@ class BookmarksDatabaseTest {
 
     @Test
     fun shouldInsertAndGetMultipleTags(){
-        val tag1  = Tag(null, "tag1")
-        val tag2  = Tag(null, "tag2")
-        val tag3  = Tag(null, "tag3")
+        val tag1  = Tag( "tag1")
+        val tag2  = Tag( "tag2")
+        val tag3  = Tag("tag3")
         tagDao.insertTag(tag1, tag2, tag3)
         tagDao
             .getTags()
@@ -127,7 +129,7 @@ class BookmarksDatabaseTest {
             .getValueBlocking()
             !!.map { it.tagName }
             .contains("tagfordelete"))
-        tagDao.deleteTagByName("tagfordelete")
+        tagDao.deleteTag("tagfordelete")
 
         assertFalse(tagDao
             .getTags()
@@ -136,26 +138,27 @@ class BookmarksDatabaseTest {
             .contains("tagfordelete"))
     }
 
-    @Test
-    fun shouldUpdateTag(){
-        insTag()
-        tagDao
-            .getTags()
-            .getValueBlocking()
-            .also { assertNotNull(it) }!!
-            .filter { it.tagName == "test_tag" }
-            .get(0)
-            .let {oldTag ->
-                tagDao.insertTag(Tag(oldTag.tId, "new tag"))
-                assertEquals(tagDao
-                    .getTags()
-                    .getValueBlocking()
-                    .also { assertNotNull(it) }!!
-                    .filter { oldTag.tId == it.tId  }
-                    .get(0)
-                    .tagName, "new tag")
-            }
-    }
+    //For now this test is unnecessary
+//    @Test
+//    fun shouldUpdateTag(){
+//        insTag()
+//        tagDao
+//            .getTags()
+//            .getValueBlocking()
+//            .also { assertNotNull(it) }!!
+//            .filter { it.tagName == "test_tag" }
+//            .get(0)
+//            .let {oldTag ->
+//                tagDao.insertTag(Tag("new tag"))
+//                assertEquals(tagDao
+//                    .getTags()
+//                    .getValueBlocking()
+//                    .also { assertNotNull(it) }!!
+//                    .filter { oldTag.tagName == it.tagName  }
+//                    .get(0)
+//                    .tagName, "new tag")
+//            }
+//    }
 
 
     @Test
@@ -163,11 +166,11 @@ class BookmarksDatabaseTest {
         insBm("test1.com")
         insTag("test_tag1")
         insPair("test1.com", "test_tag1")
-        assertEquals(
-            bookmarkDao.getBookmarkId("test1.com"),
-            bookmarkTagPairDao
-                .getBookmarkIdByTagId(tagDao
-                    .getTagId("test_tag1")))
+        assert(bookmarkTagPairDao.getTagsWithBookmark("test1.com")
+            .getValueBlocking()
+            ?.map { it.tagName }
+            ?.contains("test_tag1") ?: false
+        )
     }
 
 
