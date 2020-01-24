@@ -8,16 +8,19 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksDatabase
@@ -29,22 +32,28 @@ import kotlinx.android.synthetic.main.activity_main.*
 import layout.BookmarkAdapter
 
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
-SelectTagDialogFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener{
-    private lateinit var bookmarksView: RecyclerView
+SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFragmentInteractionListener{
+//    private lateinit var bookmarksView: RecyclerView
     private lateinit var bookmarksViewModel: BookmarksViewModel
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        val fab: FloatingActionButton = findViewById(R.id.fab)
+
 
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navController = Navigation.findNavController(findViewById(R.id.coordinator))
-        findViewById<NavigationView>(R.id.nav_view)
-            .setupWithNavController(navController)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val navController = findNavController(R.id.nav_host_fragment)
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
 
 
-        //TODO implement action bar cleanly or remove it.
-//        setSupportActionBar(toolbar)
 
         //This is a workaround to not use sunflower InjectorUtils methoo.
         val bookmarksrepo = BookmarksRepository.getInstance(
@@ -57,24 +66,23 @@ SelectTagDialogFragment.OnFragmentInteractionListener, NavigationView.OnNavigati
             BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 //        val bookmarksViewModel = ViewModelProviders.of(this)[BookmarksViewModel::class.java]
 
+//
+//        val viewManager = LinearLayoutManager(this)
+//        val bookmarkAdapter = BookmarkAdapter()
+//        bookmarkAdapter.viewModel = bookmarksViewModel
+//
+//        //when vm.bookmarks changes, ViewModel(in future database) calls this function
+//        //TODO Dont use notifyDataSetChanged(), use diffutils or something.
+//        //TODO is observing whole list is good or can we do better?
+//        bookmarksViewModel.bookmarksToShow.observe(this, Observer<List<Bookmark>> { newBookmarks ->
+//            bookmarkAdapter.bookmarks = newBookmarks
+//            bookmarkAdapter.notifyDataSetChanged()
+//        })
 
-        val viewManager = LinearLayoutManager(this)
-        val bookmarkAdapter = BookmarkAdapter()
-        bookmarkAdapter.viewModel = bookmarksViewModel
-
-        //when vm.bookmarks changes, ViewModel(in future database) calls this function
-        //TODO Dont use notifyDataSetChanged(), use diffutils or something.
-        //TODO is observing whole list is good or can we do better?
-        bookmarksViewModel.bookmarksToShow.observe(this, Observer<List<Bookmark>> { newBookmarks ->
-            bookmarkAdapter.bookmarks = newBookmarks
-            bookmarkAdapter.notifyDataSetChanged()
-        })
-
-        bookmarksView = findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
-            layoutManager = viewManager
-            adapter = bookmarkAdapter
-        }
-
+//        bookmarksView = findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
+//            layoutManager = viewManager
+//            adapter = bookmarkAdapter
+//        }
 
         fab.setOnClickListener(View.OnClickListener {
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
@@ -109,9 +117,6 @@ SelectTagDialogFragment.OnFragmentInteractionListener, NavigationView.OnNavigati
         }
     }
 
-    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     //TODO why without this AddBookmarkDialogFragment doesn't work.
     override fun onFragmentInteraction(uri: Uri) {
