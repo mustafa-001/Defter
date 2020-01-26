@@ -7,25 +7,20 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.EditText
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
-import kotlinx.android.synthetic.*
-import kotlinx.android.synthetic.main.fragment_select_tag_dialog.view.*
-import kotlinx.android.synthetic.main.fragment_select_tag_dialog.*
 import java.lang.IllegalStateException
-
+import kotlinx.android.synthetic.*
+import kotlinx.android.synthetic.main.fragment_select_tag_dialog.*
+import kotlinx.android.synthetic.main.fragment_select_tag_dialog.view.*
 
 /**
  * A simple [Fragment] subclass.
@@ -45,29 +40,36 @@ class SelectTagDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
         return activity?.let {
-            val view = it
-                .layoutInflater
-                .inflate(R.layout.fragment_select_tag_dialog, null)
 
             val selectedTags = allTags.map { tags.contains(it) }
-            val adapter: ArrayAdapter<String> = ArrayAdapter(view.context, android.R.layout.simple_dropdown_item_1line, allTags.map { it.tagName })
             Log.d("Defter", "all tags are: ${allTags.map { it.tagName }}")
-            view.new_tag_text.setAdapter(adapter)
-            view.new_tag_text.threshold = 1
             val changes: MutableMap<String, Boolean> = mutableMapOf()
 
             AlertDialog.Builder(it)
-                .setView(view)
-                .setMultiChoiceItems(allTags.map{it.tagName}.toTypedArray(),
+                .setView(it
+                    .layoutInflater
+                    .inflate(R.layout.fragment_select_tag_dialog, null)
+                    .apply{
+                        this.new_tag_text.setAdapter(
+                            ArrayAdapter(this.context,
+                                android.R.layout.simple_dropdown_item_1line,
+                                allTags.map { t -> t.tagName })
+                        )
+                        this.new_tag_text.threshold = 1
+                    })
+
+                .setMultiChoiceItems(allTags.map { it.tagName }.toTypedArray(),
                     allTags.map { tags.contains(it) }.toBooleanArray(),
-                    DialogInterface.OnMultiChoiceClickListener{dialog, which, isChecked ->
+                    DialogInterface.OnMultiChoiceClickListener { dialog, which, isChecked ->
                         changes.put(allTags.map { it.tagName }.get(which), isChecked)
                         })
+
                 .setTitle("Select new tag")
-                .setNegativeButton("Cancel",
-                    DialogInterface.OnClickListener { _, _ ->
-                        getDialog()?.cancel()
-                    })
+
+                .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.cancel()
+                    }
+
                 .setPositiveButton("Add",
                     DialogInterface.OnClickListener { _, _ ->
                         changes.mapKeys {
@@ -77,13 +79,13 @@ class SelectTagDialogFragment : DialogFragment() {
                             bookmarksViewModel.deleteBookmarkTagPair(selectedBookmark.url, it.key)
                             }
                         }
-                        onPositiveClick(view.findViewById<AutoCompleteTextView>(R.id.new_tag_text)?.text.toString())
+                        onPositiveClick(this.view!!.new_tag_text.text.toString())
                     })
                 .create()
         } ?: throw IllegalStateException("Main Activity cannot be null")
     }
 
-    fun onPositiveClick(tag: String){
+    fun onPositiveClick(tag: String) {
         if (tag != "") {
             bookmarksViewModel.addBookmarkTagPair(selectedBookmark.url, tag)
         }
@@ -91,8 +93,8 @@ class SelectTagDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //TODO Make sure this way of getting activity's ViewModel is safe and proper way.
-        //Commented part is old default ViewModelFactory method.
+        // TODO Make sure this way of getting activity's ViewModel is safe and proper way.
+        // Commented part is old default ViewModelFactory method.
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
             BookmarksDatabase.getInstance(requireContext()).tagDao(),
@@ -102,7 +104,6 @@ class SelectTagDialogFragment : DialogFragment() {
         allTags = bookmarksViewModel.getTagsSync()
         tags = bookmarksViewModel.getTagsOfBookmarkSync(selectedBookmark.url)
     }
-
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
@@ -157,5 +158,3 @@ class SelectTagDialogFragment : DialogFragment() {
             }
     }
 }
-
-

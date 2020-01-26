@@ -8,21 +8,18 @@ import android.content.Context.CLIPBOARD_SERVICE
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.WindowManager
-import android.widget.Button
-import androidx.fragment.app.Fragment
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.Fragment
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
+import java.lang.IllegalStateException
 import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.*
 import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.view.*
-import java.lang.IllegalStateException
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
@@ -40,7 +37,7 @@ class AddBookmarkDialogFragment : DialogFragment() {
     private lateinit var bookmarksViewModel: BookmarksViewModel
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let{
+        return activity?.let {
             AlertDialog.Builder(it).let {
                 val view = requireActivity()
                     .layoutInflater
@@ -70,14 +67,14 @@ class AddBookmarkDialogFragment : DialogFragment() {
         } ?: throw IllegalStateException("Main Activity cannot be null")
     }
 
-    private fun onPositiveClick(url: String){
+    private fun onPositiveClick(url: String) {
         Log.d("url is: ", url)
         bookmarksViewModel.addBookmark(url)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //TODO Make sure this way of getting activity's ViewModel is safe and proper way.
+        // TODO Make sure this way of getting activity's ViewModel is safe and proper way.
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
             BookmarksDatabase.getInstance(requireContext()).tagDao(),

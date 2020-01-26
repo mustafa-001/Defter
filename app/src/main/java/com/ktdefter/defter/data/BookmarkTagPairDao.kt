@@ -1,7 +1,7 @@
 package com.ktdefter.defter.data
 
-import androidx.room.*
 import androidx.lifecycle.LiveData
+import androidx.room.*
 
 @Dao
 interface BookmarkTagPairDao {
@@ -9,7 +9,7 @@ interface BookmarkTagPairDao {
     fun insertPair(bookmarkTagPair: BookmarkTagPair)
 
     @Query("DELETE FROM bookmarktagpair " +
-            "WHERE tagid =  :tag "+
+            "WHERE tagid =  :tag " +
             "AND bookmarkid = :url")
     fun deletePair(url: String, tag: String)
 

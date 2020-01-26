@@ -11,13 +11,13 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="wrap_content"
-            android:layout_height="29dp"
-            android:background="#FF9799" />
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#AB47BC" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/nav_host_content"
+    <include layout="@layout/host_fragment_main"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="#DD1C00"
+        app:backgroundTint="#D500F9"
         app:srcCompat="@android:drawable/ic_input_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

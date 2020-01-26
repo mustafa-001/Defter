@@ -3,10 +3,12 @@ package com.ktdefter.defter
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +21,6 @@ import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import kotlinx.android.synthetic.main.fragment_bookmark_list.*
 import layout.BookmarkAdapter
 
-
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
@@ -28,7 +29,7 @@ import layout.BookmarkAdapter
  * Use the [BookmarkListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BookmarkListFragment : Fragment() {
+class BookmarkListFragment : Fragment(), DrawerLayout.DrawerListener {
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var bookmarksView: RecyclerView
@@ -36,7 +37,7 @@ class BookmarkListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //This is a workaround to not use sunflower InjectorUtils methoo.
+        // This is a workaround to not use sunflower InjectorUtils methoo.
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
             BookmarksDatabase.getInstance(requireContext()).tagDao(),
@@ -46,14 +47,27 @@ class BookmarkListFragment : Fragment() {
         bookmarksViewModel =
             BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 //        val bookmarksViewModel = ViewModelProviders.of(this)[BookmarksViewModel::class.java]
-
-
-
-
     }
 
+    override fun onDrawerClosed(drawerView: View) {
+        Toast.makeText(drawerView.context, "Drawer Opened" , Toast.LENGTH_SHORT).show()
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+        Toast.makeText(drawerView.context, "Drawer Opened" , Toast.LENGTH_SHORT).show()
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onDrawerStateChanged(newState: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+    override fun onDrawerOpened(drawerView: View) {
+        Toast.makeText(drawerView.context, "Drawer Opened" , Toast.LENGTH_SHORT).show()
+    }
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -66,9 +80,9 @@ class BookmarkListFragment : Fragment() {
                     layoutManager = viewManager
                     adapter = bookmarkAdapter
                 }
-                //when vm.bookmarks changes, ViewModel(in future database) calls this function
-                //TODO Dont use notifyDataSetChanged(), use diffutils or something.
-                //TODO is observing whole list is good or can we do better?
+                // when vm.bookmarks changes, ViewModel(in future database) calls this function
+                // TODO Dont use notifyDataSetChanged(), use diffutils or something.
+                // TODO is observing whole list is good or can we do better?
                 bookmarksViewModel.bookmarksToShow.observe(this@BookmarkListFragment, Observer<List<Bookmark>> { newBookmarks ->
                     bookmarkAdapter.bookmarks = newBookmarks
                     bookmarkAdapter.notifyDataSetChanged()

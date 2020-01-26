@@ -1,13 +1,13 @@
-//package com.ktdefter.defter
+// package com.ktdefter.defter
 //
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import android.widget.TextView
-//import androidx.recyclerview.widget.RecyclerView
-//import com.ktdefter.defter.data.Tag
+// import android.view.LayoutInflater
+// import android.view.View
+// import android.view.ViewGroup
+// import android.widget.TextView
+// import androidx.recyclerview.widget.RecyclerView
+// import com.ktdefter.defter.data.Tag
 //
-//class TagListAdapter() : RecyclerView.Adapter<TagListAdapter.TagViewHolder>(){
+// class TagListAdapter() : RecyclerView.Adapter<TagListAdapter.TagViewHolder>(){
 //    lateinit var tags: List<Tag>
 //
 //    class TagViewHolder(v: View):RecyclerView.ViewHolder(v){
@@ -31,4 +31,4 @@
 //
 //        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 //    }
-//}
+// }

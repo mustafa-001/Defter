@@ -9,22 +9,19 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
-import com.ktdefter.defter.R
 import androidx.recyclerview.widget.RecyclerView
+import com.ktdefter.defter.R
 import com.ktdefter.defter.SelectTagDialogFragment
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
-import kotlinx.android.synthetic.main.bookmarklist.view.*
 
 class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
 
-    var bookmarks: List<Bookmark> = listOf(Bookmark( url = "starting"))
+    var bookmarks: List<Bookmark> = listOf(Bookmark(url = "starting"))
     lateinit var viewModel: BookmarksViewModel
 
-
-
-    class BmViewHolder(v: View): RecyclerView.ViewHolder(v){
+    class BmViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         lateinit var bookmark: Bookmark
         lateinit var tags: LiveData<Tag>
         val titleTextView: TextView = v.findViewById(R.id.bookmark_title_text)
@@ -32,13 +29,13 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
         val tagsTextView: TextView = v.findViewById(R.id.bookmark_tags_text)
     }
 
-    //Must return a ViewHolder that holds our bookmark view, just inflate our xml and pass it
+    // Must return a ViewHolder that holds our bookmark view, just inflate our xml and pass it
     // in a ViewHolder. Called before onBindViewHolder()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarkAdapter.BmViewHolder {
         return BmViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.bookmarklist, parent, false)
+                .inflate(R.layout.bookmark_view, parent, false)
         )
     }
 
@@ -48,28 +45,28 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 this.bookmark = it
                 this.urlTextView.text = it.url
                 this.titleTextView.text = it.title
-                viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags->
+                viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->
                     this.tagsTextView.text = tags
                         .map { it.tagName }
-                        .fold(""){ acc, nxt -> acc+", "+nxt
+                        .fold("") { acc, nxt -> acc + ", " + nxt
                         }
                 }
             }
             }
 
-        //Android will call this function when creating context menu.
-        //menu: context menu being build
-        //v: view for which context menu being build
-        //menuinfo: extra info about item for which context menu being shown
-        //https://developer.android.com/reference/android/view/View.OnCreateContextMenuListener
-        //TODO implement other context bar functions; edit eg.
-        holder.itemView.setOnCreateContextMenuListener { menu, v,  _->
+        // Android will call this function when creating context menu.
+        // menu: context menu being build
+        // v: view for which context menu being build
+        // menuinfo: extra info about item for which context menu being shown
+        // https://developer.android.com/reference/android/view/View.OnCreateContextMenuListener
+        // TODO implement other context bar functions; edit eg.
+        holder.itemView.setOnCreateContextMenuListener { menu, v, _ ->
             menu.add("Delete").setOnMenuItemClickListener {
                 viewModel.deleteBookmark(holder.bookmark.url)
                 true
             }
             menu.add("Choose tags").setOnMenuItemClickListener {
-                val selectTagDialogFragment =  SelectTagDialogFragment()
+                val selectTagDialogFragment = SelectTagDialogFragment()
                 val activity = v.context as AppCompatActivity
                 selectTagDialogFragment.apply {
                     selectedBookmark = holder.bookmark
@@ -92,11 +89,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
         }
     }
 
-
     override fun getItemCount(): Int {
         return bookmarks.size
     }
-
-
-
 }

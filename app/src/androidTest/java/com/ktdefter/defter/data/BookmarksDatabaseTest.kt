@@ -5,10 +5,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 
 class BookmarksDatabaseTest {
 
@@ -42,7 +42,6 @@ class BookmarksDatabaseTest {
 //        insPair("test3.com", "test_tag1")
 //        insPair("test1.com", "test_tag2")
 //        insPair("test1.com", "test_tag3")
-
     }
 
     @After
@@ -50,34 +49,34 @@ class BookmarksDatabaseTest {
         db.close()
     }
 
-    private fun insBm(url: String = "test.com", title: String = "TestTitle"){
-        bookmarkDao.insertBookmark(Bookmark( url, title))
+    private fun insBm(url: String = "test.com", title: String = "TestTitle") {
+        bookmarkDao.insertBookmark(Bookmark(url, title))
     }
 
-    private fun insTag(tagname: String = "test_tag"){
-        tagDao.insertTag(Tag( tagname))
+    private fun insTag(tagname: String = "test_tag") {
+        tagDao.insertTag(Tag(tagname))
     }
 
-    private fun insPair(url: String, tag: String ){
-        bookmarkTagPairDao.addBookmarkTagPair( url, tag)
+    private fun insPair(url: String, tag: String) {
+        bookmarkTagPairDao.addBookmarkTagPair(url, tag)
     }
 
     @Test
-    fun shouldInsertNewBookmark(){
-        bookmarkDao.insertBookmark(Bookmark( "test.com", "Test Page"))
+    fun shouldInsertNewBookmark() {
+        bookmarkDao.insertBookmark(Bookmark("test.com", "Test Page"))
         val bm = bookmarkDao.getBookmark("test.com")
         assertNotNull(bm)
     }
 
     @Test
-    fun shouldDeleteBookmark(){
+    fun shouldDeleteBookmark() {
         bookmarkDao.insertBookmark(Bookmark("test.com"))
         bookmarkDao.deleteBookmark("test.com")
         assertNull(bookmarkDao.getBookmark("test.com"))
     }
 
     @Test
-    fun shouldUpdateBookmark(){
+    fun shouldUpdateBookmark() {
         insBm()
         bookmarkDao.getBookmark("test.com").let {
             bookmarkDao
@@ -87,41 +86,40 @@ class BookmarksDatabaseTest {
     }
 
     @Test
-    fun shouldInsertMultipleBookmark(){
+    fun shouldInsertMultipleBookmark() {
         bookmarkDao.insertBookmark(
-            Bookmark( "test1.com", title = "test1title"),
-            Bookmark( "test2.com", title = "test2title"))
+            Bookmark("test1.com", title = "test1title"),
+            Bookmark("test2.com", title = "test2title"))
         bookmarkDao.getBookmark("test2.com").let {
             assertNotNull(it)
             assertEquals(it.title, "test2title")
         }
     }
 
-
     @Test
-    fun shouldInsertTag(){
+    fun shouldInsertTag() {
         insTag()
         assertNotNull(tagDao.getTags())
     }
 
     @Test
-    fun shouldInsertAndGetMultipleTags(){
-        val tag1  = Tag( "tag1")
-        val tag2  = Tag( "tag2")
-        val tag3  = Tag("tag3")
+    fun shouldInsertAndGetMultipleTags() {
+        val tag1 = Tag("tag1")
+        val tag2 = Tag("tag2")
+        val tag3 = Tag("tag3")
         tagDao.insertTag(tag1, tag2, tag3)
         tagDao
             .getTags()
             .getValueBlocking()
             .let {
             assertNotNull(it)
-            assertTrue( it is List<Tag>)
-            assertTrue( it!!.map { it.tagName }.contains("tag2"))
+            assertTrue(it is List<Tag>)
+            assertTrue(it!!.map { it.tagName }.contains("tag2"))
         }
     }
 
     @Test
-    fun shouldDeleteTag(){
+    fun shouldDeleteTag() {
         insTag("tagfordelete")
 
         assertTrue(tagDao
@@ -138,7 +136,7 @@ class BookmarksDatabaseTest {
             .contains("tagfordelete"))
     }
 
-    //For now this test is unnecessary
+    // For now this test is unnecessary
 //    @Test
 //    fun shouldUpdateTag(){
 //        insTag()
@@ -160,9 +158,8 @@ class BookmarksDatabaseTest {
 //            }
 //    }
 
-
     @Test
-    fun shouldInsertBookmarkTagPair(){
+    fun shouldInsertBookmarkTagPair() {
         insBm("test1.com")
         insTag("test_tag1")
         insPair("test1.com", "test_tag1")
@@ -173,9 +170,8 @@ class BookmarksDatabaseTest {
         )
     }
 
-
     @Test
-    fun shouldGetTagsOfBookmark(){
+    fun shouldGetTagsOfBookmark() {
         insBm("test1.com")
         insTag("test_tag1")
         insTag("test_tag2")
@@ -192,7 +188,7 @@ class BookmarksDatabaseTest {
     }
 
     @Test
-    fun shouldGetBookmarksOfTag(){
+    fun shouldGetBookmarksOfTag() {
         insBm("test1.com")
         insBm("test2.com")
         insBm("test3.com")
@@ -203,6 +199,6 @@ class BookmarksDatabaseTest {
         assertEquals(bookmarkTagPairDao
             .getBookmarksWithTag("test_tag1")
             .getValueBlocking()
-            ?.map { it.url } , listOf("test1.com", "test2.com", "test3.com"))
+            ?.map { it.url }, listOf("test1.com", "test2.com", "test3.com"))
     }
 }

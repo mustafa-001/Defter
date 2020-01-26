@@ -86,3 +86,8 @@ dependencies {
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:+'
 }
+
+dependencies {
+    implementation 'androidx.legacy:legacy-support-v4:+'
+    implementation 'androidx.recyclerview:recyclerview:+'
+}
