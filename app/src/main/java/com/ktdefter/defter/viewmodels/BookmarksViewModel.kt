@@ -63,6 +63,8 @@ class BookmarksViewModel internal constructor(private val bookmarksRepository: B
         }
     }
 
+    fun getTags(): LiveData<List<Tag>> = bookmarksRepository.getTags()
+
     fun getTagsSync(): List<Tag> = bookmarksRepository.getTagsSync()
 
     fun getTagsOfBookmark(url: String) = bookmarksRepository.getTagsOfBookmark(url)

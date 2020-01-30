@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.ktdefter.defter.data.Bookmark
+import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
@@ -45,10 +46,6 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
 
-        navView.menu.add("Deneme")
-        navView.menu.add("Deneme2")
-        navView.menu.add("Deneme2")
-
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -61,7 +58,17 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         )
 
         bookmarksViewModel =
-            BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+             BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+
+
+        var oldTags: List<Tag>? = null
+        bookmarksViewModel.getTags().observe(this, Observer<List<Tag>> { newTags ->
+//            oldTags?.forEach{it -> navView.menu.add(it.tagName)}
+            for (newTag in newTags) {
+                navView.menu.add(newTag.tagName)
+            }
+            oldTags = newTags
+        })
 
 
         fab.setOnClickListener(View.OnClickListener {

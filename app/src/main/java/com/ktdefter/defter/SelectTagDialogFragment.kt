@@ -79,7 +79,7 @@ class SelectTagDialogFragment : DialogFragment() {
                             bookmarksViewModel.deleteBookmarkTagPair(selectedBookmark.url, it.key)
                             }
                         }
-                        onPositiveClick(this.view!!.new_tag_text.text.toString())
+                        onPositiveClick(  view!!.new_tag_text.text.toString())
                     })
                 .create()
         } ?: throw IllegalStateException("Main Activity cannot be null")
