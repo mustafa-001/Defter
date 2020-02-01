@@ -47,15 +47,21 @@ class SelectTagDialogFragment : DialogFragment() {
             val view = it.layoutInflater.inflate(R.layout.fragment_select_tag_dialog, null)
             view.apply {
                 new_tag_text.setAdapter(
-                    ArrayAdapter(context,
+                    ArrayAdapter(this.context,
                         android.R.layout.simple_dropdown_item_1line,
-                        allTags.map { it.tagName })
+                        allTags.map { t -> t.tagName })
                 )
                 new_tag_text.threshold = 1
             }
 
             AlertDialog.Builder(it)
                 .setView(view)
+
+                .setMultiChoiceItems(allTags.map { it.tagName }.toTypedArray(),
+                    allTags.map { tags.contains(it) }.toBooleanArray(),
+                    DialogInterface.OnMultiChoiceClickListener { dialog, which, isChecked ->
+                        changes.put(allTags.map { it.tagName }.get(which), isChecked)
+                    })
 
                 .setTitle("Select new tag")
 
