@@ -44,25 +44,18 @@ class SelectTagDialogFragment : DialogFragment() {
             val selectedTags = allTags.map { tags.contains(it) }
             Log.d("Defter", "all tags are: ${allTags.map { it.tagName }}")
             val changes: MutableMap<String, Boolean> = mutableMapOf()
+            val view = it.layoutInflater.inflate(R.layout.fragment_select_tag_dialog, null)
+            view.apply {
+                new_tag_text.setAdapter(
+                    ArrayAdapter(context,
+                        android.R.layout.simple_dropdown_item_1line,
+                        allTags.map { it.tagName })
+                )
+                new_tag_text.threshold = 1
+            }
 
             AlertDialog.Builder(it)
-                .setView(it
-                    .layoutInflater
-                    .inflate(R.layout.fragment_select_tag_dialog, null)
-                    .apply{
-                        this.new_tag_text.setAdapter(
-                            ArrayAdapter(this.context,
-                                android.R.layout.simple_dropdown_item_1line,
-                                allTags.map { t -> t.tagName })
-                        )
-                        this.new_tag_text.threshold = 1
-                    })
-
-                .setMultiChoiceItems(allTags.map { it.tagName }.toTypedArray(),
-                    allTags.map { tags.contains(it) }.toBooleanArray(),
-                    DialogInterface.OnMultiChoiceClickListener { dialog, which, isChecked ->
-                        changes.put(allTags.map { it.tagName }.get(which), isChecked)
-                        })
+                .setView(view)
 
                 .setTitle("Select new tag")
 
@@ -79,13 +72,13 @@ class SelectTagDialogFragment : DialogFragment() {
                             bookmarksViewModel.deleteBookmarkTagPair(selectedBookmark.url, it.key)
                             }
                         }
-                        onPositiveClick(  view!!.new_tag_text.text.toString())
+                        onPositiveClick(view.new_tag_text.text.toString())
                     })
                 .create()
         } ?: throw IllegalStateException("Main Activity cannot be null")
     }
 
-    fun onPositiveClick(tag: String) {
+    private fun onPositiveClick(tag: String) {
         if (tag != "") {
             bookmarksViewModel.addBookmarkTagPair(selectedBookmark.url, tag)
         }
@@ -105,10 +98,6 @@ class SelectTagDialogFragment : DialogFragment() {
         tags = bookmarksViewModel.getTagsOfBookmarkSync(selectedBookmark.url)
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
