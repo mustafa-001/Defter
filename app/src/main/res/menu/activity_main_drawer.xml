@@ -12,9 +12,6 @@
     </group>
     <group
         android:id="@+id/tags_drawer">
-        <item
-            android:title="Tags"
-            android:id="@+id/tags_recycler_drawer" />
     </group>
 
 </menu>

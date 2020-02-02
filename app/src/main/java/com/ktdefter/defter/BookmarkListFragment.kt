@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,11 +32,12 @@ import layout.BookmarkAdapter
  * Use the [BookmarkListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BookmarkListFragment : Fragment(), DrawerLayout.DrawerListener {
+class BookmarkListFragment() : Fragment(), DrawerLayout.DrawerListener {
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var bookmarksView: RecyclerView
     private lateinit var bookmarksViewModel: BookmarksViewModel
+    private val tagToShow = arguments?.getString("selectedTag")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,9 +47,8 @@ class BookmarkListFragment : Fragment(), DrawerLayout.DrawerListener {
             BookmarksDatabase.getInstance(requireContext()).tagDao(),
             BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao()
         )
-
-        bookmarksViewModel =
-            BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+//
+        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 //        val bookmarksViewModel = ViewModelProviders.of(this)[BookmarksViewModel::class.java]
     }
 
@@ -80,10 +83,16 @@ class BookmarkListFragment : Fragment(), DrawerLayout.DrawerListener {
                     layoutManager = viewManager
                     adapter = bookmarkAdapter
                 }
-                // when vm.bookmarks changes, ViewModel(in future database) calls this function
+
                 // TODO Dont use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
-                bookmarksViewModel.bookmarksToShow.observe(this@BookmarkListFragment, Observer<List<Bookmark>> { newBookmarks ->
+                var bookmarks: LiveData<List<Bookmark>>?
+                if (tagToShow == null) {
+                    bookmarks = bookmarksViewModel.getBookmarks()
+                } else {
+                    bookmarks = bookmarksViewModel.getBookmarksOfTag(tagToShow)
+                }
+                bookmarks.observe(this@BookmarkListFragment, Observer<List<Bookmark>> { newBookmarks ->
                     bookmarkAdapter.bookmarks = newBookmarks
                     bookmarkAdapter.notifyDataSetChanged()
                 })
