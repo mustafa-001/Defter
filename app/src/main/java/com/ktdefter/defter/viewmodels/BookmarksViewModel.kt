@@ -71,7 +71,13 @@ class BookmarksViewModel internal constructor(private val bookmarksRepository: B
 
     fun getTagsOfBookmarkSync(url: String) = bookmarksRepository.getTagsOfBookmarkSync(url)
 
-    fun getBookmarksOfTag(tag: String) = bookmarksRepository.getBookmarksOfTag(tag)
+    fun getBookmarksOfTag(tag: String?): LiveData<List<Bookmark>> {
+        return if (tag == null) {
+            getBookmarks()
+        } else {
+            bookmarksRepository.getBookmarksOfTag(tag)
+        }
+    }
 
-    fun getBookmarksOfTagSync(tag: String) = bookmarksRepository.getBookmarksOfTagSync(tag)
+        fun getBookmarksOfTagSync(tag: String) = bookmarksRepository.getBookmarksOfTagSync(tag)
 }

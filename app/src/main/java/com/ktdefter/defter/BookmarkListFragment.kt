@@ -3,10 +3,12 @@ package com.ktdefter.defter
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,6 +16,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ktdefter.defter.data.Bookmark
@@ -32,12 +35,11 @@ import layout.BookmarkAdapter
  * Use the [BookmarkListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BookmarkListFragment() : Fragment(), DrawerLayout.DrawerListener {
+class BookmarkListFragment() : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var bookmarksView: RecyclerView
     private lateinit var bookmarksViewModel: BookmarksViewModel
-    private val tagToShow = arguments?.getString("selectedTag")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,27 +49,18 @@ class BookmarkListFragment() : Fragment(), DrawerLayout.DrawerListener {
             BookmarksDatabase.getInstance(requireContext()).tagDao(),
             BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao()
         )
-//
         bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
-//        val bookmarksViewModel = ViewModelProviders.of(this)[BookmarksViewModel::class.java]
+
+        //Overrride back button and direclty return to homelist instead of returning to another bookmarks of tag list.
+        if (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {
+                requireActivity().onBackPressedDispatcher.addCallback(this) {
+                    while (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {
+                        findNavController().navigateUp()
+                    }
+                }
+            }
     }
 
-    override fun onDrawerClosed(drawerView: View) {
-        Toast.makeText(drawerView.context, "Drawer Opened" , Toast.LENGTH_SHORT).show()
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-        Toast.makeText(drawerView.context, "Drawer Opened" , Toast.LENGTH_SHORT).show()
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onDrawerStateChanged(newState: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-    override fun onDrawerOpened(drawerView: View) {
-        Toast.makeText(drawerView.context, "Drawer Opened" , Toast.LENGTH_SHORT).show()
-    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -86,13 +79,9 @@ class BookmarkListFragment() : Fragment(), DrawerLayout.DrawerListener {
 
                 // TODO Dont use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
-                var bookmarks: LiveData<List<Bookmark>>?
-                if (tagToShow == null) {
-                    bookmarks = bookmarksViewModel.getBookmarks()
-                } else {
-                    bookmarks = bookmarksViewModel.getBookmarksOfTag(tagToShow)
-                }
-                bookmarks.observe(this@BookmarkListFragment, Observer<List<Bookmark>> { newBookmarks ->
+
+                val tagToShow = arguments?.getString("selectedTag")
+                bookmarksViewModel.getBookmarksOfTag(tagToShow).observe(this@BookmarkListFragment, Observer<List<Bookmark>> { newBookmarks ->
                     bookmarkAdapter.bookmarks = newBookmarks
                     bookmarkAdapter.notifyDataSetChanged()
                 })
@@ -133,23 +122,5 @@ class BookmarkListFragment() : Fragment(), DrawerLayout.DrawerListener {
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BookmarkListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            BookmarkListFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
     }
 }

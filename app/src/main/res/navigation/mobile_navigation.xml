@@ -9,11 +9,19 @@
         android:id="@+id/nav_home"
         android:name="com.ktdefter.defter.BookmarkListFragment"
         android:label="Bookmarks"
-        tools:layout="@layout/fragment_bookmark_list" />
+        tools:layout="@layout/fragment_bookmark_list" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_show_bookmarks_of_tag"
+            app:destination="@id/nav_show_bookmarks_of_tag" />
+    </fragment>
     <fragment
         android:id="@+id/nav_show_bookmarks_of_tag"
         android:name="com.ktdefter.defter.BookmarkListFragment"
         android:label="Bookmarks"
-        tools:layout="@layout/fragment_bookmark_list" />
+        tools:layout="@layout/fragment_bookmark_list" >
+        <action
+            android:id="@+id/action_nav_show_bookmarks_of_tag_self"
+            app:destination="@id/nav_show_bookmarks_of_tag" />
+    </fragment>
 
 </navigation>

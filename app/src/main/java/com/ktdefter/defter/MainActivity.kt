@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,6 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.navArgs
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -69,12 +72,11 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
 
             for (newTag in newTags) {
                 val menuItem = navView.menu.add(R.id.tags_drawer, newTags.indexOf(newTag), newTags.indexOf(newTag), newTag.tagName)
-                menuItem.setOnMenuItemClickListener { Toast.makeText(applicationContext,
-                    "Clicked: ${menuItem.title} ",
-                    Toast.LENGTH_SHORT)
-                    .show()
-                    val bundle = bundleOf("selectedTag" to menuItem.title.toString())
+                menuItem.setOnMenuItemClickListener {
+                    val bundle = Bundle()
+                    bundle.putString("selectedTag", menuItem.title.toString())
                     navController.navigate(R.id.nav_show_bookmarks_of_tag, bundle)
+                    drawer.closeDrawer(Gravity.LEFT, true)
                 true}
             }
         })
@@ -100,6 +102,11 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
