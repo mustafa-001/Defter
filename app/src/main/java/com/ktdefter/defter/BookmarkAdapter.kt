@@ -48,7 +48,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->
                     this.tagsTextView.text = tags
                         .map { it.tagName }
-                        .fold("") { acc, nxt -> acc + ", " + nxt
+                        .fold("") { acc, nxt -> acc  + nxt + ","
                         }
                 }
             }

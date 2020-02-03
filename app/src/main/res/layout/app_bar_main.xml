@@ -17,8 +17,12 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/host_fragment_main"
-        />
+    <include
+        layout="@layout/host_fragment_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:scrollbarStyle="outsideInset" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
