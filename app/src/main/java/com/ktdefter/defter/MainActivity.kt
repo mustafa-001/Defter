@@ -2,7 +2,6 @@ package com.ktdefter.defter
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -12,20 +11,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import androidx.navigation.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
@@ -44,6 +38,11 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        if (intent != null) {
+            Log.d("Defter", " Intent isn't null")
+        }
+        Log.d("Defter", "Intent is: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
 
@@ -66,6 +65,15 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
              BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
 
+        when {
+            intent.action == Intent.ACTION_SEND -> {
+                Log.d("Defter", "intent: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
+                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT)))
+            }
+        }
+
+
+
 
         bookmarksViewModel.getTags().observe(this, Observer<List<Tag>> { newTags ->
             navView.menu.removeGroup(R.id.tags_drawer)
@@ -81,7 +89,6 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
             }
         })
 
-
         fab.setOnClickListener(View.OnClickListener {
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
             addBookmarkDialogFragment.show(
@@ -90,12 +97,6 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
             )
         })
 
-        when {
-            getIntent().action == Intent.ACTION_SEND -> {
-
-                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT)))
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

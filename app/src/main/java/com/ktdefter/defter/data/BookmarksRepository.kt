@@ -1,4 +1,6 @@
 package com.ktdefter.defter.data
+import com.ktdefter.defter.util.getTitleAndFavicon
+import kotlinx.coroutines.*
 
 // TODO Fetch url title and favicon if they don't exist in database.
 class BookmarksRepository private constructor(
@@ -13,6 +15,10 @@ class BookmarksRepository private constructor(
 
     fun insertBookmark(url: String) {
         bookmarksDao.insertBookmark(Bookmark(url))
+        GlobalScope.launch {
+           val bookmark = async {  getTitleAndFavicon(url) }.await()
+            bookmarksDao.insertBookmark(bookmark)
+        }
     }
 
     fun deleteBookmark(url: String) = bookmarksDao.deleteBookmark(url)
