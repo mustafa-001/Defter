@@ -1,4 +1,5 @@
 package com.ktdefter.defter.data
+import android.content.Context
 import com.ktdefter.defter.util.getTitleAndFavicon
 import kotlinx.coroutines.*
 
@@ -6,7 +7,8 @@ import kotlinx.coroutines.*
 class BookmarksRepository private constructor(
     private val bookmarksDao: BookmarkDao,
     private val tagDao: TagDao,
-    private val bookmarkTagPairDao: BookmarkTagPairDao
+    private val bookmarkTagPairDao: BookmarkTagPairDao,
+    private  val context: Context
 ) {
 
     fun getBookmarks() = bookmarksDao.getBookmarks()
@@ -16,7 +18,7 @@ class BookmarksRepository private constructor(
     fun insertBookmark(url: String) {
         bookmarksDao.insertBookmark(Bookmark(url))
         GlobalScope.launch {
-           val bookmark = async {  getTitleAndFavicon(url) }.await()
+           val bookmark = async {  getTitleAndFavicon(context, url) }.await()
             bookmarksDao.insertBookmark(bookmark)
         }
     }
@@ -48,9 +50,9 @@ class BookmarksRepository private constructor(
 
         @Volatile private var instance: BookmarksRepository? = null
 
-        fun getInstance(bookmarksDao: BookmarkDao, tagDao: TagDao, bookmarkTagPairDao: BookmarkTagPairDao): BookmarksRepository {
+        fun getInstance(bookmarksDao: BookmarkDao, tagDao: TagDao, bookmarkTagPairDao: BookmarkTagPairDao, context: Context): BookmarksRepository {
             return instance ?: synchronized(this) {
-                instance ?: BookmarksRepository(bookmarksDao, tagDao, bookmarkTagPairDao).also { instance = it }
+                instance ?: BookmarksRepository(bookmarksDao, tagDao, bookmarkTagPairDao, context).also { instance = it }
             }
         }
     }

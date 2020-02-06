@@ -8,9 +8,16 @@ data class Bookmark(
     @PrimaryKey
     val url: String,
     val title: String = "Title isn't implemented",
-    val favicon: String = "Not implemented yet"
+    var favicon: String = "Not implemented yet"
 ) {
     override fun toString() = url
-    fun getHostname(): String = TODO()
+    fun getHostname(): String{
+        return url
+            .removePrefix("http://")
+            .removePrefix("https://")
+            .replaceAfter("/", "")
+            .dropLast(1)
+    }
     var tags = "empty"
 }
+

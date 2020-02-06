@@ -78,7 +78,8 @@ class AddBookmarkDialogFragment : DialogFragment() {
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
             BookmarksDatabase.getInstance(requireContext()).tagDao(),
-            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao()
+            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao(),
+            requireContext()
         )
         bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
     }

@@ -2,9 +2,11 @@ package layout
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -15,6 +17,9 @@ import com.ktdefter.defter.SelectTagDialogFragment
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import java.io.File
+import java.io.FileNotFoundException
+import java.lang.Exception
 
 class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
 
@@ -27,6 +32,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
         val titleTextView: TextView = v.findViewById(R.id.bookmark_title_text)
         val urlTextView: TextView = v.findViewById(R.id.bookmark_url_text)
         val tagsTextView: TextView = v.findViewById(R.id.bookmark_tags_text)
+        val faviconImageView: ImageView = v.findViewById(R.id.bookmark_image)
     }
 
     // Must return a ViewHolder that holds our bookmark view, just inflate our xml and pass it
@@ -43,12 +49,20 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
         holder.apply {
             bookmarks.get(position).let {
                 this.bookmark = it
-                this.urlTextView.text = it.url
+                this.urlTextView.text = it.getHostname()
                 this.titleTextView.text = it.title
+                val imageFile: File? = try {
+                    File(this.itemView.context.filesDir, bookmark.favicon)
+                }
+                catch (FileNotFoundException: Exception) {
+                    Log.d("Defter", "Favicon file for ${bookmark.getHostname()} not found")
+                    null
+            }
+                this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
                 viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->
                     this.tagsTextView.text = tags
-                        .map { it.tagName }
-                        .fold("") { acc, nxt -> acc  + nxt + ","
+                        .map { tag -> tag.tagName }
+                        .fold("") { acc, nxt -> acc  + nxt + "  "
                         }
                 }
             }

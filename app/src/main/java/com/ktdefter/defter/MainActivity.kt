@@ -58,7 +58,8 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(applicationContext).bookmarkDao(),
             BookmarksDatabase.getInstance(applicationContext).tagDao(),
-            BookmarksDatabase.getInstance(applicationContext).bookmarkTagPairDao()
+            BookmarksDatabase.getInstance(applicationContext).bookmarkTagPairDao(),
+            applicationContext
         )
 
         bookmarksViewModel =
