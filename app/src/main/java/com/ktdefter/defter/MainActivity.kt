@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -39,13 +40,7 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        if (intent != null) {
-            Log.d("Defter", " Intent isn't null")
-        }
-        Log.d("Defter", "Intent is: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
-
         val fab: FloatingActionButton = findViewById(R.id.fab)
-
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -64,16 +59,6 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
 
         bookmarksViewModel =
              BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
-
-
-        when {
-            intent.action == Intent.ACTION_SEND -> {
-                Log.d("Defter", "intent: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
-                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT)))
-            }
-        }
-
-
 
 
         bookmarksViewModel.getTags().observe(this, Observer<List<Tag>> { newTags ->
@@ -100,6 +85,16 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
 
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        when {
+            intent?.action == Intent.ACTION_SEND -> {
+                Log.d("Defter", "intent: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
+                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT)))
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -121,7 +116,6 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         }
     }
 
-    // TODO why without this AddBookmarkDialogFragment doesn't work.
     override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }

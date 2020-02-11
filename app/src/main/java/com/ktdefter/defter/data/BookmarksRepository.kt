@@ -1,5 +1,6 @@
 package com.ktdefter.defter.data
 import android.content.Context
+import android.util.Log
 import com.ktdefter.defter.util.getTitleAndFavicon
 import kotlinx.coroutines.*
 
@@ -17,6 +18,7 @@ class BookmarksRepository private constructor(
 
     fun insertBookmark(url: String) {
         bookmarksDao.insertBookmark(Bookmark(url))
+        Log.d("Defter", "Inserting bookmark: $url")
         GlobalScope.launch {
            val bookmark = async {  getTitleAndFavicon(context, url) }.await()
             bookmarksDao.insertBookmark(bookmark)

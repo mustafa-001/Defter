@@ -17,10 +17,16 @@ fun getTitleAndFavicon(context: Context, url: String): Bookmark {
         .timeout(30000)
         .get()
     Log.d("Defter", "requesting: $url")
-    val imageUrl = "https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d"//doc.getElementById()
+    val imageUrl = doc.select("link[href~=.*\\.(ico|png)]").first().absUrl("href")
+
     val hostName = Bookmark(url).getHostname()
 
-    saveImage(context, hostName, imageUrl)
+    if (imageUrl == null){
+        Log.d("Defter", "Failed to parse site favicon.")
+    } else {
+        Log.d("Defter", "Downloading image at: $imageUrl")
+        saveImage(context, hostName, imageUrl)
+    }
 
     return Bookmark(url, doc.title(), hostName)
 }
@@ -35,6 +41,7 @@ fun saveImage(context: Context, url: String, image_url: String) :String{
     return url
 }
 
+//Return a sealed class from here.
 fun downloadImage(url: String): Bitmap {
     val client = OkHttpClient()
     val request: Request = Request.Builder()

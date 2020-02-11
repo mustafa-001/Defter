@@ -12,6 +12,7 @@
         style="@style/Widget.AppCompat.Button"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:background="#00A75D5D"
         android:drawableBottom="?attr/actionModeCopyDrawable" />
 
     <EditText

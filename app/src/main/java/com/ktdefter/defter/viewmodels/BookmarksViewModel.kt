@@ -13,13 +13,6 @@ class BookmarksViewModel internal constructor(private val bookmarksRepository: B
     private var lastShownTag: String? = null
 
     var bookmarksToShow: LiveData<List<Bookmark>> = getBookmarks()
-    init {
-        bookmarksToShow = if (lastShownTag == null) {
-            getBookmarks()
-        } else {
-            getBookmarksOfTag(lastShownTag as String)
-        }
-    }
 
     // TODO Add tags witch swtichmap to bookmarks, dont observer Livedata<List<Tag>>
     // from Adapter

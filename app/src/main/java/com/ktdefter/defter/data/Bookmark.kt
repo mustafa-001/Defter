@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 data class Bookmark(
     @PrimaryKey
     val url: String,
-    val title: String = "Title isn't implemented",
-    var favicon: String = "Not implemented yet"
+    val title: String? = null,
+    var favicon: String? = null
 ) {
     override fun toString() = url
     fun getHostname(): String{
@@ -16,6 +16,7 @@ data class Bookmark(
             .removePrefix("http://")
             .removePrefix("https://")
             .replaceAfter("/", "")
+            .removePrefix("www.")
             .dropLast(1)
     }
     var tags = "empty"

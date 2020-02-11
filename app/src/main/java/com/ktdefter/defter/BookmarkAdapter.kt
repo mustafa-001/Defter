@@ -57,8 +57,10 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 catch (FileNotFoundException: Exception) {
                     Log.d("Defter", "Favicon file for ${bookmark.getHostname()} not found")
                     null
-            }
-                this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
+                }
+                if (imageFile != null) {
+                    this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
+                }
                 viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->
                     this.tagsTextView.text = tags
                         .map { tag -> tag.tagName }
@@ -79,6 +81,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 viewModel.deleteBookmark(holder.bookmark.url)
                 true
             }
+
             menu.add("Choose tags").setOnMenuItemClickListener {
                 val selectTagDialogFragment = SelectTagDialogFragment()
                 val activity = v.context as AppCompatActivity
