@@ -1,6 +1,8 @@
 package layout
 
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
@@ -51,16 +53,19 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 this.bookmark = it
                 this.urlTextView.text = it.getHostname()
                 this.titleTextView.text = it.title
-                val imageFile: File? = try {
-                    File(this.itemView.context.filesDir, bookmark.favicon)
-                }
-                catch (FileNotFoundException: Exception) {
+
+                val imageFile: File? = bookmark.favicon?.let{
+                    File(this.itemView.context.filesDir, it)
+                } ?: run {
                     Log.d("Defter", "Favicon file for ${bookmark.getHostname()} not found")
+                    File(this.itemView.context.filesDir, "defaultFavicon.png")
                     null
                 }
+
                 if (imageFile != null) {
                     this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
                 }
+
                 viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->
                     this.tagsTextView.text = tags
                         .map { tag -> tag.tagName }
