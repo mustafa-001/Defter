@@ -3,6 +3,7 @@ package layout
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
@@ -58,12 +59,13 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                     File(this.itemView.context.filesDir, it)
                 } ?: run {
                     Log.d("Defter", "Favicon file for ${bookmark.getHostname()} not found")
-                    File(this.itemView.context.filesDir, "defaultFavicon.png")
                     null
                 }
 
                 if (imageFile != null) {
                     this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
+                } else {
+                    this.faviconImageView.setImageResource(R.drawable.ic_broken_image_black_24dp)
                 }
 
                 viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->

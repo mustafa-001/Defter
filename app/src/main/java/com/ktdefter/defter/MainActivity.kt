@@ -37,6 +37,7 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
     private lateinit var navController: NavController
     private lateinit var navView: NavigationView
     private lateinit var drawer: DrawerLayout
+    private val oldTagIds: MutableList<Int> = mutableListOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,10 +88,15 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
 
     private fun setDrawerTags(){
         bookmarksViewModel.getTags().observe(this, Observer<List<Tag>> { newTags ->
-            navView.menu.removeGroup(R.id.tags_drawer)
+            oldTagIds.map {
+                navView.menu.removeItem(it)
+            }
+            oldTagIds.clear()
 
             for (newTag in newTags) {
                 val menuItem = navView.menu.add(R.id.tags_drawer, newTags.indexOf(newTag), newTags.indexOf(newTag), newTag.tagName)
+                oldTagIds.add(menuItem.itemId)
+
                 menuItem.setOnMenuItemClickListener {
                     val bundle = Bundle()
                     bundle.putString("selectedTag", menuItem.title.toString())
