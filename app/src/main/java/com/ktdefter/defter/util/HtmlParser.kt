@@ -3,13 +3,11 @@ package com.ktdefter.defter.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.util.Log
 import com.ktdefter.defter.data.Bookmark
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
-import java.net.URI
 
 
 fun getTitleAndFavicon(context: Context, url: String): Bookmark {
@@ -17,7 +15,7 @@ fun getTitleAndFavicon(context: Context, url: String): Bookmark {
         .timeout(30000)
         .get()
     Log.d("Defter", "requesting: $url")
-    val imageUrl = doc.select("link[href~=.*\\.(ico|png)]").first().absUrl("href")
+    val imageUrl: String? = doc.select("link[href~=.*\\.(ico|png)]").first()?.absUrl("href")
 
     val hostName = Bookmark(url).getHostname()
 
@@ -31,8 +29,13 @@ fun getTitleAndFavicon(context: Context, url: String): Bookmark {
     return Bookmark(url, doc.title(), hostName)
 }
 
-fun saveImage(context: Context, url: String, image_url: String) :String{
-    val bitmap:Bitmap = downloadImage(image_url)
+fun saveImage(context: Context, url: String, image_url: String) :String?{
+    val bitmap:Bitmap = try {
+        downloadImage(image_url)
+    } catch (e: okio.IOException){
+        Log.d("Defter", "Cannot retrieve favicon from $image_url")
+        return null
+    }
 
     context.openFileOutput(url, Context.MODE_PRIVATE ).use {fos ->
         bitmap.compress(Bitmap.CompressFormat.PNG, 80, fos)
