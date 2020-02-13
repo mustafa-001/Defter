@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -33,6 +34,9 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
 SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFragmentInteractionListener{
     private lateinit var bookmarksViewModel: BookmarksViewModel
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
+    private lateinit var navView: NavigationView
+    private lateinit var drawer: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +44,9 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        drawer = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+        navController = findNavController(R.id.nav_host_fragment)
 
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -56,25 +59,12 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
             BookmarksDatabase.getInstance(applicationContext).bookmarkTagPairDao(),
             applicationContext
         )
-
         bookmarksViewModel =
              BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
+        setDrawerTags()
 
-        bookmarksViewModel.getTags().observe(this, Observer<List<Tag>> { newTags ->
-            navView.menu.removeGroup(R.id.tags_drawer)
-
-            for (newTag in newTags) {
-                val menuItem = navView.menu.add(R.id.tags_drawer, newTags.indexOf(newTag), newTags.indexOf(newTag), newTag.tagName)
-                menuItem.setOnMenuItemClickListener {
-                    val bundle = Bundle()
-                    bundle.putString("selectedTag", menuItem.title.toString())
-                    navController.navigate(R.id.nav_show_bookmarks_of_tag, bundle)
-                    drawer.closeDrawer(Gravity.LEFT, true)
-                true}
-            }
-        })
-
+        val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener(View.OnClickListener {
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
             addBookmarkDialogFragment.show(
@@ -95,6 +85,23 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         }
     }
 
+    private fun setDrawerTags(){
+        bookmarksViewModel.getTags().observe(this, Observer<List<Tag>> { newTags ->
+            navView.menu.removeGroup(R.id.tags_drawer)
+
+            for (newTag in newTags) {
+                val menuItem = navView.menu.add(R.id.tags_drawer, newTags.indexOf(newTag), newTags.indexOf(newTag), newTag.tagName)
+                menuItem.setOnMenuItemClickListener {
+                    val bundle = Bundle()
+                    bundle.putString("selectedTag", menuItem.title.toString())
+                    navController.navigate(R.id.nav_show_bookmarks_of_tag, bundle)
+                    drawer.closeDrawer(Gravity.LEFT, true)
+                    true}
+            }
+        })
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -105,6 +112,7 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
