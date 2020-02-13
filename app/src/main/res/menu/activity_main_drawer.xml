@@ -4,15 +4,15 @@
     tools:showIn="navigation_view">
 
     <group
-        android:id="@+id/top"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/drawer_bookmarks"
-            android:title="Bookmarks" />
-    </group>
-    <group
         android:id="@+id/tags_drawer">
     </group>
 
+    <group
+        android:id="@+id/top"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_settings"
+            android:title="Settings" />
+    </group>
 </menu>
 
