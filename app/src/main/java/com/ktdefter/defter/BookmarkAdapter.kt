@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ktdefter.defter.R
 import com.ktdefter.defter.SelectTagDialogFragment
@@ -26,7 +27,16 @@ import java.lang.Exception
 
 class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
 
-    var bookmarks: List<Bookmark> = listOf(Bookmark(url = "starting"))
+    var bookmarks: List<Bookmark> = emptyList()
+     set(value) {
+         DiffUtil.calculateDiff(
+             BookmarkListDiffCallback(field, value)
+         ).let {result ->
+                 result.dispatchUpdatesTo(this)
+             }
+         field = value
+     }
+
     lateinit var viewModel: BookmarksViewModel
 
     class BmViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -75,7 +85,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                         }
                 }
             }
-            }
+        }
 
         // Android will call this function when creating context menu.
         // menu: context menu being build
@@ -116,4 +126,35 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
     override fun getItemCount(): Int {
         return bookmarks.size
     }
+
+}
+
+class BookmarkListDiffCallback(private  val oldList: List<Bookmark>,
+                               private  val newList: List<Bookmark>)
+    : DiffUtil.Callback() {
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        if (oldList.get(oldItemPosition).title != newList.get(newItemPosition).title) {
+            return false
+        }
+
+        if (oldList.get(oldItemPosition).favicon != newList.get(newItemPosition).favicon) {
+            return false
+        }
+
+       return true
+    }
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList.get(oldItemPosition).url == newList.get(newItemPosition).url
+    }
+
+    override fun getNewListSize(): Int {
+        return  newList.size
+    }
+
+    override fun getOldListSize(): Int {
+        return  oldList.size
+    }
+
 }

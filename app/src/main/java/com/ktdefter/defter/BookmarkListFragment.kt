@@ -84,7 +84,6 @@ class BookmarkListFragment() : Fragment() {
                 val tagToShow = arguments?.getString("selectedTag")
                 bookmarksViewModel.getBookmarksOfTag(tagToShow).observe(this@BookmarkListFragment, Observer<List<Bookmark>> { newBookmarks ->
                     bookmarkAdapter.bookmarks = newBookmarks
-                    bookmarkAdapter.notifyDataSetChanged()
                 })
                 return this
             }
