@@ -117,9 +117,17 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
         holder.itemView.setOnClickListener {
             Intent().apply {
                 action = Intent.ACTION_VIEW
-                data = Uri.parse(holder.bookmark.url)
+                data = sanitizeURL(holder.bookmark.url)
                 it.context.startActivity(this)
             }
+        }
+    }
+
+    private fun sanitizeURL(url: String): Uri {
+        return if (Uri.parse(url).scheme == null){
+            Uri.parse(url).buildUpon().scheme("http").build()
+        } else {
+            Uri.parse(url)
         }
     }
 

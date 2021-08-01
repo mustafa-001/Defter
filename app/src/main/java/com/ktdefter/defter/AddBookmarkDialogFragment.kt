@@ -68,7 +68,7 @@ class AddBookmarkDialogFragment : DialogFragment() {
     }
 
     private fun onPositiveClick(url: String) {
-        Log.d("url is: ", url)
+        Log.d("Adding the url: ", url)
         bookmarksViewModel.addBookmark(url)
     }
 

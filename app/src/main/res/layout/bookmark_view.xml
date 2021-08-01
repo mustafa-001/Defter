@@ -80,7 +80,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="4dp"
         android:background="#4DE0F2F1"
-        android:foreground="@android:color/secondary_text_dark"
+        android:foreground="#3F51B5"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
         android:text="bookmark doesn't have any tags"

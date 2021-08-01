@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -53,7 +54,7 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        // This is a workaround to not use sunflower InjectorUtils methoo.
+        // This is a workaround to not use sunflower InjectorUtils method.
         val bookmarksrepo = BookmarksRepository.getInstance(
             BookmarksDatabase.getInstance(applicationContext).bookmarkDao(),
             BookmarksDatabase.getInstance(applicationContext).tagDao(),
@@ -78,16 +79,16 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        when {
-            intent?.action == Intent.ACTION_SEND -> {
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
                 Log.d("Defter", "intent: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
-                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT)))
+                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT))!!)
             }
         }
     }
 
     private fun setDrawerTags(){
-        bookmarksViewModel.getTags().observe(this, Observer<List<Tag>> { newTags ->
+        bookmarksViewModel.getTags().observe(this, { newTags ->
             oldTagIds.map {
                 navView.menu.removeItem(it)
             }
@@ -101,7 +102,7 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
                     val bundle = Bundle()
                     bundle.putString("selectedTag", menuItem.title.toString())
                     navController.navigate(R.id.nav_show_bookmarks_of_tag, bundle)
-                    drawer.closeDrawer(Gravity.LEFT, true)
+                    drawer.closeDrawer(GravityCompat.START, true)
                     true}
             }
         })
