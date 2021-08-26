@@ -38,18 +38,18 @@ class AddBookmarkDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
-            AlertDialog.Builder(it).let {
+            AlertDialog.Builder(it).run {
                 val view = requireActivity()
                     .layoutInflater
                     .inflate(R.layout.fragment_add_bookmark_dialog, null)
 
-                it.setView(view)
-                it.setTitle("Add new bookmark")
-                it.setNegativeButton("Cancel",
+                setView(view)
+                setTitle("Add new bookmark")
+                setNegativeButton("Cancel",
                     DialogInterface.OnClickListener { _, _ ->
                         getDialog()?.cancel()
                     })
-                it.setPositiveButton("Add",
+                setPositiveButton("Add",
                     DialogInterface.OnClickListener { _, _ ->
                         onPositiveClick(view.findViewById<EditText>(R.id.url_text)?.text.toString())
                     })
@@ -59,7 +59,7 @@ class AddBookmarkDialogFragment : DialogFragment() {
                         view.url_text.append(clipboard.primaryClip!!.getItemAt(0).text)
                     }
                 }
-                it.create()
+                create()
             }
             .apply {
                 this.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)

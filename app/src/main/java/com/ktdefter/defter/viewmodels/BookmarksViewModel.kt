@@ -14,14 +14,13 @@ class BookmarksViewModel internal constructor(private val bookmarksRepository: B
 
     var bookmarksToShow: LiveData<List<Bookmark>> = getBookmarks()
 
-    // TODO Add tags witch swtichmap to bookmarks, dont observer Livedata<List<Tag>>
+    // TODO Add tags witch switchmap to bookmarks, dont observer Livedata<List<Tag>>
     // from Adapter
     fun getBookmarks(): LiveData<List<Bookmark>> {
         return Transformations.map(bookmarksRepository.getBookmarks()) {
            it.apply {
                this.map {
                    it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url)
-                       .fold("Tags:\t") { s, t -> s + t.tagName + ", " }
                }
             }
         }

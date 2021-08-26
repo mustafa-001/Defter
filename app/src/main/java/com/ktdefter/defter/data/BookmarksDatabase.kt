@@ -1,12 +1,14 @@
 package com.ktdefter.defter.data
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Bookmark::class, Tag::class, BookmarkTagPair::class], version = 1, exportSchema = false)
+@Database(entities = [Bookmark::class, Tag::class, BookmarkTagPair::class], version = 1,
+    exportSchema = true)
 abstract class BookmarksDatabase : RoomDatabase() {
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun tagDao(): TagDao

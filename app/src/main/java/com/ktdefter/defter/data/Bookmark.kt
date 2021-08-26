@@ -1,6 +1,7 @@
 package com.ktdefter.defter.data
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity
@@ -8,7 +9,7 @@ data class Bookmark(
     @PrimaryKey
     val url: String,
     val title: String? = null,
-    var favicon: String? = null
+    var favicon: String? = null,
 ) {
     override fun toString() = url
     fun getHostname(): String{
@@ -19,6 +20,5 @@ data class Bookmark(
             .removePrefix("www.")
             .dropLast(1)
     }
-    var tags = "empty"
-}
+    @Ignore var tags: List<Tag> = emptyList() }
 

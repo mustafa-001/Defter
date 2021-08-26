@@ -25,7 +25,7 @@ import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import kotlinx.android.synthetic.main.fragment_bookmark_list.*
-import layout.BookmarkAdapter
+import com.ktdefter.defter.BookmarkAdapter
 
 /**
  * A simple [Fragment] subclass.
@@ -53,6 +53,7 @@ class BookmarkListFragment() : Fragment() {
         bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
         //Overrride back button and direclty return to homelist instead of returning to another bookmarks of tag list.
+
         if (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {
                 requireActivity().onBackPressedDispatcher.addCallback(this) {
                     while (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {

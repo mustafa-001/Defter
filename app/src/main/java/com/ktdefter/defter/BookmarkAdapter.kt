@@ -1,4 +1,4 @@
-package layout
+package com.ktdefter.defter
 
 import android.content.Intent
 import android.content.res.Resources
@@ -81,7 +81,8 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->
                     this.tagsTextView.text = tags
                         .map { tag -> tag.tagName }
-                        .fold("") { acc, nxt -> acc  + nxt + "  "
+                        .fold("") { acc, nxt ->
+                            "$acc$nxt  "
                         }
                 }
             }

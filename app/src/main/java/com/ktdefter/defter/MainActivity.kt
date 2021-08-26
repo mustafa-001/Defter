@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
@@ -23,13 +26,15 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.ktdefter.defter.R.id.action_nav_home_to_settingsFragment
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import layout.BookmarkAdapter
+import com.ktdefter.defter.BookmarkAdapter
+import kotlin.concurrent.fixedRateTimer
 
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
 SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFragmentInteractionListener{
@@ -65,6 +70,12 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
              BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
         setDrawerTags()
+
+//        supportFragmentManager.commit {
+//            add<BookmarkListFragment>(R.id.nav_host_fragment)
+//            setReorderingAllowed(true)
+//            addToBackStack("nav_host")
+//        }
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener(View.OnClickListener {
@@ -120,13 +131,18 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                Toast.makeText(this.applicationContext, "settings selected", Toast.LENGTH_SHORT)
+                    .show()
+                findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment)
+
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
