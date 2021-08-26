@@ -12,6 +12,7 @@ import androidx.activity.addCallback
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -39,7 +40,7 @@ class BookmarkListFragment() : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var bookmarksView: RecyclerView
-    private lateinit var bookmarksViewModel: BookmarksViewModel
+    private  lateinit var bookmarksViewModel: BookmarksViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
