@@ -23,7 +23,7 @@ import android.util.Log.d as d1
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private  lateinit var bookmarksViewModel: BookmarksViewModel
+    private lateinit var bookmarksViewModel: BookmarksViewModel
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val bookmarksrepo = BookmarksRepository.getInstance(
@@ -32,7 +32,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao(),
             requireContext()
         )
-        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+        bookmarksViewModel =
+            BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
         setPreferencesFromResource(root_preferences, rootKey)
         val prefs = findPreference<Preference>("export")
@@ -40,13 +41,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
         if (preference.key == "export") {
+            Log.d("defter","Clicked export preference")
             Toast.makeText(
                 preference.context,
                 "Export function is not implemented yet!",
                 Toast.LENGTH_SHORT
             ).show()
-            BookmarksExporter(File(requireContext().filesDir, "exported_bookmarks.json"))
-                .export(bookmarksViewModel.getBookmarksOfTagSync("aa"))
+            val be = BookmarksExporter(
+                File(
+                    requireContext().filesDir,
+                    "exported_bookmarks.json"
+                )
+            )
+    Log.d("defter","Created BookmarksExporter class")
+            be.export(bookmarksViewModel.getBookmarksOfTagSync("aa"))
 
         }
         return true
@@ -55,9 +63,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 class BookmarksExporter(
     val fd: File
-) {
+)
+{
     fun export(bookmarks: List<Bookmark>) {
-        Log.d("defter","writing to text file!")
+        Log.d("defter", "writing to ${fd.absolutePath}")
         fd.writeText("not implemented!")
         fd.writeText(bookmarks[0].url)
     }
