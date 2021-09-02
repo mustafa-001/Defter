@@ -17,6 +17,9 @@ import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import kotlin.system.exitProcess
 import android.util.Log.d as d1
@@ -54,7 +57,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 )
             )
     Log.d("defter","Created BookmarksExporter class")
-            be.export(bookmarksViewModel.getBookmarksOfTagSync("aa"))
+            be.export(bookmarksViewModel.getBookmarksOfTagSync("a"))
 
         }
         return true
@@ -66,9 +69,12 @@ class BookmarksExporter(
 )
 {
     fun export(bookmarks: List<Bookmark>) {
+        val encodedBookmarks = Json.encodeToString(bookmarks)
+
+        Log.d("defter ", "list[1]: ${bookmarks[1].toString()}")
         Log.d("defter", "writing to ${fd.absolutePath}")
-        fd.writeText("not implemented!")
-        fd.writeText(bookmarks[0].url)
+        Log.d("defter", "encoded bookmarks: $encodedBookmarks")
+        fd.writeText(encodedBookmarks)
     }
 
 }
