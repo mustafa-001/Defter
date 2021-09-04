@@ -17,6 +17,9 @@ interface BookmarkDao {
     @Query("SELECT * FROM bookmark")
     fun getBookmarks(): LiveData<List<Bookmark>>
 
+    @Query("SELECT * FROM bookmark")
+    fun getBookmarksSync(): List<Bookmark>
+
     @Query("SELECT * FROM bookmark WHERE url = :url")
     fun getBookmark(url: String): Bookmark
 

@@ -44,21 +44,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
         if (preference.key == "export") {
-            Log.d("defter","Clicked export preference")
-            Toast.makeText(
-                preference.context,
-                "Export function is not implemented yet!",
-                Toast.LENGTH_SHORT
-            ).show()
+            Log.d("defter", "Clicked export preference")
             val be = BookmarksExporter(
                 File(
                     requireContext().filesDir,
                     "exported_bookmarks.json"
                 )
             )
-    Log.d("defter","Created BookmarksExporter class")
-            be.export(bookmarksViewModel.getBookmarksOfTagSync("a"))
-
+            Log.d("defter", "Created BookmarksExporter class")
+            be.export(bookmarksViewModel.getBookmarksSync())
         }
         return true
     }
@@ -66,15 +60,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 class BookmarksExporter(
     val fd: File
-)
-{
+) {
     fun export(bookmarks: List<Bookmark>) {
         val encodedBookmarks = Json.encodeToString(bookmarks)
 
-        Log.d("defter ", "list[1]: ${bookmarks[1].toString()}")
-        Log.d("defter", "writing to ${fd.absolutePath}")
         Log.d("defter", "encoded bookmarks: $encodedBookmarks")
         fd.writeText(encodedBookmarks)
+        Log.d("defter", "writing to ${fd.absolutePath}")
     }
 
 }

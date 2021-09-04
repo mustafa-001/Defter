@@ -1,6 +1,7 @@
 package com.ktdefter.defter.data
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.ktdefter.defter.util.getTitleAndFavicon
 import kotlinx.coroutines.*
 
@@ -12,9 +13,9 @@ class BookmarksRepository private constructor(
     private  val context: Context
 ) {
 
-    fun getBookmarks() = bookmarksDao.getBookmarks()
-
-    fun getBookmark(url: String) = bookmarksDao.getBookmark(url)
+    fun getBookmarks():LiveData<List<Bookmark>> = bookmarksDao.getBookmarks()
+    fun getBookmarksSync():List<Bookmark> = bookmarksDao.getBookmarksSync()
+    fun getBookmark(url: String)= bookmarksDao.getBookmark(url)
 
     fun insertBookmark(url: String) {
         bookmarksDao.insertBookmark(Bookmark(url))

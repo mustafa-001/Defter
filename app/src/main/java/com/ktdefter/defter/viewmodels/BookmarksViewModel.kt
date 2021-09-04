@@ -25,6 +25,13 @@ class BookmarksViewModel internal constructor(private val bookmarksRepository: B
             }
         }
     }
+    fun getBookmarksSync(): List<Bookmark> {
+        return bookmarksRepository.getBookmarksSync().map {
+            it.apply {
+                    it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url)
+            }
+        }
+    }
 
     fun addBookmark(url: String) {
         bookmarksRepository.insertBookmark(url)
