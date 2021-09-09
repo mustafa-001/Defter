@@ -7,8 +7,9 @@ import androidx.lifecycle.ViewModel
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.data.Tag
+import javax.inject.Inject
 
-class BookmarksViewModel internal constructor(private val bookmarksRepository: BookmarksRepository) : ViewModel() {
+class BookmarksViewModel @Inject internal constructor(private val bookmarksRepository: BookmarksRepository) : ViewModel() {
    private var position = 0
     private var lastShownTag: String? = null
 

@@ -34,11 +34,14 @@ import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import com.ktdefter.defter.BookmarkAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.concurrent.fixedRateTimer
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
 SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFragmentInteractionListener{
-    private lateinit var bookmarksViewModel: BookmarksViewModel
+    @Inject lateinit var bookmarksViewModel: BookmarksViewModel
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var navView: NavigationView

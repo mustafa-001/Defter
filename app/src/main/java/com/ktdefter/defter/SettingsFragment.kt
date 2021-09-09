@@ -47,6 +47,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             Log.d("defter", "Clicked export preference")
             val be = BookmarksExporter(
                 File(
+
                     requireContext().filesDir,
                     "exported_bookmarks.json"
                 )

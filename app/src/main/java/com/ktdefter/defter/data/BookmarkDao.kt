@@ -5,12 +5,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import javax.inject.Inject
 
 /**
  *Data Access Object for Bookmark class
  */
 @Dao
-interface BookmarkDao {
+interface BookmarkDao  {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBookmark(vararg bookmark: Bookmark)
 
