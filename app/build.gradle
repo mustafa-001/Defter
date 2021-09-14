@@ -32,6 +32,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 dependencies {
     def room_version = "2.3.0"
@@ -57,10 +60,9 @@ dependencies {
 
     implementation "com.google.dagger:hilt-android:2.38.1"
     kapt "com.google.dagger:hilt-compiler:2.38.1"
+    kapt 'com.google.dagger:hilt-android-compiler:2.38.1'
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     implementation 'com.google.dagger:dagger:2.38.1'
-    implementation "com.google.dagger:dagger:2.38.1"
-    implementation "com.google.dagger:dagger-android:2.35.1"
-    kapt "com.google.dagger:dagger-compiler:2.38.1"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

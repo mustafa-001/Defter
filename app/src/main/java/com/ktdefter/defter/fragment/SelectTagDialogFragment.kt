@@ -1,4 +1,4 @@
-package com.ktdefter.defter
+package com.ktdefter.defter.fragment
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -8,9 +8,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import com.ktdefter.defter.R
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository

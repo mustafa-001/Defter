@@ -1,17 +1,21 @@
 package com.ktdefter.defter.viewmodels
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.data.Tag
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class BookmarksViewModel @Inject internal constructor(private val bookmarksRepository: BookmarksRepository) : ViewModel() {
+@HiltViewModel
+class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) : ViewModel() {
    private var position = 0
-    private var lastShownTag: String? = null
+    private var lastShownTag: Tag? = null
 
     var bookmarksToShow: LiveData<List<Bookmark>> = getBookmarks()
 

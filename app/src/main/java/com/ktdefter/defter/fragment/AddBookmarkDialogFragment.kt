@@ -1,4 +1,4 @@
-package com.ktdefter.defter
+package com.ktdefter.defter.fragment
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -13,12 +13,12 @@ import android.view.WindowManager
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import com.ktdefter.defter.R
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import java.lang.IllegalStateException
-import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.*
 import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.view.*
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

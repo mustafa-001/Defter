@@ -4,21 +4,16 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -26,22 +21,16 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.ktdefter.defter.R.id.action_nav_home_to_settingsFragment
-import com.ktdefter.defter.data.Tag
-import com.ktdefter.defter.data.BookmarksDatabase
-import com.ktdefter.defter.data.BookmarksRepository
+import com.ktdefter.defter.fragment.AddBookmarkDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
-import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
-import kotlinx.android.synthetic.main.activity_main.*
-import com.ktdefter.defter.BookmarkAdapter
+import com.ktdefter.defter.fragment.BookmarkListFragment
+import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import kotlin.concurrent.fixedRateTimer
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
 SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFragmentInteractionListener{
-    @Inject lateinit var bookmarksViewModel: BookmarksViewModel
+    private val bookmarksViewModel: BookmarksViewModel by viewModels()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var navView: NavigationView
@@ -61,16 +50,6 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        // This is a workaround to not use sunflower InjectorUtils method.
-        val bookmarksrepo = BookmarksRepository.getInstance(
-            BookmarksDatabase.getInstance(applicationContext).bookmarkDao(),
-            BookmarksDatabase.getInstance(applicationContext).tagDao(),
-            BookmarksDatabase.getInstance(applicationContext).bookmarkTagPairDao(),
-            applicationContext
-        )
-        bookmarksViewModel =
-             BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
         setDrawerTags()
 

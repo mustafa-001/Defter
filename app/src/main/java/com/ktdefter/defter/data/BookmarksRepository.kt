@@ -4,46 +4,20 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.ktdefter.defter.util.getTitleAndFavicon
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
-@Module
-@InstallIn(ActivityComponent::class)
-object DatabaseModule {
 
-    @Provides
-    fun provideYourDatabase(
-        @ApplicationContext app: Context
-    ) = Room.databaseBuilder(
-        app,
-        BookmarksDatabase::class.java,
-        "bookmarks.db"
-    ).build() // The reason we can construct a database for the repo
-
-    @Provides
-    fun provideBookmarkDao(db: BookmarksDatabase) = db.bookmarkDao() // The reason we can implement a Dao for the database
-
-    @Provides
-    fun provideTagDao(db: BookmarksDatabase) = db.tagDao() // The reason we can implement a Dao for the database
-
-    @Provides
-    fun provideBookmarkTagPairDao(db: BookmarksDatabase) = db.bookmarkTagPairDao() // The reason we can implement a Dao for the database
-}
 
 // TODO Fetch url title and favicon if they don't exist in database.
 class BookmarksRepository @Inject constructor(
     private val bookmarksDao: BookmarkDao,
     private val tagDao: TagDao,
     private val bookmarkTagPairDao: BookmarkTagPairDao,
-    @ActivityContext private  val context: Context
+    @ApplicationContext private  val context: Context
 ) {
     fun getBookmarks():LiveData<List<Bookmark>> = bookmarksDao.getBookmarks()
     fun getBookmarksSync():List<Bookmark> = bookmarksDao.getBookmarksSync()

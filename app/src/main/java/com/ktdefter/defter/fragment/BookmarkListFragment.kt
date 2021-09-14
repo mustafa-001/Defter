@@ -1,22 +1,14 @@
-package com.ktdefter.defter
+package com.ktdefter.defter.fragment
 
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +18,8 @@ import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import kotlinx.android.synthetic.main.fragment_bookmark_list.*
-import com.ktdefter.defter.BookmarkAdapter
+import com.ktdefter.defter.R
+import com.ktdefter.defter.fragment.adapter.BookmarkAdapter
 
 /**
  * A simple [Fragment] subclass.
@@ -57,7 +50,9 @@ class BookmarkListFragment() : Fragment() {
 
         if (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {
                 requireActivity().onBackPressedDispatcher.addCallback(this) {
-                    while (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {
+                    while (findNavController().currentDestination != findNavController().graph.findNode(
+                            R.id.nav_home
+                        )) {
                         findNavController().navigateUp()
                     }
                 }

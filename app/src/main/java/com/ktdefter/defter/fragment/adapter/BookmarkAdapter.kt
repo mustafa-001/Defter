@@ -1,9 +1,6 @@
-package com.ktdefter.defter
+package com.ktdefter.defter.fragment.adapter
 
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,13 +14,11 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ktdefter.defter.R
-import com.ktdefter.defter.SelectTagDialogFragment
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
+import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import java.io.File
-import java.io.FileNotFoundException
-import java.lang.Exception
 
 class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
 
@@ -50,15 +45,15 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
 
     // Must return a ViewHolder that holds our bookmark view, just inflate our xml and pass it
     // in a ViewHolder. Called before onBindViewHolder()
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarkAdapter.BmViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BmViewHolder {
         return BmViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.bookmark_view, parent, false)
+                .inflate(R.layout.fragment_bookmark_view, parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: BookmarkAdapter.BmViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BmViewHolder, position: Int) {
         holder.apply {
             bookmarks.get(position).let {
                 this.bookmark = it

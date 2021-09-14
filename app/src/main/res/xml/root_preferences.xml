@@ -7,6 +7,10 @@
             app:key="export"
             app:title="@string/export_bookmarks"
                 />
+        <Preference
+            app:key="import"
+            app:title="@string/import_bookmarks"
+            />
 
         <ListPreference
             app:defaultValue="reply"
