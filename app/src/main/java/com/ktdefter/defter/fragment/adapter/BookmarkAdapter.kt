@@ -73,7 +73,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                     this.faviconImageView.setImageResource(R.drawable.ic_broken_image_black_24dp)
                 }
 
-                viewModel.getTagsOfBookmark(it.url).observe(holder.itemView.context as AppCompatActivity) { tags ->
+                viewModel.getTagsOfBookmarkSync(it.url).let{ tags ->
                     this.tagsTextView.text = tags
                         .map { tag -> tag.tagName }
                         .fold("") { acc, nxt ->

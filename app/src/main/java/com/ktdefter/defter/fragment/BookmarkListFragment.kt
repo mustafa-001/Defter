@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import kotlinx.android.synthetic.main.fragment_bookmark_list.*
 import com.ktdefter.defter.R
 import com.ktdefter.defter.fragment.adapter.BookmarkAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * A simple [Fragment] subclass.
@@ -29,22 +31,23 @@ import com.ktdefter.defter.fragment.adapter.BookmarkAdapter
  * Use the [BookmarkListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class BookmarkListFragment() : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var bookmarksView: RecyclerView
-    private  lateinit var bookmarksViewModel: BookmarksViewModel
+    val  bookmarksViewModel: BookmarksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // This is a workaround to not use sunflower InjectorUtils methoo.
-        val bookmarksrepo = BookmarksRepository.getInstance(
-            BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
-            BookmarksDatabase.getInstance(requireContext()).tagDao(),
-            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao(),
-            requireContext()
-        )
-        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
+//        val bookmarksrepo = BookmarksRepository.getInstance(
+//            BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
+//            BookmarksDatabase.getInstance(requireContext()).tagDao(),
+//            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao(),
+//            requireContext()
+//        )
+//        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
         //Overrride back button and direclty return to homelist instead of returning to another bookmarks of tag list.
 
