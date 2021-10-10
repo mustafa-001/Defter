@@ -2,6 +2,7 @@ package com.ktdefter.defter.fragment
 
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
@@ -14,6 +15,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -21,6 +24,28 @@ import java.util.*
 class SettingsFragment : PreferenceFragmentCompat() {
 
     val bookmarksViewModel: BookmarksViewModel by viewModels()
+
+    val getDocumentFileToExport = registerForActivityResult(ActivityResultContracts.CreateDocument()) { it ->
+        Log.d("defter", "on ActivityResultCallback, data: $it")
+
+        val contentResolver = activity!!.applicationContext.contentResolver
+        val outputStream = contentResolver.openOutputStream(it!!)
+        val be = JSONExporter(outputStream!!)
+        val bookmarksViewModel: BookmarksViewModel by viewModels()
+        be.export(bookmarksViewModel.getBookmarksSync())// Perform operations on the document using its URI.
+    }
+    val getDocumentFileToImport = registerForActivityResult(ActivityResultContracts.OpenDocument()) { it ->
+        Log.d("defter", "on ActivityResultCallback, data: $it")
+
+        val contentResolver = activity!!.applicationContext.contentResolver
+        val inputStream = contentResolver.openInputStream(it!!)
+        val importedBookmarks = JSONImporter(inputStream!!)
+        val bookmarksViewModel: BookmarksViewModel by viewModels()
+        for (b in importedBookmarks.import()){
+            bookmarksViewModel.addBookmark(b.url)
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(root_preferences, rootKey)
         val prefs = findPreference<Preference>("export")
@@ -28,61 +53,52 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
 
+        //Without this getDocumentFile.ActivityResultCallback requires bookmarksViewModel for
+        // the first time. Activity is not fully restored/constructed when this callback is called.
+        // This causes IllegalStateException to be thrown.
+        val dummy_variable = bookmarksViewModel.getBookmarksSync()
         when (preference.key) {
             "export" -> {
                 Log.d("defter", "Clicked export preference")
                 val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())!!
-                val be = JSONExporterImporter(
-                    File(
-                        requireContext().filesDir,
-                        "$date _exported_bookmarks_defter.json"
-                    )
-                )
-                be.export(bookmarksViewModel.getBookmarksSync())
+                Log.d("defter", "Export preference is clicked.")
+                getDocumentFileToExport.launch("${date}_exported_defter.json")
+
             }
             "import" -> {
-                if (preference.key == "import") {
-                    SelectImportFileFragment().show((activity as AppCompatActivity).supportFragmentManager, "select_import_file")
-                    val be = JSONExporterImporter(
-                        File(
-                            requireContext().filesDir,
-                            "exported_bookmarks.json"
-                        )
-                    )
-//                    be.import().forEach { b ->
-//                        bookmarksViewModel.addBookmark(b.url)
-//                        b.tags.forEach { t ->
-//                            bookmarksViewModel.addBookmarkTagPair(b.url, t.tagName)
-//                        }
-//                    }
-
-                }
+                getDocumentFileToImport.launch(arrayOf("application/json"))
             }
         }
         return true
     }
 }
 
-    interface BookmarkExportable {
-        fun export(bookmarks: List<Bookmark>)
-    }
-    interface BookmarkImportable {
-        fun import(): List<Bookmark>
-    }
+interface BookmarkExportable {
+    fun export(bookmarks: List<Bookmark>)
+}
 
-    class JSONExporterImporter(
-        private val fd: File
-    ) : BookmarkExportable, BookmarkImportable {
-        override fun export(bookmarks: List<Bookmark>) {
-            val encodedBookmarks = Json.encodeToString(bookmarks)
-            Log.d("defter", "encoded bookmarks: $encodedBookmarks")
-            fd.writeText(encodedBookmarks)
-            Log.d("defter", "writing to ${fd.absolutePath}")
-        }
+interface BookmarkImportable {
+    fun import(): List<Bookmark>
+}
 
-        override fun import(): List<Bookmark> {
-            Log.d("defter", "decoding bookmarks from ${fd.absolutePath}")
-            return Json.decodeFromString<List<Bookmark>>(fd.readText(Charsets.UTF_8))
-        }
+
+class JSONExporter(
+    private val outputStream: OutputStream
+) : BookmarkExportable {
+    override fun export(bookmarks: List<Bookmark>) {
+        val encodedBookmarks = Json.encodeToString(bookmarks)
+        Log.d("defter", "encoded bookmarks: $encodedBookmarks")
+        outputStream.write(encodedBookmarks.toByteArray())
+        outputStream.flush()
     }
+}
+
+class JSONImporter(
+    private val inputStream: InputStream
+) : BookmarkImportable {
+
+    override fun import(): List<Bookmark> {
+        return Json.decodeFromString<List<Bookmark>>(inputStream.readBytes().decodeToString())
+    }
+}
 

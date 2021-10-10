@@ -49,7 +49,7 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
         return BmViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.fragment_bookmark_view, parent, false)
+                .inflate(R.layout.fragment_bookmark, parent, false)
         )
     }
 

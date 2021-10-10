@@ -30,15 +30,13 @@ class ImportFileRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = position.toString()
-        holder.contentView.text = item.path
+        holder.contentView.text = item.name
     }
 
     override fun getItemCount(): Int = values.size
 
     inner class ViewHolder(binding: View) :
         RecyclerView.ViewHolder(binding) {
-        val idView: TextView = binding.item_number
         val contentView: TextView = binding.content
 
         override fun toString(): String {
