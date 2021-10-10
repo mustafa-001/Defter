@@ -10,12 +10,10 @@
 
     <Button
         android:id="@+id/paste_clipboard_button"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:background="#00A75D5D"
-        android:baselineAligned="false"
-        android:drawableBottom="@drawable/ic_content_paste_black_24dp" />
+        android:layout_width="42dp"
+        android:layout_height="match_parent"
+        android:drawableBottom="@drawable/ic_baseline_content_paste_24"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <EditText
         android:id="@+id/url_text"

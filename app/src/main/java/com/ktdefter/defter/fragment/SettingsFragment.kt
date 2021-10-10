@@ -28,7 +28,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     val getDocumentFileToExport = registerForActivityResult(ActivityResultContracts.CreateDocument()) { it ->
         Log.d("defter", "on ActivityResultCallback, data: $it")
 
-        val contentResolver = activity!!.applicationContext.contentResolver
+        val contentResolver = requireActivity()!!.applicationContext.contentResolver
         val outputStream = contentResolver.openOutputStream(it!!)
         val be = JSONExporter(outputStream!!)
         val bookmarksViewModel: BookmarksViewModel by viewModels()
@@ -37,7 +37,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     val getDocumentFileToImport = registerForActivityResult(ActivityResultContracts.OpenDocument()) { it ->
         Log.d("defter", "on ActivityResultCallback, data: $it")
 
-        val contentResolver = activity!!.applicationContext.contentResolver
+        val contentResolver = requireActivity().applicationContext.contentResolver
         val inputStream = contentResolver.openInputStream(it!!)
         val importedBookmarks = JSONImporter(inputStream!!)
         val bookmarksViewModel: BookmarksViewModel by viewModels()
