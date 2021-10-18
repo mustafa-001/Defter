@@ -80,8 +80,8 @@ class BookmarksDatabaseTest {
         insBm()
         bookmarkDao.getBookmark("test.com").let {
             bookmarkDao
-                .insertBookmark(Bookmark(it.url, "New Title"))
-            assertEquals(bookmarkDao.getBookmark("test.com").title, "New Title")
+                .insertBookmark(Bookmark(it!!.url, "New Title"))
+            assertEquals(bookmarkDao.getBookmark("test.com")!!.title, "New Title")
         }
     }
 
@@ -92,7 +92,7 @@ class BookmarksDatabaseTest {
             Bookmark("test2.com", title = "test2title"))
         bookmarkDao.getBookmark("test2.com").let {
             assertNotNull(it)
-            assertEquals(it.title, "test2title")
+            assertEquals(it!!.title, "test2title")
         }
     }
 

@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.jsoup.Jsoup
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -25,26 +26,32 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     val bookmarksViewModel: BookmarksViewModel by viewModels()
 
-    val getDocumentFileToExport = registerForActivityResult(ActivityResultContracts.CreateDocument()) { it ->
-        Log.d("defter", "on ActivityResultCallback, data: $it")
+    val getDocumentFileToExport =
+        registerForActivityResult(ActivityResultContracts.CreateDocument()) { it ->
+            Log.d("defter", "on ActivityResultCallback, data: $it")
 
-        val contentResolver = requireActivity()!!.applicationContext.contentResolver
-        val outputStream = contentResolver.openOutputStream(it!!)
-        val be = JSONExporter(outputStream!!)
-        val bookmarksViewModel: BookmarksViewModel by viewModels()
-        be.export(bookmarksViewModel.getBookmarksSync())// Perform operations on the document using its URI.
-    }
-    val getDocumentFileToImport = registerForActivityResult(ActivityResultContracts.OpenDocument()) { it ->
-        Log.d("defter", "on ActivityResultCallback, data: $it")
-
-        val contentResolver = requireActivity().applicationContext.contentResolver
-        val inputStream = contentResolver.openInputStream(it!!)
-        val importedBookmarks = JSONImporter(inputStream!!)
-        val bookmarksViewModel: BookmarksViewModel by viewModels()
-        for (b in importedBookmarks.import()){
-            bookmarksViewModel.addBookmark(b.url)
+            val contentResolver = requireActivity()!!.applicationContext.contentResolver
+            val outputStream = contentResolver.openOutputStream(it!!)
+            val be = JSONExporter(outputStream!!)
+            val bookmarksViewModel: BookmarksViewModel by viewModels()
+            be.export(bookmarksViewModel.getBookmarksSync())// Perform operations on the document using its URI.
         }
-    }
+    val getDocumentFileToImport =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { it ->
+            Log.d("defter", "on ActivityResultCallback, data: $it")
+
+            val contentResolver = requireActivity().applicationContext.contentResolver
+            val inputStream = contentResolver.openInputStream(it!!)
+            val importedBookmarks: BookmarkImportable = when (it.path?.takeLast(4)){
+                "html"-> HTMLImporter(inputStream!!)
+                "json" -> JSONImporter(inputStream!!)
+                else -> throw Exception("Unreachable")
+            }
+            val bookmarksViewModel: BookmarksViewModel by viewModels()
+            for (b in importedBookmarks.import()) {
+                bookmarksViewModel.addBookmark(b.url)
+            }
+        }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(root_preferences, rootKey)
@@ -66,7 +73,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             }
             "import" -> {
-                getDocumentFileToImport.launch(arrayOf("application/json"))
+                getDocumentFileToImport.launch(arrayOf("text/html", "application/json"))
             }
         }
         return true
@@ -81,6 +88,18 @@ interface BookmarkImportable {
     fun import(): List<Bookmark>
 }
 
+class HTMLImporter(
+    private val inputStream: InputStream
+) : BookmarkImportable {
+    override fun import(): List<Bookmark> {
+        val doc = Jsoup.parse(inputStream, "UTF-8", "")
+        var bookmarks = mutableListOf<Bookmark>()
+        val links = doc.select("a[href]")
+        links.forEach { Log.d("defter", "adding ${it.attr("href")}to bookmarks") }
+        return links
+            .map { Bookmark(it.attr("href").toString()) }
+    }
+}
 
 class JSONExporter(
     private val outputStream: OutputStream

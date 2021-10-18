@@ -12,6 +12,8 @@ import javax.inject.Inject
  */
 @Dao
 interface BookmarkDao  {
+    // TODO Don't Replace on Conflict, raher update the old
+//    item. Replacing causes old items to get deleted from Recycler View
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBookmark(vararg bookmark: Bookmark)
 
@@ -22,7 +24,7 @@ interface BookmarkDao  {
     fun getBookmarksSync(): List<Bookmark>
 
     @Query("SELECT * FROM bookmark WHERE url = :url")
-    fun getBookmark(url: String): Bookmark
+    fun getBookmark(url: String): Bookmark?
 
     @Query("DELETE FROM bookmark WHERE url = :url")
     fun deleteBookmark(url: String)

@@ -40,14 +40,6 @@ class BookmarkListFragment() : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // This is a workaround to not use sunflower InjectorUtils methoo.
-//        val bookmarksrepo = BookmarksRepository.getInstance(
-//            BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
-//            BookmarksDatabase.getInstance(requireContext()).tagDao(),
-//            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao(),
-//            requireContext()
-//        )
-//        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
 
         //Overrride back button and direclty return to homelist instead of returning to another bookmarks of tag list.
 
