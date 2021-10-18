@@ -95,6 +95,8 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 true
             }
 
+            // TODO We no longer have access to AppCompatActivity context when using Hİlt.,
+            // So this navigation throws exception.
             menu.add("Choose tags").setOnMenuItemClickListener {
                 val selectTagDialogFragment = SelectTagDialogFragment()
                 val activity = v.context as AppCompatActivity
