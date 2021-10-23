@@ -59,18 +59,21 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 this.bookmark = it
                 this.urlTextView.text = it.getHostname()
                 this.titleTextView.text = it.title
+                viewModel.addBookmark(bookmark.url)
 
-                val imageFile: File? = bookmark.favicon?.let{
+                val imageFile: File? = bookmark.getHostname().let{
                     File(this.itemView.context.filesDir, it)
-                } ?: run {
-                    Log.d("Defter", "Favicon file for ${bookmark.getHostname()} not found")
-                    null
                 }
 
                 if (imageFile != null) {
+                    Log.d("Defter", "Favicon file for ${bookmark.url} is found at ${bookmark.favicon}")
                     this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
                 } else {
                     this.faviconImageView.setImageResource(R.drawable.ic_broken_image_black_24dp)
+                    if (bookmark.favicon != null ) {
+                        Log.d("Defter", "Favicon file for ${bookmark.url} should be at  ${bookmark.favicon} but not.\n This should be unreachable!")
+                        throw(Exception("Saved favicon cannot be found!"))
+                    }
                 }
 
                 viewModel.getTagsOfBookmarkSync(it.url).let{ tags ->

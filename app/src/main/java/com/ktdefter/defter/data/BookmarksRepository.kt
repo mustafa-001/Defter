@@ -1,6 +1,7 @@
 package com.ktdefter.defter.data
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
@@ -24,8 +25,14 @@ class BookmarksRepository @Inject constructor(
             it.filter { it.favicon == null }
                 .map {
                     GlobalScope.launch {
-                        val newBookmark = async { getTitleAndFavicon(context, it.url) }.await()
-                        bookmarksDao.insertBookmark(newBookmark)
+                        val newBookmark = async { getTitleAndFavicon(context, Uri.parse(it.url)) }.await()
+                        Log.d("defter", "There is no saved favicon for ${newBookmark.url}, Trying to fetch.")
+                        if (newBookmark.favicon == null) {
+                            Log.d("defter", "Cannot fetch favicon for ${newBookmark.url}")
+                        } else {
+                            bookmarksDao.updateBookmark(newBookmark)
+                            Log.d("defter", "Update bookmark is called with ${newBookmark.url} ${newBookmark.favicon}")
+                        }
                     }
                 }
             return@map it
@@ -40,8 +47,8 @@ class BookmarksRepository @Inject constructor(
             bookmarksDao.insertBookmark(Bookmark(url))
             Log.d("Defter", "Inserting bookmark: $url")
             GlobalScope.launch {
-                val bookmark = async { getTitleAndFavicon(context, url) }.await()
-                bookmarksDao.insertBookmark(bookmark)
+                val bookmark = async { getTitleAndFavicon(context, Uri.parse(url)) }.await()
+                bookmarksDao.updateBookmark(bookmark)
             }
         }
     }

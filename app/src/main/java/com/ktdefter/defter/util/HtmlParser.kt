@@ -3,7 +3,9 @@ package com.ktdefter.defter.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Log
+import androidx.core.graphics.drawable.toIcon
 import com.ktdefter.defter.data.Bookmark
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -14,20 +16,24 @@ import java.lang.NullPointerException
 import java.net.MalformedURLException
 
 
-fun getTitleAndFavicon(context: Context, url: String): Bookmark {
+fun getTitleAndFavicon(context: Context, url: Uri): Bookmark {
+    val newUrl = if (url.scheme == "http") {
+        url.buildUpon().scheme("https").build()
+    } else url
+
     val doc = try {
-        Jsoup.connect(url)
+        Jsoup.connect(newUrl.toString())
             .timeout(30000)
             .followRedirects(true)
             .get()
     } catch (e: Exception) {
         Log.d("defter", e.toString())
-        return Bookmark(url, "no title", null)
+        return Bookmark(url.toString(), "Cannot reach title", null)
     }
     Log.d("Defter", "requesting: $url")
     val imageUrl: String? = doc.select("link[href~=.*\\.(ico|png)]").first()?.absUrl("href")
 
-    val hostName = Bookmark(url).getHostname()
+    val hostName = Bookmark(newUrl.toString()).getHostname()
 
     if (imageUrl == null) {
         Log.d("Defter", "Failed to parse site favicon.")
@@ -36,7 +42,7 @@ fun getTitleAndFavicon(context: Context, url: String): Bookmark {
         saveImage(context, hostName, imageUrl)
     }
 
-    return Bookmark(url, doc.title(), hostName)
+    return Bookmark(newUrl.toString(), doc.title(), hostName)
 }
 
 fun saveImage(context: Context, url: String, image_url: String): String? {

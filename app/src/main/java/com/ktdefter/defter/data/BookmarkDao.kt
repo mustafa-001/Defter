@@ -1,10 +1,7 @@
 package com.ktdefter.defter.data
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import javax.inject.Inject
 
 /**
@@ -14,8 +11,11 @@ import javax.inject.Inject
 interface BookmarkDao  {
     // TODO Don't Replace on Conflict, raher update the old
 //    item. Replacing causes old items to get deleted from Recycler View
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insertBookmark(vararg bookmark: Bookmark)
+
+    @Update
+    fun updateBookmark(vararg bookmark: Bookmark)
 
     @Query("SELECT * FROM bookmark")
     fun getBookmarks(): LiveData<List<Bookmark>>
