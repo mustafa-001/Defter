@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -21,15 +22,18 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.AddBookmarkDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.fragment.BookmarkListFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
-SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFragmentInteractionListener{
+    SelectTagDialogFragment.OnFragmentInteractionListener,
+    BookmarkListFragment.OnFragmentInteractionListener {
     private val bookmarksViewModel: BookmarksViewModel by viewModels()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
@@ -68,6 +72,7 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
             )
         })
 
+        bookmarksViewModel.searchKeyword = MutableLiveData(Optional.of("youtube"))
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -80,7 +85,7 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
         }
     }
 
-    private fun setDrawerTags(){
+    private fun setDrawerTags() {
         bookmarksViewModel.getTags().observe(this, { newTags ->
             oldTagIds.map {
                 navView.menu.removeItem(it)
@@ -88,7 +93,12 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
             oldTagIds.clear()
 
             for (newTag in newTags) {
-                val menuItem = navView.menu.add(R.id.tags_drawer, newTags.indexOf(newTag), newTags.indexOf(newTag), newTag.tagName)
+                val menuItem = navView.menu.add(
+                    R.id.tags_drawer,
+                    newTags.indexOf(newTag),
+                    newTags.indexOf(newTag),
+                    newTag.tagName
+                )
                 oldTagIds.add(menuItem.itemId)
 
                 menuItem.setOnMenuItemClickListener {
@@ -96,7 +106,8 @@ SelectTagDialogFragment.OnFragmentInteractionListener, BookmarkListFragment.OnFr
                     bundle.putString("selectedTag", menuItem.title.toString())
                     navController.navigate(R.id.nav_show_bookmarks_of_tag, bundle)
                     drawer.closeDrawer(GravityCompat.START, true)
-                    true}
+                    true
+                }
             }
         })
 

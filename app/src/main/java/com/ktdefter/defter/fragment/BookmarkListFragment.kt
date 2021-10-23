@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ktdefter.defter.MainActivity
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.BookmarksRepository
@@ -36,7 +39,7 @@ class BookmarkListFragment() : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var bookmarksView: RecyclerView
-    val  bookmarksViewModel: BookmarksViewModel by viewModels()
+    val  bookmarksViewModel: BookmarksViewModel by activityViewModels<BookmarksViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +76,7 @@ class BookmarkListFragment() : Fragment() {
                 // TODO Dont use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
 
-                val tagToShow = arguments?.getString("selectedTag")
-                bookmarksViewModel.getBookmarksOfTag(tagToShow).observe(this@BookmarkListFragment, Observer<List<Bookmark>> { newBookmarks ->
+                bookmarksViewModel.bookmarksToShow.observe(viewLifecycleOwner, { newBookmarks ->
                     bookmarkAdapter.bookmarks = newBookmarks
                 })
                 return this

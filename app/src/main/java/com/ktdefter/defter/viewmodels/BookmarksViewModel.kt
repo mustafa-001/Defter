@@ -1,6 +1,7 @@
 package com.ktdefter.defter.viewmodels
 
 import android.app.Application
+import android.graphics.Path
 import android.util.Log
 import androidx.lifecycle.*
 import com.ktdefter.defter.data.Bookmark
@@ -9,38 +10,63 @@ import com.ktdefter.defter.data.Tag
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @HiltViewModel
-class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) : ViewModel() {
-   private var position = 0
-    private var lastShownTag: Tag? = null
+class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) :
+    ViewModel() {
+    private var position = 0
+    private var tag: Optional<Tag> = Optional.empty()
 
-    var bookmarksToShow: LiveData<List<Bookmark>> = getBookmarks()
+    var searchKeyword: MutableLiveData<Optional<String>> =
+        MutableLiveData(Optional.empty<String>())
+    lateinit var bookmarksToShow: LiveData<List<Bookmark>>
+
+    init {
+        getBookmarks()
+    }
 
     // TODO Add tags witch switchmap to bookmarks, dont observer Livedata<List<Tag>>
     // from Adapter
-    fun getBookmarks(): LiveData<List<Bookmark>> {
-        return Transformations.map(bookmarksRepository.getBookmarks()) {
-           it.apply {
-               this.map {
-                   it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url)
-               }
+    fun getBookmarks() {
+        val bookmarksToObserve: LiveData<List<Bookmark>> =
+            Transformations.switchMap(searchKeyword) {
+
+                val filteredWithTag = if (tag.isPresent) {
+                    bookmarksRepository.getBookmarksOfTag(tag.get().tagName)
+                } else {
+                    bookmarksRepository.getBookmarks()
+                }
+                if (searchKeyword.value!!.isPresent) {
+                    Log.d("defter", "filtering")
+                    Transformations.map(filteredWithTag) {
+                        it.filter { it.url.contains(searchKeyword.value!!.get()) }
+                    }
+                } else {
+                    Log.d("defter", "not filtering")
+                    filteredWithTag
+                }
+
             }
+        bookmarksToShow = Transformations.map(bookmarksToObserve) { bookmarks ->
+            bookmarks.map { it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url) }
+            bookmarks
         }
     }
+
     fun getBookmarksSync(): List<Bookmark> {
         return bookmarksRepository.getBookmarksSync().map {
             it.apply {
-                    it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url)
+                it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url)
             }
         }
     }
 
     fun addBookmark(url: String) {
         bookmarksRepository.insertBookmark(url)
-   }
+    }
 
     fun deleteBookmark(url: String) {
         bookmarksRepository.deleteBookmark(url)
@@ -50,7 +76,8 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
         if (!bookmarksRepository
                 .getTagsSync()
                 .map { it.tagName }
-                .contains(tag)) {
+                .contains(tag)
+        ) {
             bookmarksRepository.insertTag(tag)
             Log.d("Defter", "adding new $tag")
         }
@@ -75,13 +102,6 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
 
     fun getTagsOfBookmarkSync(url: String) = bookmarksRepository.getTagsOfBookmarkSync(url)
 
-    fun getBookmarksOfTag(tag: String?): LiveData<List<Bookmark>> {
-        return if (tag == null) {
-            getBookmarks()
-        } else {
-            bookmarksRepository.getBookmarksOfTag(tag)
-        }
-    }
 
-        fun getBookmarksOfTagSync(tag: String) = bookmarksRepository.getBookmarksOfTagSync(tag)
+    fun getBookmarksOfTagSync(tag: String) = bookmarksRepository.getBookmarksOfTagSync(tag)
 }
