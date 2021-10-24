@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener(View.OnClickListener {
+            bookmarksViewModel.searchKeyword = MutableLiveData(Optional.of("youtube"))
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
             addBookmarkDialogFragment.show(
                 this.supportFragmentManager,
@@ -72,7 +73,6 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
             )
         })
 
-        bookmarksViewModel.searchKeyword = MutableLiveData(Optional.of("youtube"))
     }
 
     override fun onNewIntent(intent: Intent?) {

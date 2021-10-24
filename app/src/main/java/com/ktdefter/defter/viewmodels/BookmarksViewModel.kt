@@ -18,42 +18,58 @@ import javax.inject.Singleton
 class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) :
     ViewModel() {
     private var position = 0
-    private var tag: Optional<Tag> = Optional.empty()
+    var tag: Optional<Tag> = Optional.empty()
 
     var searchKeyword: MutableLiveData<Optional<String>> =
-        MutableLiveData(Optional.empty<String>())
-    lateinit var bookmarksToShow: LiveData<List<Bookmark>>
-
-    init {
-        getBookmarks()
+        MutableLiveData(Optional.of("google"))
+    set(value) {
+        field = value
+        Log.d("defter", "seach keyword is reassigned")
     }
+    val bookmarksToShow: MediatorLiveData<List<Bookmark>> = getBookmarks()
 
     // TODO Add tags witch switchmap to bookmarks, dont observer Livedata<List<Tag>>
     // from Adapter
-    fun getBookmarks() {
-        val bookmarksToObserve: LiveData<List<Bookmark>> =
-            Transformations.switchMap(searchKeyword) {
+    private fun getBookmarks(): MediatorLiveData<List<Bookmark>> {
 
-                val filteredWithTag = if (tag.isPresent) {
-                    bookmarksRepository.getBookmarksOfTag(tag.get().tagName)
-                } else {
-                    bookmarksRepository.getBookmarks()
+       val r = MediatorLiveData<List<Bookmark>>()
+           r.addSource(searchKeyword, {
+            if (it.isPresent){
+                Log.d("defter", "filtering")
+                r.addSource(bookmarksRepository.getBookmarks()) {bookmarks ->
+                    r.value = bookmarks.filter { it.url.contains(searchKeyword.value!!.get()) }
                 }
-                if (searchKeyword.value!!.isPresent) {
-                    Log.d("defter", "filtering")
-                    Transformations.map(filteredWithTag) {
-                        it.filter { it.url.contains(searchKeyword.value!!.get()) }
-                    }
-                } else {
-                    Log.d("defter", "not filtering")
-                    filteredWithTag
+            } else {
+                r.addSource(bookmarksRepository.getBookmarks()) {
+                    r.value = it
                 }
-
+                Log.d("defter", "not filtering")
             }
-        bookmarksToShow = Transformations.map(bookmarksToObserve) { bookmarks ->
-            bookmarks.map { it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url) }
-            bookmarks
-        }
+        })
+        return r
+//        val bookmarksToObserve: MediatorLiveData<List<Bookmark>> =
+//            Transformations.switchMap(searchKeyword) {
+//
+//                val filteredWithTag = if (tag.isPresent) {
+//                    bookmarksRepository.getBookmarksOfTag(tag.get().tagName)
+//                } else {
+//                    bookmarksRepository.getBookmarks()
+//                }
+//                if (searchKeyword.value!!.isPresent) {
+//                    Log.d("defter", "filtering")
+//                    Transformations.map(filteredWithTag) {
+//                        it.filter { it.url.contains(searchKeyword.value!!.get()) }
+//                    }
+//                } else {
+//                    Log.d("defter", "not filtering")
+//                    filteredWithTag
+//                }
+//
+//            }
+//        bookmarksToShow = Transformations.map(bookmarksToObserve) { bookmarks ->
+//            bookmarks.map { it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url) }
+//            bookmarks
+//        }
     }
 
     fun getBookmarksSync(): List<Bookmark> {
