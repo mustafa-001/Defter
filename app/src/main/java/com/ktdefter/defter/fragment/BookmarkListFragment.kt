@@ -3,28 +3,22 @@ package com.ktdefter.defter.fragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import androidx.activity.addCallback
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ktdefter.defter.MainActivity
-import com.ktdefter.defter.data.Bookmark
-import com.ktdefter.defter.data.BookmarksDatabase
-import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
-import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import kotlinx.android.synthetic.main.fragment_bookmark_list.*
 import com.ktdefter.defter.R
+import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.adapter.BookmarkAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -35,17 +29,21 @@ import dagger.hilt.android.AndroidEntryPoint
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-class BookmarkListFragment() : Fragment() {
+class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
     private var listener: OnFragmentInteractionListener? = null
-
     private lateinit var bookmarksView: RecyclerView
+    private lateinit var tag: Optional<Tag>
     val  bookmarksViewModel: BookmarksViewModel by activityViewModels<BookmarksViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //Overrride back button and direclty return to homelist instead of returning to another bookmarks of tag list.
-
+        tag = if (arguments?.getString("selectedTag") ==null) {
+            Optional.empty<Tag>()
+        } else{
+            Optional.of(arguments?.getString("selectedTag")!!.let { Tag(it) })
+        }
         if (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {
                 requireActivity().onBackPressedDispatcher.addCallback(this) {
                     while (findNavController().currentDestination != findNavController().graph.findNode(
@@ -62,6 +60,8 @@ class BookmarkListFragment() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
+        bookmarksViewModel.tag.postValue(tag)
         // Inflate the layout for this fragment
         inflater.inflate(R.layout.fragment_bookmark_list, container, false)
             .apply {
@@ -100,6 +100,30 @@ class BookmarkListFragment() : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        val searchView = menu.findItem(R.id.action_search).actionView as SearchView
+        searchView.setOnQueryTextListener(this)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        val newQuery: Optional<String> = if (query == null){
+            Optional.empty<String>()
+        } else Optional.of(query)
+        bookmarksViewModel.searchKeyword.postValue(newQuery)
+        Log.d("defter", "SearchView.onTextSubmit() with query: $newQuery")
+        return true
+    }
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        val newQuery: Optional<String> = if (query == null){
+            Optional.empty<String>()
+        } else Optional.of(query)
+        bookmarksViewModel.searchKeyword.postValue(newQuery)
+        Log.d("defter", "SearchView.onTextSubmit() with query: $newQuery")
+        return true
     }
 
     /**

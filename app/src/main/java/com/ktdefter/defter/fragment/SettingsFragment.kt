@@ -2,11 +2,16 @@ package com.ktdefter.defter.fragment
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.forEach
+import androidx.core.view.isNotEmpty
+import androidx.core.view.iterator
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.ktdefter.defter.R
 import com.ktdefter.defter.R.xml.root_preferences
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
@@ -25,6 +30,19 @@ import java.util.*
 class SettingsFragment : PreferenceFragmentCompat() {
 
     val bookmarksViewModel: BookmarksViewModel by viewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        setHasOptionsMenu(true)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.forEach { it.setEnabled(false) }
+    }
 
     val getDocumentFileToExport =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) { it ->

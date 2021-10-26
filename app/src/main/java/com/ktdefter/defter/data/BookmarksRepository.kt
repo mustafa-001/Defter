@@ -22,7 +22,7 @@ class BookmarksRepository @Inject constructor(
 ) {
     fun getBookmarks(): LiveData<List<Bookmark>> {
         return bookmarksDao.getBookmarks().map{
-            it.filter { it.favicon == null }
+            it.filter { it.favicon == null && false }
                 .map {
                     GlobalScope.launch {
                         val newBookmark = async { getTitleAndFavicon(context, Uri.parse(it.url)) }.await()
