@@ -1,8 +1,10 @@
 package com.ktdefter.defter
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -15,6 +17,8 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -35,13 +39,14 @@ import java.util.*
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
     SelectTagDialogFragment.OnFragmentInteractionListener,
-    BookmarkListFragment.OnFragmentInteractionListener{
-    private val bookmarksViewModel: BookmarksViewModel by viewModels()
+    BookmarkListFragment.OnFragmentInteractionListener, LifecycleOwner{
+    val bookmarksViewModel: BookmarksViewModel by viewModels<BookmarksViewModel>()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var navView: NavigationView
     private lateinit var drawer: DrawerLayout
     private val oldTagIds: MutableList<Int> = mutableListOf<Int>()
+    private lateinit var tags: LiveData<List<Tag>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +62,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        tags = bookmarksViewModel.getTags()
         setDrawerTags()
 
 //        supportFragmentManager.commit {
@@ -87,7 +93,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
     }
 
     private fun setDrawerTags() {
-        bookmarksViewModel.getTags().observe(this, { newTags ->
+        this.tags.observe(this, { newTags ->
             oldTagIds.map {
                 navView.menu.removeItem(it)
             }

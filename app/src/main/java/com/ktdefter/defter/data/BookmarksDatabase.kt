@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+
 @Database(entities = [Bookmark::class, Tag::class, BookmarkTagPair::class], version = 1,
     exportSchema = true)
 abstract class BookmarksDatabase : RoomDatabase() {

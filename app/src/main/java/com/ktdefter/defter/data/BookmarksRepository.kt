@@ -11,9 +11,11 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 // TODO Fetch url title and favicon if they don't exist in database.
+@Singleton
 class BookmarksRepository @Inject constructor(
     private val bookmarksDao: BookmarkDao,
     private val tagDao: TagDao,
@@ -76,26 +78,26 @@ class BookmarksRepository @Inject constructor(
     fun getBookmarksOfTag(tag: String) = bookmarkTagPairDao.getBookmarksWithTag(tag)
 
     fun getBookmarksOfTagSync(tag: String) = bookmarkTagPairDao.getBookmarksWithTagSync(tag)
-
-    companion object {
-
-        @Volatile
-        private var instance: BookmarksRepository? = null
-
-        fun getInstance(
-            bookmarksDao: BookmarkDao,
-            tagDao: TagDao,
-            bookmarkTagPairDao: BookmarkTagPairDao,
-            context: Context
-        ): BookmarksRepository {
-            return instance ?: synchronized(this) {
-                instance ?: BookmarksRepository(
-                    bookmarksDao,
-                    tagDao,
-                    bookmarkTagPairDao,
-                    context
-                ).also { instance = it }
-            }
-        }
-    }
+//
+//    companion object {
+//
+//        @Volatile
+//        private var instance: BookmarksRepository? = null
+//
+//        fun getInstance(
+//            bookmarksDao: BookmarkDao,
+//            tagDao: TagDao,
+//            bookmarkTagPairDao: BookmarkTagPairDao,
+//            context: Context?
+//        ): BookmarksRepository {
+//            return instance ?: synchronized(this) {
+//                instance ?: BookmarksRepository(
+//                    bookmarksDao,
+//                    tagDao,
+//                    bookmarkTagPairDao,
+//                    context
+//                ).also { instance = it }
+//            }
+//        }
+//    }
 }

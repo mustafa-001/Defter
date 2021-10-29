@@ -2,12 +2,14 @@ package com.ktdefter.defter.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import javax.inject.Singleton
 
 /**
  * Data Access Objct for Tag class
  */
 
 @Dao
+@Singleton
 interface TagDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insertTag(vararg tag: Tag)

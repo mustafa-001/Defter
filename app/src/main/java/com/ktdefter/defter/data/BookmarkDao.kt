@@ -3,11 +3,13 @@ package com.ktdefter.defter.data
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  *Data Access Object for Bookmark class
  */
 @Dao
+@Singleton
 interface BookmarkDao  {
     // TODO Don't Replace on Conflict, raher update the old
 //    item. Replacing causes old items to get deleted from Recycler View

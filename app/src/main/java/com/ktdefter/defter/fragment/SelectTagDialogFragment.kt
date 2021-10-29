@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.ktdefter.defter.R
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksDatabase
@@ -17,6 +18,8 @@ import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.lang.IllegalStateException
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_select_tag_dialog.*
@@ -30,9 +33,10 @@ import kotlinx.android.synthetic.main.fragment_select_tag_dialog.view.*
  * Use the [SelectTagDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class SelectTagDialogFragment : DialogFragment() {
     private var listener: OnFragmentInteractionListener? = null
-    private lateinit var bookmarksViewModel: BookmarksViewModel
+    private  val bookmarksViewModel: BookmarksViewModel by viewModels<BookmarksViewModel>()
     lateinit var selectedBookmark: Bookmark
     lateinit var tags: List<Tag>
     lateinit var allTags: List<Tag>
@@ -92,15 +96,6 @@ class SelectTagDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO Make sure this way of getting activity's ViewModel is safe and proper way.
-        // Commented part is old default ViewModelFactory method.
-        val bookmarksrepo = BookmarksRepository.getInstance(
-            BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
-            BookmarksDatabase.getInstance(requireContext()).tagDao(),
-            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao(),
-            requireContext()
-        )
-        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
         allTags = bookmarksViewModel.getTagsSync()
         tags = bookmarksViewModel.getTagsOfBookmarkSync(selectedBookmark.url)
     }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
@@ -18,10 +19,12 @@ import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.processor.internal.definecomponent.codegen._dagger_hilt_android_components_ActivityComponent
 import java.io.File
+import javax.inject.Inject
 
-class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
-
+class BookmarkAdapter(val fragmentManager: FragmentManager) : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
     var bookmarks: List<Bookmark> = emptyList()
      set(value) {
          DiffUtil.calculateDiff(
@@ -102,11 +105,11 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
             // So this navigation throws exception.
             menu.add("Choose tags").setOnMenuItemClickListener {
                 val selectTagDialogFragment = SelectTagDialogFragment()
-                val activity = v.context as AppCompatActivity
+//                val activity =  v.context as AppCompatActivity
                 selectTagDialogFragment.apply {
                     selectedBookmark = holder.bookmark
                     show(
-                        activity.supportFragmentManager,
+                        this@BookmarkAdapter.fragmentManager,
                         "select_tag_dialog"
                     )
                 }
@@ -114,7 +117,6 @@ class BookmarkAdapter() : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
                 true
             }
         }
-
         holder.itemView.setOnClickListener {
             Intent().apply {
                 action = Intent.ACTION_VIEW
