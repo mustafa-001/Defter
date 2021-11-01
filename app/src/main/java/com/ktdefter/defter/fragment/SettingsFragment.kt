@@ -4,23 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
-import androidx.core.view.isNotEmpty
-import androidx.core.view.iterator
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.ktdefter.defter.R
 import com.ktdefter.defter.R.xml.root_preferences
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jsoup.Jsoup
-import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat
@@ -36,8 +32,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        requireActivity().fab.hide()
         setHasOptionsMenu(true)
         return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        requireActivity().fab.show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,7 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             val bookmarksViewModel: BookmarksViewModel by viewModels()
             for (b in importedBookmarks.import()) {
-                bookmarksViewModel.addBookmark(b.url)
+                bookmarksViewModel.addBookmark(b)
             }
         }
 

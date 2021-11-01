@@ -1,7 +1,9 @@
 package com.ktdefter.defter.fragment.adapter
 
+import android.app.ProgressDialog.show
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,14 +11,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ktdefter.defter.R
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
+import com.ktdefter.defter.fragment.EditBookmarkFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -24,16 +30,17 @@ import dagger.hilt.processor.internal.definecomponent.codegen._dagger_hilt_andro
 import java.io.File
 import javax.inject.Inject
 
-class BookmarkAdapter(val fragmentManager: FragmentManager) : RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
+class BookmarkAdapter(val fragmentManager: FragmentManager) :
+    RecyclerView.Adapter<BookmarkAdapter.BmViewHolder>() {
     var bookmarks: List<Bookmark> = emptyList()
-     set(value) {
-         DiffUtil.calculateDiff(
-             BookmarkListDiffCallback(field, value)
-         ).let {result ->
-                 result.dispatchUpdatesTo(this)
-             }
-         field = value
-     }
+        set(value) {
+            DiffUtil.calculateDiff(
+                BookmarkListDiffCallback(field, value)
+            ).let { result ->
+                result.dispatchUpdatesTo(this)
+            }
+            field = value
+        }
 
     lateinit var viewModel: BookmarksViewModel
 
@@ -62,24 +69,29 @@ class BookmarkAdapter(val fragmentManager: FragmentManager) : RecyclerView.Adapt
                 this.bookmark = it
                 this.urlTextView.text = it.getHostname()
                 this.titleTextView.text = it.title
-                viewModel.addBookmark(bookmark.url)
 
-                val imageFile: File? = bookmark.getHostname().let{
+                val imageFile: File? = bookmark.getHostname().let {
                     File(this.itemView.context.filesDir, it)
                 }
 
                 if (imageFile != null) {
-                    Log.d("Defter", "Favicon file for ${bookmark.url} is found at ${bookmark.favicon}")
+                    Log.d(
+                        "Defter",
+                        "Favicon file for ${bookmark.url} is found at ${bookmark.favicon}"
+                    )
                     this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
                 } else {
                     this.faviconImageView.setImageResource(R.drawable.ic_broken_image_black_24dp)
-                    if (bookmark.favicon != null ) {
-                        Log.d("Defter", "Favicon file for ${bookmark.url} should be at  ${bookmark.favicon} but not.\n This should be unreachable!")
+                    if (bookmark.favicon != null) {
+                        Log.d(
+                            "Defter",
+                            "Favicon file for ${bookmark.url} should be at  ${bookmark.favicon} but not.\n This should be unreachable!"
+                        )
                         throw(Exception("Saved favicon cannot be found!"))
                     }
                 }
 
-                viewModel.getTagsOfBookmarkSync(it.url).let{ tags ->
+                viewModel.getTagsOfBookmarkSync(it.url).let { tags ->
                     this.tagsTextView.text = tags
                         .map { tag -> tag.tagName }
                         .fold("") { acc, nxt ->
@@ -113,7 +125,13 @@ class BookmarkAdapter(val fragmentManager: FragmentManager) : RecyclerView.Adapt
                         "select_tag_dialog"
                     )
                 }
-
+                true
+            }
+            menu.add("Edit Fragment").setOnMenuItemClickListener {
+                this@BookmarkAdapter.fragmentManager
+                    .primaryNavigationFragment!!
+                    .findNavController().navigate(R.id.editBookmarkFragment,
+                        Bundle().apply { putString("url", holder.bookmark.url.toString()) })
                 true
             }
         }
@@ -127,7 +145,7 @@ class BookmarkAdapter(val fragmentManager: FragmentManager) : RecyclerView.Adapt
     }
 
     private fun sanitizeURL(url: String): Uri {
-        return if (Uri.parse(url).scheme == null){
+        return if (Uri.parse(url).scheme == null) {
             Uri.parse(url).buildUpon().scheme("http").build()
         } else {
             Uri.parse(url)
@@ -140,9 +158,10 @@ class BookmarkAdapter(val fragmentManager: FragmentManager) : RecyclerView.Adapt
 
 }
 
-class BookmarkListDiffCallback(private  val oldList: List<Bookmark>,
-                               private  val newList: List<Bookmark>)
-    : DiffUtil.Callback() {
+class BookmarkListDiffCallback(
+    private val oldList: List<Bookmark>,
+    private val newList: List<Bookmark>
+) : DiffUtil.Callback() {
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         if (oldList.get(oldItemPosition).title != newList.get(newItemPosition).title) {
@@ -153,7 +172,7 @@ class BookmarkListDiffCallback(private  val oldList: List<Bookmark>,
             return false
         }
 
-       return true
+        return true
     }
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -161,11 +180,11 @@ class BookmarkListDiffCallback(private  val oldList: List<Bookmark>,
     }
 
     override fun getNewListSize(): Int {
-        return  newList.size
+        return newList.size
     }
 
     override fun getOldListSize(): Int {
-        return  oldList.size
+        return oldList.size
     }
 
 }

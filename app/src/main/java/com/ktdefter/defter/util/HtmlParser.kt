@@ -5,15 +5,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
-import androidx.core.graphics.drawable.toIcon
 import com.ktdefter.defter.data.Bookmark
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
-import java.io.IOException
 import java.lang.Exception
-import java.lang.NullPointerException
-import java.net.MalformedURLException
 
 
 fun getTitleAndFavicon(context: Context, url: Uri): Bookmark {

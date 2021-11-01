@@ -13,14 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ktdefter.defter.R
 import com.ktdefter.defter.data.Bookmark
-import com.ktdefter.defter.data.BookmarksDatabase
-import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
-import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
-import java.lang.IllegalStateException
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_select_tag_dialog.*
 import kotlinx.android.synthetic.main.fragment_select_tag_dialog.view.*

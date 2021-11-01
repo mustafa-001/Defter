@@ -22,7 +22,12 @@ data class Bookmark(
             .removePrefix("https://")
             .replaceAfter("/", "")
             .removePrefix("www.")
-            .dropLast(1)
+            .dropLastWhile { it -> it == '/'.toChar() }
     }
+
+    override fun equals(other: Any?): Boolean {
+        return (other as Bookmark).url == this.url
+    }
+
     @Ignore var tags: List<Tag> = emptyList() }
 

@@ -1,18 +1,16 @@
 package com.ktdefter.defter.viewmodels
 
-import android.app.Application
-import android.graphics.Path
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.data.Tag
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) :
@@ -66,6 +64,19 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
         }
     }
 
+    fun updateBookmark(
+        oldBookmark: Bookmark,
+        newBookmark: Bookmark,
+        fetchTitle: BookmarksRepository.ShouldFetchTitle = BookmarksRepository.ShouldFetchTitle.IfNeeded
+    ) {
+        if (oldBookmark.url != newBookmark.url) {
+            deleteBookmark(oldBookmark.url)
+            addBookmark(newBookmark)
+        }
+
+        bookmarksRepository.updateBookmark(newBookmark, fetchTitle)
+    }
+
     fun getBookmarksSync(): List<Bookmark> {
         return bookmarksRepository.getBookmarksSync().map {
             it.apply {
@@ -74,9 +85,11 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
         }
     }
 
-    fun addBookmark(url: String) {
-        bookmarksRepository.insertBookmark(url)
-    }
+    fun addBookmark(
+        bookmark: Bookmark,
+        fetchTitle: BookmarksRepository.ShouldFetchTitle = BookmarksRepository.ShouldFetchTitle.Yes
+    ) = bookmarksRepository.insertBookmark(bookmark, fetchTitle)
+
 
     fun deleteBookmark(url: String) {
         bookmarksRepository.deleteBookmark(url)

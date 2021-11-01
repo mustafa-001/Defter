@@ -15,14 +15,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ktdefter.defter.R
-import com.ktdefter.defter.data.BookmarksDatabase
-import com.ktdefter.defter.data.BookmarksRepository
+import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
-import com.ktdefter.defter.viewmodels.BookmarksViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.IllegalStateException
 import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.view.*
-import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,7 +70,7 @@ class AddBookmarkDialogFragment : DialogFragment() {
 
     private fun onPositiveClick(url: String) {
         Log.d("Adding the url: ", url)
-        viewModel.addBookmark(url)
+        viewModel.addBookmark(Bookmark(url))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

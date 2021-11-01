@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/editBookmarkFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.EditBookmarkFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/editBookmarkFragment_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:text="@string/enter_search_term"
+            app:layout_constraintEnd_toEndOf="@+id/editBookmarkFragment_tags"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/editBookmarkFragment_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/editBookmarkFragment_url" />
+
+        <Button
+            android:id="@+id/editBookmarkFragment_fetch"
+            android:layout_width="190dp"
+            android:text="@string/fetch"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/editBookmarkFragment_submit"
+            android:text="@string/save"
+            android:layout_width="190dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/editBookmarkFragment_fetch" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

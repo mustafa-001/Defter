@@ -1,25 +1,20 @@
 package com.ktdefter.defter
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -28,13 +23,13 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.AddBookmarkDialogFragment
-import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import com.ktdefter.defter.fragment.BookmarkListFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
+import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
@@ -87,7 +82,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         when (intent?.action) {
             Intent.ACTION_SEND -> {
                 Log.d("Defter", "intent: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
-                bookmarksViewModel.addBookmark(intent.getStringExtra((Intent.EXTRA_TEXT))!!)
+                bookmarksViewModel.addBookmark(Bookmark( intent.getStringExtra((Intent.EXTRA_TEXT))!!))
             }
         }
     }

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.ktdefter.defter.R
 
-import com.ktdefter.defter.placeholder.PlaceholderContent.PlaceholderItem
 import kotlinx.android.synthetic.main.fragment_select_import_file.view.*
 import java.io.File
 
