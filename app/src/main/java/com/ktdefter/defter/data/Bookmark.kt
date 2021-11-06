@@ -3,9 +3,12 @@ package com.ktdefter.defter.data
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
+import java.sql.Time
+import java.util.*
 
 @Entity
 @Serializable
@@ -14,9 +17,11 @@ data class Bookmark(
     val url: String,
     val title: String? = null,
     var favicon: String? = null,
+    @Contextual
+    val lastModification: Date = Date(),
 ) {
     override fun toString() = url
-    fun getHostname(): String{
+    fun getHostname(): String {
         return url
             .removePrefix("http://")
             .removePrefix("https://")
@@ -29,5 +34,20 @@ data class Bookmark(
         return (other as Bookmark).url == this.url
     }
 
-    @Ignore var tags: List<Tag> = emptyList() }
 
+    @Ignore
+    var tags: List<Tag> = emptyList()
+}
+
+class Converters {
+    @TypeConverter
+    fun fromTimestamp(value: Long): Date {
+        return value.let { Date(it) }
+    }
+
+    @TypeConverter
+    fun dateToTimestamp(date: Date): Long {
+        return date.time
+    }
+
+}

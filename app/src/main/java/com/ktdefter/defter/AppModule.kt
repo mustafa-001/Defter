@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.room.Room
 import com.ktdefter.defter.data.BookmarksDatabase
+import com.ktdefter.defter.data.MIGRATION_1_2
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.Module
 import dagger.Provides
@@ -27,6 +28,7 @@ object DatabaseModule {
         "bookmarks.db"
     // TODO: don't use main thread, use coroutines instead. see. https://stackoverflow.com/questions/44167111/android-room-simple-select-query-cannot-access-database-on-the-main-thread
     ).allowMainThreadQueries()
+        .addMigrations(MIGRATION_1_2)
         .build() // The reason we can construct a database for the repo
 
     @Singleton

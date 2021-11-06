@@ -19,7 +19,7 @@ interface BookmarkDao  {
     @Update
     fun updateBookmark(vararg bookmark: Bookmark)
 
-    @Query("SELECT * FROM bookmark")
+    @Query("SELECT * FROM bookmark ORDER  BY lastModification DESC")
     fun getBookmarks(): LiveData<List<Bookmark>>
 
     @Query("SELECT * FROM bookmark")

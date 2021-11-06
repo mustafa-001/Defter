@@ -65,19 +65,19 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
         // Inflate the layout for this fragment
         inflater.inflate(R.layout.fragment_bookmark_list, container, false)
             .apply {
-                val viewManager = LinearLayoutManager(requireContext())
-                val bookmarkAdapter = BookmarkAdapter(requireActivity().supportFragmentManager)
-                bookmarkAdapter.viewModel = bookmarksViewModel
+                val bookmarksListLayoutManager = LinearLayoutManager(requireContext())
+                val bookmarksLİstAdapter = BookmarkAdapter(requireActivity().supportFragmentManager)
+                bookmarksLİstAdapter.viewModel = bookmarksViewModel
                 bookmarksView = this.findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
-                    layoutManager = viewManager
-                    adapter = bookmarkAdapter
+                    layoutManager = bookmarksListLayoutManager
+                    adapter = bookmarksLİstAdapter
                 }
 
                 // TODO Dont use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
 
                 bookmarksViewModel.bookmarksToShow.observe(viewLifecycleOwner, { newBookmarks ->
-                    bookmarkAdapter.bookmarks = newBookmarks
+                    bookmarksLİstAdapter.bookmarks = newBookmarks
                 })
                 return this
             }
