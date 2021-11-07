@@ -1,13 +1,8 @@
 package com.ktdefter.defter.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.ktdefter.defter.data.Bookmark
-import com.ktdefter.defter.data.BookmarksRepository
-import com.ktdefter.defter.data.Tag
+import androidx.lifecycle.*
+import com.ktdefter.defter.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -16,53 +11,124 @@ import javax.inject.Inject
 class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) :
     ViewModel() {
     private var position = 0
-    var tag: MutableLiveData<Optional<Tag>> = MutableLiveData(Optional.empty())
-    val searchKeyword: MutableLiveData<Optional<String>> =
-        MutableLiveData(Optional.empty())
-    val bookmarksToShow: MediatorLiveData<List<Bookmark>> = getBookmarks()
 
-    // TODO Add tags witch switchmap to bookmarks, dont observer Livedata<List<Tag>>
-    // from Adapter
-    private fun getBookmarks(): MediatorLiveData<List<Bookmark>> {
-        return MediatorLiveData<List<Bookmark>>().let { mlv ->
-            mlv.addSource(searchKeyword) { keyword ->
-                if (keyword.isPresent) {
-                    //Remove it in case it's added in other branch. It throws
-                    // java.lang.IllegalArgumentException: This source was already added with the different observer
-                    mlv.removeSource(tag)
-                    Log.d("defter", "filtering")
-                    mlv.addSource(tag) { tag ->
-                        if (tag.isPresent) {
-                            mlv.addSource(bookmarksRepository.getBookmarksOfTag(tag.get().tagName)) { bookmarks ->
-                                mlv.value =
-                                    bookmarks.filter { it.url.contains(keyword.get()) }
-                            }
-                        } else {
-                            mlv.addSource(bookmarksRepository.getBookmarks()) { bookmarks ->
-                                mlv.value =
-                                    bookmarks.filter { it.url.contains(keyword.get()) }
-                            }
-                        }
+    //This repetition is better than 60+ line, 4 MutableLiveData and addSource() mess.
+    //That also means we Observe parameters we set, Which I think is schizophrenic.
+    private val queryParametersChanged = MutableLiveData(true)
+    var sortBy: SortBy = SortBy.MODIFICATION_TIME
+        set(value) {
+            field = value
+            queryParametersChanged.postValue(true)
+        }
+
+    var sortDirection: SortDirection = SortDirection.DESC
+        set(value) {
+            field = value
+            queryParametersChanged.postValue(true)
+        }
+
+    var tag: Optional<Tag> = Optional.empty()
+        set(value) {
+            field = value
+            queryParametersChanged.postValue(true)
+        }
+    var searchKeyword: Optional<String> = Optional.empty()
+        set(value) {
+            field = value
+            queryParametersChanged.postValue(true)
+        }
+
+    val bookmarksToShow: MediatorLiveData<List<Bookmark>> =
+        MediatorLiveData<List<Bookmark>>().also { mlv ->
+            mlv.addSource(queryParametersChanged) {
+                if (it) {
+                    val t: LiveData<List<Bookmark>> = if (tag.isPresent) {
+                        bookmarksRepository.getBookmarksOfTag(
+                            tag.get(),
+                            sortBy,
+                            sortDirection
+                        )
+                    } else {
+                        bookmarksRepository.getBookmarks(sortBy, sortDirection)
                     }
-                } else {
-                    Log.d("defter", "not filtering")
-                    mlv.removeSource(tag)
-                    mlv.addSource(tag) { tag ->
-                        if (tag.isPresent) {
-                            mlv.addSource(bookmarksRepository.getBookmarksOfTag(tag.get().tagName)) { bookmarks ->
-                                mlv.value = bookmarks
-                            }
-                        } else {
-                            mlv.addSource(bookmarksRepository.getBookmarks()) { bookmarks ->
-                                mlv.value = bookmarks
-                            }
-                        }
+                    mlv.addSource(t) {
+                        mlv.value =
+                            if (searchKeyword.isPresent)
+                                it.filter { it.url.contains(searchKeyword.get()) }
+                            else it
+
                     }
+                    queryParametersChanged.postValue(false)
                 }
             }
-            mlv
         }
-    }
+
+
+/*  fun getBookmarks(
+      sortBy: MutableLiveData<SortBy> = MutableLiveData(SortBy.MODIFICATION_TIME),
+      sortDirection: SortDirection = SortDirection.DESC
+  ): MediatorLiveData<List<Bookmark>> {
+      return MediatorLiveData<List<Bookmark>>().let { mlv ->
+          mlv.addSource(searchKeyword) { keyword ->
+              if (keyword.isPresent) {
+                  //Remove it in case it's added in other branch. It throws
+                  // java.lang.IllegalArgumentException: This source was already added with the different observer
+                  mlv.removeSource(tag)
+                  Log.d("defter", "filtering")
+                  mlv.addSource(tag) { tag ->
+                      if (tag.isPresent) {
+                          mlv.addSource(
+                              bookmarksRepository.getBookmarksOfTag(
+                                  tag.get(),
+                                  sortBy.value!!,
+                                  sortDirection
+                              )
+                          ) { bookmarks ->
+                              mlv.value =
+                                  bookmarks.filter { it.url.contains(keyword.get()) }
+                          }
+                      } else {
+                          mlv.addSource(
+                              bookmarksRepository.getBookmarks(
+                                  sortBy.value!!,
+                                  sortDirection
+                              )
+                          ) { bookmarks ->
+                              mlv.value =
+                                  bookmarks.filter { it.url.contains(keyword.get()) }
+                          }
+                      }
+                  }
+              } else {
+                  Log.d("defter", "not filtering")
+                  mlv.removeSource(tag)
+                  mlv.addSource(tag) { tag ->
+                      if (tag.isPresent) {
+                          mlv.addSource(
+                              bookmarksRepository.getBookmarksOfTag(
+                                  tag.get(),
+                                  sortBy,
+                                  sortDirection
+                              )
+                          ) { bookmarks ->
+                              mlv.value = bookmarks
+                          }
+                      } else {
+                          mlv.addSource(
+                              bookmarksRepository.getBookmarks(
+                                  sortBy,
+                                  sortDirection
+                              )
+                          ) { bookmarks ->
+                              mlv.value = bookmarks
+                          }
+                      }
+                  }
+              }
+          }
+          mlv
+      }
+  }*/
 
     fun updateBookmark(
         oldBookmark: Bookmark,
@@ -116,6 +182,7 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
             Log.d("Defter", "Tag $tag doesn't have any related bookmark, it is deleted")
         }
     }
+    fun getBookmark(url: String): Bookmark? = bookmarksRepository.getBookmark(url)
 
     fun getTags(): LiveData<List<Tag>> = bookmarksRepository.getTags()
 

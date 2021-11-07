@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import kotlinx.android.synthetic.main.fragment_bookmark_list.*
 import com.ktdefter.defter.R
+import com.ktdefter.defter.data.SortBy
+import com.ktdefter.defter.data.SortDirection
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.adapter.BookmarkAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,23 +63,23 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        bookmarksViewModel.tag.postValue(tag)
+        bookmarksViewModel.tag = tag
         // Inflate the layout for this fragment
         inflater.inflate(R.layout.fragment_bookmark_list, container, false)
             .apply {
                 val bookmarksListLayoutManager = LinearLayoutManager(requireContext())
-                val bookmarksLİstAdapter = BookmarkAdapter(requireActivity().supportFragmentManager)
-                bookmarksLİstAdapter.viewModel = bookmarksViewModel
+                val bookmarksListAdapter = BookmarkAdapter(requireActivity().supportFragmentManager)
+                bookmarksListAdapter.viewModel = bookmarksViewModel
                 bookmarksView = this.findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
                     layoutManager = bookmarksListLayoutManager
-                    adapter = bookmarksLİstAdapter
+                    adapter = bookmarksListAdapter
                 }
 
                 // TODO Dont use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
 
                 bookmarksViewModel.bookmarksToShow.observe(viewLifecycleOwner, { newBookmarks ->
-                    bookmarksLİstAdapter.bookmarks = newBookmarks
+                    bookmarksListAdapter.bookmarks = newBookmarks
                 })
                 return this
             }
@@ -102,17 +104,39 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
         listener = null
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.sortDirection){
+            if (item.isChecked){
+                bookmarksViewModel.sortDirection = SortDirection.ASC
+            } else {
+                bookmarksViewModel.sortDirection = SortDirection.DESC
+            }
+            item.isChecked = item.isChecked.not()
+            return true
+        } else if( item.itemId == R.id.sortByName){
+            if (item.isChecked){
+                bookmarksViewModel.sortBy = SortBy.MODIFICATION_TIME
+            } else {
+                bookmarksViewModel.sortBy =  SortBy.HOSTNAME
+            }
+            item.isChecked = item.isChecked.not()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         val searchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.setOnQueryTextListener(this)
     }
 
+
     override fun onQueryTextSubmit(query: String?): Boolean {
         val newQuery: Optional<String> = if (query == null){
             Optional.empty<String>()
         } else Optional.of(query)
-        bookmarksViewModel.searchKeyword.postValue(newQuery)
+        bookmarksViewModel.searchKeyword = newQuery
         Log.d("defter", "SearchView.onTextSubmit() with query: $newQuery")
         return true
     }
@@ -121,7 +145,7 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
         val newQuery: Optional<String> = if (query == null){
             Optional.empty<String>()
         } else Optional.of(query)
-        bookmarksViewModel.searchKeyword.postValue(newQuery)
+        bookmarksViewModel.searchKeyword = newQuery
         Log.d("defter", "SearchView.onTextSubmit() with query: $newQuery")
         return true
     }

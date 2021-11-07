@@ -8,9 +8,11 @@ interface BookmarkTagPairDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPair(bookmarkTagPair: BookmarkTagPair)
 
-    @Query("DELETE FROM bookmarktagpair " +
-            "WHERE tagid =  :tag " +
-            "AND bookmarkid = :url")
+    @Query(
+        "DELETE FROM bookmarktagpair " +
+                "WHERE tagid =  :tag " +
+                "AND bookmarkid = :url"
+    )
     fun deletePair(url: String, tag: String)
 
     @Query(
@@ -18,9 +20,25 @@ interface BookmarkTagPairDao {
                 "FROM  bookmark b, bookmarktagpair bt " +
                 "WHERE bt.tagid = :tag " +
                 "AND b.url = bt.bookmarkid " +
-                "GROUP BY b.url"
+                "GROUP BY b.url ORDER BY " +
+                "CASE WHEN :sortBy = 'hostname' AND  :sortDirection = 'asc'  THEN b.hostname END ASC," +
+                "CASE WHEN :sortBy = 'hostname' AND :sortDirection = 'desc'  THEN  b.hostname END DESC," +
+                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'asc'   THEN b.lastModification END ASC," +
+                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'desc'    THEN b.lastModification END DESC"
     )
-    fun getBookmarksWithTag(tag: String): LiveData<List<Bookmark>>
+    fun _getBookmarksWithTagImpl(
+        tag: String,
+        sortBy: String,
+        sortDirection: String
+    ): LiveData<List<Bookmark>>
+
+    fun getBookmarksWithTag(
+        tag: Tag,
+        sortBy: SortBy = SortBy.MODIFICATION_TIME,
+        sortDirection: SortDirection = SortDirection.DESC
+    ): LiveData<List<Bookmark>> {
+        return _getBookmarksWithTagImpl(tag.tagName, sortBy.string, sortDirection.string)
+    }
 
     @Query(
         "SElECT b.*  " +

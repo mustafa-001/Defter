@@ -9,8 +9,21 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_search"
-        android:title="Search"
         android:icon="@drawable/ic_baseline_search_24"
-        app:showAsAction="collapseActionView|ifRoom"
-        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="collapseActionView|ifRoom" />
+    <group android:id="@+id/sort">
+
+        <item
+            android:id="@+id/sortByName"
+            android:checkable="true"
+            android:title="@string/sort_by_name" />
+        <item
+            android:id="@+id/sortDirection"
+            android:checkable="true"
+            android:title="@string/ascending_sort" />
+
+    </group>
+
 </menu>

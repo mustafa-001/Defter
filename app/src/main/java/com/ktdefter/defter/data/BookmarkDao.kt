@@ -19,33 +19,22 @@ interface BookmarkDao {
     @Update
     fun updateBookmark(vararg bookmark: Bookmark)
 
-    @Query("SELECT * FROM bookmark ORDER BY lastModification  DESC")
-    fun getBookmarksSortByLastModificationDesc(): LiveData<List<Bookmark>>
 
-    @Query("SELECT * FROM bookmark ORDER BY  lastModification ASC")
-    fun getBookmarksSortByLastModificationAsc(): LiveData<List<Bookmark>>
-
-    @Query("SELECT * FROM bookmark ORDER BY hostname  DESC")
-    fun getBookmarksSortByHostnameDesc(): LiveData<List<Bookmark>>
-
-    @Query("SELECT * FROM bookmark ORDER BY hostname  ASC")
-    fun getBookmarksSortByHostnameAsc(): LiveData<List<Bookmark>>
+    //TODO Tidy up and nest these CASE's
+    @Query(
+        "SELECT * FROM bookmark ORDER BY " +
+                "CASE WHEN :sortBy = 'hostname' AND :sortDirection = 'asc'  THEN hostname END ASC," +
+                "CASE WHEN :sortBy = 'hostname' AND :sortDirection = 'desc'  THEN  hostname END DESC," +
+                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'asc'   THEN lastModification END ASC," +
+                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'desc'    THEN lastModification END DESC"
+    )
+    fun _getBookmarksImpl(sortBy: String, sortDirection: String): LiveData<List<Bookmark>>
 
     fun getBookmarks(
         sortBy: SortBy = SortBy.MODIFICATION_TIME,
         sortDirection: SortDirection = SortDirection.DESC
     ): LiveData<List<Bookmark>> {
-        if (sortBy == SortBy.MODIFICATION_TIME && sortDirection == SortDirection.ASC) {
-            return getBookmarksSortByLastModificationAsc()
-        } else if (sortBy == SortBy.HOSTNAME && sortDirection == SortDirection.DESC) {
-            return getBookmarksSortByHostnameDesc()
-        } else if (sortBy == SortBy.HOSTNAME && sortDirection == SortDirection.ASC) {
-            return getBookmarksSortByHostnameAsc()
-        } else if (sortBy == SortBy.MODIFICATION_TIME && sortDirection == SortDirection.DESC) {
-            return getBookmarksSortByLastModificationDesc()
-        } else {
-            return getBookmarksSortByLastModificationDesc()
-        }
+        return _getBookmarksImpl(sortBy.string, sortDirection.string)
     }
 
     @Query("SELECT * FROM bookmark")
@@ -58,12 +47,12 @@ interface BookmarkDao {
     fun deleteBookmark(url: String)
 }
 
-enum class SortDirection(val s: String) {
+enum class SortDirection(val string: String) {
     ASC("asc"),
     DESC("desc")
 }
 
-enum class SortBy(val s: String) {
+enum class SortBy(val string: String) {
     MODIFICATION_TIME("lastModification"),
     HOSTNAME("hostname")
 }

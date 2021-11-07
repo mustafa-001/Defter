@@ -70,7 +70,7 @@ class BookmarkAdapter(val fragmentManager: FragmentManager) :
                 this.urlTextView.text = it.hostname
                 this.titleTextView.text = it.title
 
-                val imageFile: File? = bookmark.hostname.let {
+                val imageFile: File? = bookmark.favicon?.let {
                     File(this.itemView.context.filesDir, it)
                 }
 

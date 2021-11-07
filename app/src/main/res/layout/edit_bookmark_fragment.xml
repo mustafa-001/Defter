@@ -22,13 +22,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/editBookmarkFragment_favicon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editBookmarkFragment_url" />
+
+        <EditText
+            android:id="@+id/editBookmarkFragment_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:text="@string/title"
+            app:layout_constraintStart_toEndOf="@id/editBookmarkFragment_favicon"
+            app:layout_constraintTop_toBottomOf="@+id/editBookmarkFragment_url" />
+
 
         <ListView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/editBookmarkFragment_fetch"
             app:layout_constraintTop_toBottomOf="@+id/editBookmarkFragment_url"
-            tools:layout_editor_absoluteX="0dp"
-            android:layout_height="wrap_content"/>
+            />
 
         <Button
             android:id="@+id/editBookmarkFragment_fetch"

@@ -4,15 +4,15 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import com.ktdefter.defter.util.getTitleAndFavicon
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
-// TODO Fetch url title and favicon if they don't exist in database.
 @Singleton
 class BookmarksRepository @Inject constructor(
     private val bookmarksDao: BookmarkDao,
@@ -20,8 +20,8 @@ class BookmarksRepository @Inject constructor(
     private val bookmarkTagPairDao: BookmarkTagPairDao,
     @ApplicationContext private val context: Context
 ) {
-    fun getBookmarks(): LiveData<List<Bookmark>> {
-        return  bookmarksDao.getBookmarks()
+    fun getBookmarks(sortBy: SortBy, sortDirection: SortDirection): LiveData<List<Bookmark>> {
+        return  bookmarksDao.getBookmarks(sortBy, sortDirection)
 //        return bookmarksDao.getBookmarks().map {
 //            it.filter { it.favicon == null && false }
 //                .map {
@@ -104,7 +104,7 @@ class BookmarksRepository @Inject constructor(
 
     fun getTagsOfBookmarkSync(url: String) = bookmarkTagPairDao.getTagsWithBookmarkList(url)
 
-    fun getBookmarksOfTag(tag: String) = bookmarkTagPairDao.getBookmarksWithTag(tag)
+    fun getBookmarksOfTag(tag: Tag, sortBy: SortBy, sortDirection: SortDirection) = bookmarkTagPairDao.getBookmarksWithTag(tag, sortBy, sortDirection)
 
     fun getBookmarksOfTagSync(tag: String) = bookmarkTagPairDao.getBookmarksWithTagSync(tag)
 //

@@ -32,4 +32,10 @@
     <string name="enter_search_term">Enter search term</string>
     <string name="save">Save</string>
     <string name="fetch">Fetch</string>
+    <string name="sort_by">Sort By</string>
+    <string name="sort_direction">Sort Direction</string>
+    <string name="sort_by_time">Sort by last modification time</string>
+    <string name="sort_by_name">Sort by name</string>
+    <string name="ascending_sort">Ascending Sort</string>
+    <string name="title">Title</string>
 </resources>
