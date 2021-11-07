@@ -29,7 +29,7 @@ fun getTitleAndFavicon(context: Context, url: Uri): Bookmark {
     Log.d("Defter", "requesting: $url")
     val imageUrl: String? = doc.select("link[href~=.*\\.(ico|png)]").first()?.absUrl("href")
 
-    val hostName = Bookmark(newUrl.toString()).getHostname()
+    val hostName = Bookmark(newUrl.toString()).hostname
 
     if (imageUrl == null) {
         Log.d("Defter", "Failed to parse site favicon.")

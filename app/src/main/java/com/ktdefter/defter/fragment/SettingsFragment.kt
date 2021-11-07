@@ -62,6 +62,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             val contentResolver = requireActivity().applicationContext.contentResolver
             val inputStream = contentResolver.openInputStream(it!!)
+            //Cannot read extension when file is opened from Documents directory.
             val importedBookmarks: BookmarkImportable = when (it.path?.takeLast(4)){
                 "html"-> HTMLImporter(inputStream!!)
                 "json" -> JSONImporter(inputStream!!)

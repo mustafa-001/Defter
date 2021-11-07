@@ -67,10 +67,10 @@ class BookmarkAdapter(val fragmentManager: FragmentManager) :
         holder.apply {
             bookmarks.get(position).let {
                 this.bookmark = it
-                this.urlTextView.text = it.getHostname()
+                this.urlTextView.text = it.hostname
                 this.titleTextView.text = it.title
 
-                val imageFile: File? = bookmark.getHostname().let {
+                val imageFile: File? = bookmark.hostname.let {
                     File(this.itemView.context.filesDir, it)
                 }
 

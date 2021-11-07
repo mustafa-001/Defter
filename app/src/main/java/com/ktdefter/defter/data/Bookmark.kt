@@ -19,17 +19,11 @@ data class Bookmark(
     var favicon: String? = null,
     @Contextual
     val lastModification: Date = Date(),
+    @Contextual
+    val hostname: String = getHostname(url)
 ) {
-    override fun toString() = url
-    fun getHostname(): String {
-        return url
-            .removePrefix("http://")
-            .removePrefix("https://")
-            .replaceAfter("/", "")
-            .removePrefix("www.")
-            .dropLastWhile { it -> it == '/'.toChar() }
-    }
 
+    override fun toString() = url
     override fun equals(other: Any?): Boolean {
         return (other as Bookmark).url == this.url
     }
@@ -38,6 +32,7 @@ data class Bookmark(
     @Ignore
     var tags: List<Tag> = emptyList()
 }
+
 
 class Converters {
     @TypeConverter
@@ -50,4 +45,13 @@ class Converters {
         return date.time
     }
 
+}
+
+fun getHostname(url: String): String {
+    return url
+        .removePrefix("http://")
+        .removePrefix("https://")
+        .replaceAfter("/", "")
+        .removePrefix("www.")
+        .dropLastWhile { it -> it == '/'.toChar() }
 }
