@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import com.ktdefter.defter.util.getTitleAndFavicon
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
@@ -21,7 +23,7 @@ class BookmarksRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     fun getBookmarks(sortBy: SortBy, sortDirection: SortDirection): LiveData<List<Bookmark>> {
-        return  bookmarksDao.getBookmarks(sortBy, sortDirection)
+        return bookmarksDao.getBookmarks(sortBy, sortDirection)
 //        return bookmarksDao.getBookmarks().map {
 //            it.filter { it.favicon == null && false }
 //                .map {
@@ -48,7 +50,7 @@ class BookmarksRepository @Inject constructor(
     }
 
     fun getBookmarksSync(): List<Bookmark> = bookmarksDao.getBookmarksSync()
-    fun getBookmark(url: String) = bookmarksDao.getBookmark(url)
+    fun getBookmark(url: String): LiveData<Bookmark?> = bookmarksDao.getBookmark(url)
 
     fun updateBookmark(
         bookmark: Bookmark,
@@ -65,11 +67,9 @@ class BookmarksRepository @Inject constructor(
     }
 
     fun insertBookmark(bookmark: Bookmark, fetchTitle: ShouldFetchTitle = ShouldFetchTitle.No) {
-        if (getBookmark(bookmark.url) == null) {
-            bookmarksDao.insertBookmark(bookmark)
-            Log.d("Defter", "Inserting bookmark: $bookmark.url")
-        }
-        if (fetchTitle == ShouldFetchTitle.Yes){
+        bookmarksDao.insertBookmark(bookmark)
+        Log.d("Defter", "Inserting bookmark: $bookmark.url")
+        if (fetchTitle == ShouldFetchTitle.Yes) {
             fetchTitle(bookmark)
         }
     }
@@ -81,6 +81,16 @@ class BookmarksRepository @Inject constructor(
             bookmarksDao.updateBookmark(bookmark)
         }
 
+    }
+
+    fun fetchMetadata(bookmark: Bookmark): LiveData<Bookmark> {
+        val lD: MutableLiveData<Bookmark> = MutableLiveData()
+        GlobalScope.launch {
+            val b =
+                async { getTitleAndFavicon(context, Uri.parse(bookmark.url)) }.await()
+            lD.postValue(b)
+        }
+        return  lD
     }
 
     fun deleteBookmark(url: String) = bookmarksDao.deleteBookmark(url)
@@ -104,7 +114,8 @@ class BookmarksRepository @Inject constructor(
 
     fun getTagsOfBookmarkSync(url: String) = bookmarkTagPairDao.getTagsWithBookmarkList(url)
 
-    fun getBookmarksOfTag(tag: Tag, sortBy: SortBy, sortDirection: SortDirection) = bookmarkTagPairDao.getBookmarksWithTag(tag, sortBy, sortDirection)
+    fun getBookmarksOfTag(tag: Tag, sortBy: SortBy, sortDirection: SortDirection) =
+        bookmarkTagPairDao.getBookmarksWithTag(tag, sortBy, sortDirection)
 
     fun getBookmarksOfTagSync(tag: String) = bookmarkTagPairDao.getBookmarksWithTagSync(tag)
 //

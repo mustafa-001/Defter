@@ -15,8 +15,8 @@ import com.ktdefter.defter.R
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import kotlinx.android.synthetic.main.nav_header_main.*
 import java.io.File
-import java.net.URI
 
 class EditBookmarkFragment : Fragment() {
 
@@ -30,18 +30,45 @@ class EditBookmarkFragment : Fragment() {
         val tag = viewModel.getTagsOfBookmark(url)
         return inflater.inflate(R.layout.edit_bookmark_fragment, container, false).also { view ->
             val editText = view.findViewById<EditText>(R.id.editBookmarkFragment_url)
+            editText.setText(url)
             val titleText = view.findViewById<EditText>(R.id.editBookmarkFragment_title)
             val faviconImageView = view.findViewById<ImageView>(R.id.editBookmarkFragment_favicon)
-            editText.setText(url)
-            titleText.setText(viewModel.getBookmark(url)!!.title)
-            faviconImageView.setImageURI(Uri.fromFile(File(requireContext().filesDir!!, viewModel.getBookmark(url)!!.favicon)))
+
+            viewModel.getBookmark(url).observe(viewLifecycleOwner) { bookmark ->
+                if (bookmark == null){
+                    return@observe
+                }
+                titleText.setText(bookmark!!.title)
+                File(requireContext().filesDir, bookmark!!.hostname)?.let {
+                    faviconImageView.setImageURI(Uri.fromFile(it))
+                }
+            }
+
+            view.findViewById<Button>(R.id.editBookmarkFragment_fetch).setOnClickListener {
+                viewModel.addBookmark(
+                    Bookmark(editText.text.toString()),
+                    BookmarksRepository.ShouldFetchTitle.Yes
+                )
+                viewModel.bookmarksRepository.fetchMetadata(Bookmark(editText.text.toString())).observe(viewLifecycleOwner) { bookmark ->
+                    if (bookmark == null){
+                        return@observe
+                    }
+                    titleText.setText(bookmark!!.title)
+                    File(requireContext().filesDir, bookmark!!.hostname)?.let {
+                        faviconImageView.setImageURI(Uri.fromFile(it))
+                    }
+                }
+            }
+
             view.findViewById<Button>(R.id.editBookmarkFragment_submit).setOnClickListener {
-                viewModel.updateBookmark(Bookmark(url), Bookmark(editText.text.toString()), BookmarksRepository.ShouldFetchTitle.Yes)
+                viewModel.replaceBookmark(
+                    Bookmark(url),
+                    Bookmark(editText.text.toString(), titleText.text.toString()),
+                    BookmarksRepository.ShouldFetchTitle.IfNeeded
+                )
                 view.findNavController().navigate(R.id.nav_home)
             }
-            view.findViewById<Button>(R.id.editBookmarkFragment_fetch).setOnClickListener{
-                viewModel.updateBookmark(Bookmark(url), Bookmark(editText.text.toString()), BookmarksRepository.ShouldFetchTitle.Yes)
-            }
+
         }
     }
 

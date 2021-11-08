@@ -130,14 +130,15 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
       }
   }*/
 
-    fun updateBookmark(
+    fun replaceBookmark(
         oldBookmark: Bookmark,
         newBookmark: Bookmark,
         fetchTitle: BookmarksRepository.ShouldFetchTitle = BookmarksRepository.ShouldFetchTitle.IfNeeded
     ) {
         if (oldBookmark.url != newBookmark.url) {
-            deleteBookmark(oldBookmark.url)
             addBookmark(newBookmark)
+            deleteBookmark(oldBookmark.url)
+            return
         }
 
         bookmarksRepository.updateBookmark(newBookmark, fetchTitle)
@@ -182,7 +183,7 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
             Log.d("Defter", "Tag $tag doesn't have any related bookmark, it is deleted")
         }
     }
-    fun getBookmark(url: String): Bookmark? = bookmarksRepository.getBookmark(url)
+    fun getBookmark(url: String):LiveData<Bookmark?> = bookmarksRepository.getBookmark(url)
 
     fun getTags(): LiveData<List<Tag>> = bookmarksRepository.getTags()
 

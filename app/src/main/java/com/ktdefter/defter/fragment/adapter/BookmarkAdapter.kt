@@ -70,22 +70,22 @@ class BookmarkAdapter(val fragmentManager: FragmentManager) :
                 this.urlTextView.text = it.hostname
                 this.titleTextView.text = it.title
 
-                val imageFile: File? = bookmark.favicon?.let {
+                val imageFile: File? = bookmark.hostname?.let {
                     File(this.itemView.context.filesDir, it)
                 }
 
                 if (imageFile != null) {
                     Log.d(
                         "Defter",
-                        "Favicon file for ${bookmark.url} is found at ${bookmark.favicon}"
+                        "Favicon file for ${bookmark.url} is found at ${bookmark.hostname}"
                     )
                     this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
                 } else {
                     this.faviconImageView.setImageResource(R.drawable.ic_broken_image_black_24dp)
-                    if (bookmark.favicon != null) {
+                    if (bookmark.hostname != null) {
                         Log.d(
                             "Defter",
-                            "Favicon file for ${bookmark.url} should be at  ${bookmark.favicon} but not.\n This should be unreachable!"
+                            "Favicon file for ${bookmark.url} should be at  ${bookmark.hostname} but not.\n This should be unreachable!"
                         )
                         throw(Exception("Saved favicon cannot be found!"))
                     }

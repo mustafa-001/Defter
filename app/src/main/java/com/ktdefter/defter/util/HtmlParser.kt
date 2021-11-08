@@ -24,7 +24,7 @@ fun getTitleAndFavicon(context: Context, url: Uri): Bookmark {
             .get()
     } catch (e: Exception) {
         Log.d("defter", e.toString())
-        return Bookmark(url.toString(), "Cannot reach title", null)
+        return Bookmark(url.toString(), null, null)
     }
     Log.d("Defter", "requesting: $url")
     val imageUrl: String? = doc.select("link[href~=.*\\.(ico|png)]").first()?.absUrl("href")
