@@ -35,7 +35,7 @@ class EditBookmarkFragment : Fragment() {
             val faviconImageView = view.findViewById<ImageView>(R.id.editBookmarkFragment_favicon)
 
             viewModel.getBookmark(url).observe(viewLifecycleOwner) { bookmark ->
-                if (bookmark == null){
+                if (url != editText.text.toString() || bookmark == null){
                     return@observe
                 }
                 titleText.setText(bookmark!!.title)

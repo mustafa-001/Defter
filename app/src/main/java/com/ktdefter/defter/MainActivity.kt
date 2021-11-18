@@ -30,6 +30,7 @@ import com.ktdefter.defter.fragment.BookmarkListFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
@@ -49,6 +50,8 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+
+        Timber.plant(Timber.DebugTree());
         drawer = findViewById(R.id.drawer_layout)
         navView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
@@ -56,6 +59,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
 
         tags = bookmarksViewModel.getTags()
         setDrawerTags()

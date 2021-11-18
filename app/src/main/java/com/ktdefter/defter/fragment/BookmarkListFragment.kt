@@ -6,55 +6,70 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ktdefter.defter.viewmodels.BookmarksViewModel
-import kotlinx.android.synthetic.main.fragment_bookmark_list.*
 import com.ktdefter.defter.R
 import com.ktdefter.defter.data.SortBy
 import com.ktdefter.defter.data.SortDirection
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.adapter.BookmarkAdapter
+import com.ktdefter.defter.fragment.adapter.BookmarkListDiffCallback
+import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.app_bar_main.*
+import timber.log.Timber
 import java.util.*
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [BookmarkListFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [BookmarkListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 @AndroidEntryPoint
 class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var bookmarksView: RecyclerView
     private lateinit var tag: Optional<Tag>
+    private var onMultipleSelection: Boolean = false
     val  bookmarksViewModel: BookmarksViewModel by activityViewModels<BookmarksViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //Overrride back button and direclty return to homelist instead of returning to another bookmarks of tag list.
+        //Override back button and directly return to home list instead of returning to another bookmarks of tag list.
         tag = if (arguments?.getString("selectedTag") ==null) {
             Optional.empty<Tag>()
         } else{
             Optional.of(arguments?.getString("selectedTag")!!.let { Tag(it) })
         }
-        if (findNavController().currentDestination != findNavController().graph.findNode(R.id.nav_home)) {
                 requireActivity().onBackPressedDispatcher.addCallback(this) {
+                    if (onMultipleSelection){
+                        onMultipleSelection = false
+                        disableMultipleSelection()
+                        return@addCallback
+                    }
                     while (findNavController().currentDestination != findNavController().graph.findNode(
                             R.id.nav_home
                         )) {
                         findNavController().navigateUp()
                     }
-                }
             }
+    }
+
+    fun activateMultipleSelection(){
+        val act = requireActivity() as AppCompatActivity
+        act.supportActionBar!!.hide()
+        onMultipleSelection = true
+        Timber.d("onEnableMultipleSelection")
+    }
+
+    fun disableMultipleSelection(){
+        val act = requireActivity() as AppCompatActivity
+        act.supportActionBar!!.show()
+        Timber.d("onDisableMultipleSelection")
+
     }
 
     override fun onCreateView(
@@ -68,8 +83,8 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
         inflater.inflate(R.layout.fragment_bookmark_list, container, false)
             .apply {
                 val bookmarksListLayoutManager = LinearLayoutManager(requireContext())
-                val bookmarksListAdapter = BookmarkAdapter(requireActivity().supportFragmentManager)
-                bookmarksListAdapter.viewModel = bookmarksViewModel
+                val bookmarksListAdapter = BookmarkAdapter(requireActivity().supportFragmentManager,
+                bookmarksViewModel)
                 bookmarksView = this.findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
                     layoutManager = bookmarksListLayoutManager
                     adapter = bookmarksListAdapter
@@ -77,9 +92,9 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
 
                 // TODO Dont use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
-
                 bookmarksViewModel.bookmarksToShow.observe(viewLifecycleOwner, { newBookmarks ->
                     bookmarksListAdapter.bookmarks = newBookmarks
+
                 })
                 return this
             }
@@ -156,7 +171,6 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
      * to the activity and potentially other fragments contained in that
      * activity.
      *
-     *
      * See the Android Training lesson [Communicating with Other Fragments]
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
@@ -165,4 +179,5 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
+
 }

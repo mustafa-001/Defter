@@ -6,8 +6,6 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import java.sql.Time
 import java.util.*
 
 @Entity
@@ -20,7 +18,7 @@ data class Bookmark(
     @Contextual
     val lastModification: Date = Date(),
     @Contextual
-    val hostname: String = getHostname(url)
+    val hostname: String = getHostname(url),
 ) {
 
     override fun toString() = url
@@ -28,6 +26,10 @@ data class Bookmark(
         return (other as Bookmark).url == this.url
     }
 
+
+    @Ignore
+    @Contextual
+    var isSelected: Boolean = false
 
     @Ignore
     var tags: List<Tag> = emptyList()

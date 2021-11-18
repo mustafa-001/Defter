@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
+    android:background="@color/bookmark_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -17,9 +18,7 @@
         android:layout_height="15dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="2dp"
-        android:background="#4DE0F2F1"
         android:ellipsize="middle"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
@@ -27,7 +26,7 @@
         android:textColor="#E8000000"
         android:textSize="11sp"
         app:layout_constraintBottom_toTopOf="@+id/bookmark_url_text"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/bookmark_image"
         app:layout_constraintTop_toTopOf="parent"
@@ -45,7 +44,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        android:background="#4DE0F2F1"
         android:ellipsize="middle"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
@@ -54,6 +52,7 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/bookmark_tags_text"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_title_text"
+        app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
         app:layout_constraintStart_toEndOf="@+id/bookmark_image"
         app:layout_constraintTop_toBottomOf="@+id/bookmark_title_text"
         tools:text="@tools:sample/date/ddmmyy" />
@@ -65,7 +64,6 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="#000C0104"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -91,5 +89,20 @@
         app:layout_constraintStart_toEndOf="@+id/bookmark_image"
         app:layout_constraintTop_toBottomOf="@+id/bookmark_url_text"
         app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/bookmark_more_menu"
+        android:layout_width="21dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_baseline_more_vert_24"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/bookmark_title_text"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

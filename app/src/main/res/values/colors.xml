@@ -3,4 +3,5 @@
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#283593</color>
     <color name="colorAccent">#AD1457</color>
+    <color name="bookmark_background">#4DE0F2F1</color>
 </resources>

@@ -14,6 +14,7 @@
 
         <EditText
             android:id="@+id/editBookmarkFragment_url"
+            android:padding="@dimen/text_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:importantForAutofill="no"
@@ -24,6 +25,7 @@
 
         <ImageView
             android:id="@+id/editBookmarkFragment_favicon"
+            android:padding="@dimen/text_padding"
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +33,7 @@
 
         <EditText
             android:id="@+id/editBookmarkFragment_title"
+            android:padding="@dimen/text_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"

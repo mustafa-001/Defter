@@ -6,6 +6,7 @@ import com.ktdefter.defter.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) :
@@ -62,6 +63,35 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
                 }
             }
         }
+
+    fun markBookmarkSelected(bookmark: Bookmark) {
+        val b: List<Bookmark> = bookmarksToShow.value?.map {
+            if (it.url == bookmark.url) {
+                it.let {
+                    it.isSelected = true
+                    it
+                }
+            } else {
+                it
+            }
+        } as List<Bookmark>
+        bookmarksToShow.postValue(b)
+    }
+    fun markBookmarkUnselected(bookmark: Bookmark) {
+        val b: List<Bookmark> = bookmarksToShow.value?.map {
+            if (it.url == bookmark.url) {
+                it.let {
+                    it.isSelected = false
+                    it
+                }
+            } else {
+                it
+            }
+        } as List<Bookmark>
+        bookmarksToShow.postValue(b)
+    }
+
+
 
 
 /*  fun getBookmarks(
@@ -183,7 +213,8 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
             Log.d("Defter", "Tag $tag doesn't have any related bookmark, it is deleted")
         }
     }
-    fun getBookmark(url: String):LiveData<Bookmark?> = bookmarksRepository.getBookmark(url)
+
+    fun getBookmark(url: String): LiveData<Bookmark?> = bookmarksRepository.getBookmark(url)
 
     fun getTags(): LiveData<List<Tag>> = bookmarksRepository.getTags()
 
