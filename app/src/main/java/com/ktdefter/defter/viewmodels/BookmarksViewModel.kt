@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.ktdefter.defter.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
@@ -11,8 +12,6 @@ import kotlin.collections.HashMap
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) :
     ViewModel() {
-    private var position = 0
-
     //This repetition is better than 60+ line, 4 MutableLiveData and addSource() mess.
     //That also means we Observe parameters we set, Which I think is schizophrenic.
     private val queryParametersChanged = MutableLiveData(true)
@@ -38,7 +37,6 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
             field = value
             queryParametersChanged.postValue(true)
         }
-
     val bookmarksToShow: MediatorLiveData<List<Bookmark>> =
         MediatorLiveData<List<Bookmark>>().also { mlv ->
             mlv.addSource(queryParametersChanged) {
@@ -67,10 +65,9 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
     fun markBookmarkSelected(bookmark: Bookmark) {
         val b: List<Bookmark> = bookmarksToShow.value?.map {
             if (it.url == bookmark.url) {
-                it.let {
-                    it.isSelected = true
-                    it
-                }
+                val c = it.copy()
+                c.isSelected = true
+                c
             } else {
                 it
             }
@@ -80,17 +77,15 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
     fun markBookmarkUnselected(bookmark: Bookmark) {
         val b: List<Bookmark> = bookmarksToShow.value?.map {
             if (it.url == bookmark.url) {
-                it.let {
-                    it.isSelected = false
-                    it
-                }
+                val c = it.copy()
+                c.isSelected = false
+                c
             } else {
                 it
             }
         } as List<Bookmark>
         bookmarksToShow.postValue(b)
     }
-
 
 
 
@@ -199,10 +194,10 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
                 .contains(tag)
         ) {
             bookmarksRepository.insertTag(tag)
-            Log.d("Defter", "adding new $tag")
+            Timber.d("adding new $tag")
         }
 
-        Log.d("Defter", "adding tag $tag to $url")
+        Timber.d("adding tag $tag to $url")
         bookmarksRepository.addBookmarkTagPair(url, tag)
     }
 
@@ -210,7 +205,7 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
         bookmarksRepository.deleteBookmarkTagPair(url, tag)
         if (getBookmarksOfTagSync(tag).isEmpty()) {
             this.bookmarksRepository.deleteTag(tag)
-            Log.d("Defter", "Tag $tag doesn't have any related bookmark, it is deleted")
+            Timber.d("Tag $tag doesn't have any related bookmark, it is deleted")
         }
     }
 

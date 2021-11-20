@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ktdefter.defter.R
@@ -20,7 +18,6 @@ import com.ktdefter.defter.data.SortBy
 import com.ktdefter.defter.data.SortDirection
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.adapter.BookmarkAdapter
-import com.ktdefter.defter.fragment.adapter.BookmarkListDiffCallback
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -28,44 +25,48 @@ import timber.log.Timber
 import java.util.*
 
 @AndroidEntryPoint
-class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
+class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var bookmarksView: RecyclerView
     private lateinit var tag: Optional<Tag>
-    private var onMultipleSelection: Boolean = false
-    val  bookmarksViewModel: BookmarksViewModel by activityViewModels<BookmarksViewModel>()
+    val bookmarksViewModel: BookmarksViewModel by activityViewModels<BookmarksViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //Override back button and directly return to home list instead of returning to another bookmarks of tag list.
-        tag = if (arguments?.getString("selectedTag") ==null) {
+        tag = if (arguments?.getString("selectedTag") == null) {
             Optional.empty<Tag>()
-        } else{
+        } else {
             Optional.of(arguments?.getString("selectedTag")!!.let { Tag(it) })
         }
-                requireActivity().onBackPressedDispatcher.addCallback(this) {
-                    if (onMultipleSelection){
-                        onMultipleSelection = false
-                        disableMultipleSelection()
-                        return@addCallback
-                    }
-                    while (findNavController().currentDestination != findNavController().graph.findNode(
-                            R.id.nav_home
-                        )) {
-                        findNavController().navigateUp()
-                    }
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (bookmarksViewModel.bookmarksToShow.value?.filter { it.isSelected }
+                    ?.isNotEmpty()!!) {
+               bookmarksViewModel.bookmarksToShow.postValue(bookmarksViewModel.bookmarksToShow.value?.map { b ->
+                    if (b.isSelected == true) {
+                        return@map b.copy().apply { this.isSelected = false }
+                    } else b
+                })
+                disableMultipleSelection()
+                return@addCallback
             }
+            while (findNavController().currentDestination != findNavController().graph.findNode(
+                    R.id.nav_home
+                )
+            ) {
+                findNavController().navigateUp()
+            }
+        }
     }
 
-    fun activateMultipleSelection(){
+    fun activateMultipleSelection() {
         val act = requireActivity() as AppCompatActivity
         act.supportActionBar!!.hide()
-        onMultipleSelection = true
         Timber.d("onEnableMultipleSelection")
     }
 
-    fun disableMultipleSelection(){
+    fun disableMultipleSelection() {
         val act = requireActivity() as AppCompatActivity
         act.supportActionBar!!.show()
         Timber.d("onDisableMultipleSelection")
@@ -83,18 +84,20 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
         inflater.inflate(R.layout.fragment_bookmark_list, container, false)
             .apply {
                 val bookmarksListLayoutManager = LinearLayoutManager(requireContext())
-                val bookmarksListAdapter = BookmarkAdapter(requireActivity().supportFragmentManager,
-                bookmarksViewModel)
-                bookmarksView = this.findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
-                    layoutManager = bookmarksListLayoutManager
-                    adapter = bookmarksListAdapter
-                }
+                val bookmarksListAdapter = BookmarkAdapter(
+                    requireActivity().supportFragmentManager,
+                    bookmarksViewModel
+                )
+                bookmarksView =
+                    this.findViewById<RecyclerView>(R.id.bookmarks_recycler_view).apply {
+                        layoutManager = bookmarksListLayoutManager
+                        adapter = bookmarksListAdapter
+                    }
 
                 // TODO Dont use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
                 bookmarksViewModel.bookmarksToShow.observe(viewLifecycleOwner, { newBookmarks ->
-                    bookmarksListAdapter.bookmarks = newBookmarks
-
+                    bookmarksListAdapter.setBookmarks(newBookmarks)
                 })
                 return this
             }
@@ -120,19 +123,19 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.sortDirection){
-            if (item.isChecked){
+        if (item.itemId == R.id.sortDirection) {
+            if (item.isChecked) {
                 bookmarksViewModel.sortDirection = SortDirection.ASC
             } else {
                 bookmarksViewModel.sortDirection = SortDirection.DESC
             }
             item.isChecked = item.isChecked.not()
             return true
-        } else if( item.itemId == R.id.sortByName){
-            if (item.isChecked){
+        } else if (item.itemId == R.id.sortByName) {
+            if (item.isChecked) {
                 bookmarksViewModel.sortBy = SortBy.MODIFICATION_TIME
             } else {
-                bookmarksViewModel.sortBy =  SortBy.HOSTNAME
+                bookmarksViewModel.sortBy = SortBy.HOSTNAME
             }
             item.isChecked = item.isChecked.not()
             return true
@@ -148,7 +151,7 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
 
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        val newQuery: Optional<String> = if (query == null){
+        val newQuery: Optional<String> = if (query == null) {
             Optional.empty<String>()
         } else Optional.of(query)
         bookmarksViewModel.searchKeyword = newQuery
@@ -157,7 +160,7 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(query: String?): Boolean {
-        val newQuery: Optional<String> = if (query == null){
+        val newQuery: Optional<String> = if (query == null) {
             Optional.empty<String>()
         } else Optional.of(query)
         bookmarksViewModel.searchKeyword = newQuery
@@ -167,7 +170,7 @@ class BookmarkListFragment() : Fragment(),  SearchView.OnQueryTextListener {
 
     /**
      * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
+    //     * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
      *
