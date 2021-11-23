@@ -8,6 +8,8 @@ import android.view.*
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -25,7 +27,8 @@ import timber.log.Timber
 import java.util.*
 
 @AndroidEntryPoint
-class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
+class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
+    MenuItem.OnMenuItemClickListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var bookmarksView: RecyclerView
     private lateinit var tag: Optional<Tag>
@@ -43,7 +46,7 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (bookmarksViewModel.bookmarksToShow.value?.filter { it.isSelected }
                     ?.isNotEmpty()!!) {
-               bookmarksViewModel.bookmarksToShow.postValue(bookmarksViewModel.bookmarksToShow.value?.map { b ->
+                bookmarksViewModel.bookmarksToShow.postValue(bookmarksViewModel.bookmarksToShow.value?.map { b ->
                     if (b.isSelected == true) {
                         return@map b.copy().apply { this.isSelected = false }
                     } else b
@@ -62,13 +65,13 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
 
     fun activateMultipleSelection() {
         val act = requireActivity() as AppCompatActivity
-        act.supportActionBar!!.hide()
+        act.supportActionBar?.invalidateOptionsMenu()
         Timber.d("onEnableMultipleSelection")
     }
 
     fun disableMultipleSelection() {
         val act = requireActivity() as AppCompatActivity
-        act.supportActionBar!!.show()
+        act.supportActionBar?.invalidateOptionsMenu()
         Timber.d("onDisableMultipleSelection")
 
     }
@@ -113,7 +116,7 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
         if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
@@ -147,6 +150,28 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
         super.onCreateOptionsMenu(menu, inflater)
         val searchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.setOnQueryTextListener(this)
+        menu.findItem(R.id.action_delete).setOnMenuItemClickListener(this)
+    }
+
+    fun onMultipleItemDelete() {
+        bookmarksViewModel.bookmarksToShow.value
+            ?.filter { it.isSelected }
+            ?.forEach { bookmarksViewModel.deleteBookmark(it.url) }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        if (
+            bookmarksViewModel.bookmarksToShow.value?.filter { it.isSelected }?.any() == true) {
+            menu.forEach {
+                it.isVisible = it.groupId == R.id.multiple_selection
+            }
+        } else {
+            menu.forEach {
+                it.isVisible = it.groupId != R.id.multiple_selection
+
+            }
+        }
     }
 
 
@@ -155,7 +180,7 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
             Optional.empty<String>()
         } else Optional.of(query)
         bookmarksViewModel.searchKeyword = newQuery
-        Log.d("defter", "SearchView.onTextSubmit() with query: $newQuery")
+        Timber.d("SearchView.onTextSubmit() with query: $newQuery")
         return true
     }
 
@@ -181,6 +206,13 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener {
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
+    }
+
+    override fun onMenuItemClick(p0: MenuItem?): Boolean {
+        if (p0?.itemId == R.id.action_delete) {
+            onMultipleItemDelete()
+        }
+        return true
     }
 
 }

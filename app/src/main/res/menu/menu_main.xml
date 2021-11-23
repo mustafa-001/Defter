@@ -25,5 +25,14 @@
             android:title="@string/ascending_sort" />
 
     </group>
+    <group
+        android:id="@+id/multiple_selection"
+        android:visible="false">
+        <item
+            android:id="@+id/action_delete"
+            android:orderInCategory="100"
+            android:title="Delete"
+            app:showAsAction="always" />
+    </group>
 
 </menu>
