@@ -85,8 +85,8 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         super.onNewIntent(intent)
         when (intent?.action) {
             Intent.ACTION_SEND -> {
-                Log.d("Defter", "intent: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
-                bookmarksViewModel.addBookmark(Bookmark( intent.getStringExtra((Intent.EXTRA_TEXT))!!))
+                Timber.d("intent: " + intent.getStringExtra(Intent.EXTRA_TEXT))
+                bookmarksViewModel.addBookmark(Bookmark(intent.getStringExtra((Intent.EXTRA_TEXT))!!))
             }
         }
     }

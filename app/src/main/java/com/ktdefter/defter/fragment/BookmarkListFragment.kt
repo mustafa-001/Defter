@@ -36,6 +36,7 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
 
         //Override back button and directly return to home list instead of returning to another bookmarks of tag list.
         tag = if (arguments?.getString("selectedTag") == null) {
@@ -44,21 +45,29 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
             Optional.of(arguments?.getString("selectedTag")!!.let { Tag(it) })
         }
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (bookmarksViewModel.bookmarksToShow.value?.filter { it.isSelected }
-                    ?.isNotEmpty()!!) {
+            if (bookmarksViewModel.bookmarksToShow.value?.any { it.isSelected }!!) {
                 bookmarksViewModel.bookmarksToShow.postValue(bookmarksViewModel.bookmarksToShow.value?.map { b ->
-                    if (b.isSelected == true) {
+                    if (b.isSelected) {
                         return@map b.copy().apply { this.isSelected = false }
                     } else b
                 })
                 disableMultipleSelection()
                 return@addCallback
+
             }
-            while (findNavController().currentDestination != findNavController().graph.findNode(
-                    R.id.nav_home
-                )
-            ) {
-                findNavController().navigateUp()
+            if (findNavController().currentDestination?.id != findNavController().graph.startDestination) {
+                Timber.d("onBackPressedCallback when currentDestination is not startDestination")
+
+                findNavController().navigate(R.id.nav_home)
+//                while (findNavController().currentDestination != findNavController().graph.findNode(
+//                        R.id.nav_home
+//                    )
+//                ) {
+//                    findNavController().navigateUp()
+//                }
+            } else {
+                requireActivity().finish()
+//                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
     }
@@ -157,6 +166,7 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
         bookmarksViewModel.bookmarksToShow.value
             ?.filter { it.isSelected }
             ?.forEach { bookmarksViewModel.deleteBookmark(it.url) }
+        disableMultipleSelection()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -173,7 +183,6 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
             }
         }
     }
-
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         val newQuery: Optional<String> = if (query == null) {
