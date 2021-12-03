@@ -1,6 +1,7 @@
 package com.ktdefter.defter.fragment.adapter
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -119,11 +120,11 @@ class BookmarkViewHolder(v: View) :
         }
         if (bookmark.isSelected) {
             itemView.setBackgroundColor(
-                ContextCompat.getColor(itemView.context, R.color.colorAccent)
+                ContextCompat.getColor(itemView.context, R.color.primaryLightColor)
             )
         } else {
             itemView.setBackgroundColor(
-                ContextCompat.getColor(itemView.context, R.color.bookmark_background)
+//                ContextCompat.getColor(itemView.context, Color.WHITE)
             )
         }
     }

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
-    android:background="@color/bookmark_background"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
 
     <!--        app:autoSizeTextType="uniform"-->
     <!--        app:autoSizeMinTextSize="12dp"-->
@@ -23,7 +23,6 @@
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
         android:singleLine="true"
-        android:textColor="#E8000000"
         android:textSize="11sp"
         app:layout_constraintBottom_toTopOf="@+id/bookmark_url_text"
         app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
@@ -48,7 +47,6 @@
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
         android:singleLine="true"
-        android:textColor="#E8000000"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/bookmark_tags_text"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_title_text"
@@ -59,8 +57,9 @@
 
     <ImageView
         android:id="@+id/bookmark_image"
-        android:layout_width="32dp"
-        android:layout_height="0dp"
+        android:background="#ffffff"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
@@ -81,7 +80,6 @@
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
         android:text="bookmark doesn't have any tags"
-        android:textColor="@color/colorPrimary"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_url_text"

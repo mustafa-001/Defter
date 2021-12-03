@@ -11,6 +11,10 @@
             app:key="import"
             app:title="@string/import_bookmarks"
             />
+        <SwitchPreferenceCompat
+            app:key="useDarkTheme"
+            app:title="Use dark theme"
+            />
 
         <ListPreference
             app:defaultValue="reply"

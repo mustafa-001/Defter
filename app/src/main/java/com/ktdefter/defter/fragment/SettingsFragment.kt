@@ -8,6 +8,9 @@ import androidx.core.view.forEach
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
+import androidx.preference.SwitchPreferenceCompat
+import com.ktdefter.defter.R
 import com.ktdefter.defter.R.xml.root_preferences
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
@@ -17,10 +20,13 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jsoup.Jsoup
+import timber.log.Timber
 import java.io.InputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import android.content.Intent
+
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -63,8 +69,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val contentResolver = requireActivity().applicationContext.contentResolver
             val inputStream = contentResolver.openInputStream(it!!)
             //Cannot read extension when file is opened from Documents directory.
-            val importedBookmarks: BookmarkImportable = when (it.path?.takeLast(4)){
-                "html"-> HTMLImporter(inputStream!!)
+            val importedBookmarks: BookmarkImportable = when (it.path?.takeLast(4)) {
+                "html" -> HTMLImporter(inputStream!!)
                 "json" -> JSONImporter(inputStream!!)
                 else -> throw Exception("Unreachable")
             }
@@ -95,6 +101,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             "import" -> {
                 getDocumentFileToImport.launch(arrayOf("text/html", "application/json"))
+            }
+            "useDarkTheme" -> {
+                val p = preference as SwitchPreferenceCompat
+                if (p.isChecked) {
+                    Timber.d("dark theme selected")
+
+                }
+                val intent: Intent =
+                    requireActivity().baseContext.packageManager.getLaunchIntentForPackage(
+                        requireActivity().baseContext.packageName
+                    )!!
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
             }
         }
         return true

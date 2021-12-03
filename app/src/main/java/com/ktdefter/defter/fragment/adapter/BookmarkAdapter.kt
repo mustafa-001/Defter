@@ -1,6 +1,7 @@
 package com.ktdefter.defter.fragment.adapter
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -139,7 +140,7 @@ class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: Bookm
             }
             if (bookmark.isSelected) {
                 itemView.setBackgroundColor(
-                    ContextCompat.getColor(itemView.context, R.color.colorAccent)
+                    ContextCompat.getColor(itemView.context, R.color.primaryColor)
                 )
             } else {
                 itemView.setBackgroundColor(
