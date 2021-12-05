@@ -1,16 +1,14 @@
 package com.ktdefter.defter.fragment
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.forEach
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
 import androidx.preference.SwitchPreferenceCompat
-import com.ktdefter.defter.R
 import com.ktdefter.defter.R.xml.root_preferences
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
@@ -25,7 +23,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
-import android.content.Intent
 
 
 @AndroidEntryPoint
@@ -52,19 +49,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         menu.forEach { it.setEnabled(false) }
     }
 
-    val getDocumentFileToExport =
+    private val getDocumentFileToExport =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) { it ->
-            Log.d("defter", "on ActivityResultCallback, data: $it")
+            Timber.d("on ActivityResultCallback, data: $it")
 
-            val contentResolver = requireActivity()!!.applicationContext.contentResolver
+            val contentResolver = requireActivity().applicationContext.contentResolver
             val outputStream = contentResolver.openOutputStream(it!!)
             val be = JSONExporter(outputStream!!)
             val bookmarksViewModel: BookmarksViewModel by viewModels()
             be.export(bookmarksViewModel.getBookmarksSync())// Perform operations on the document using its URI.
         }
-    val getDocumentFileToImport =
+    private val getDocumentFileToImport =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { it ->
-            Log.d("defter", "on ActivityResultCallback, data: $it")
+            Timber.d("on ActivityResultCallback, data: $it")
 
             val contentResolver = requireActivity().applicationContext.contentResolver
             val inputStream = contentResolver.openInputStream(it!!)
@@ -93,9 +90,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val dummy_variable = bookmarksViewModel.getBookmarksSync()
         when (preference.key) {
             "export" -> {
-                Log.d("defter", "Clicked export preference")
-                val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())!!
-                Log.d("defter", "Export preference is clicked.")
+                Timber.d("Clicked export preference")
+                val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
+                Timber.d("Export preference is clicked.")
                 getDocumentFileToExport.launch("${date}_exported_defter.json")
 
             }
@@ -136,7 +133,7 @@ class HTMLImporter(
         val doc = Jsoup.parse(inputStream, "UTF-8", "")
         var bookmarks = mutableListOf<Bookmark>()
         val links = doc.select("a[href]")
-        links.forEach { Log.d("defter", "adding ${it.attr("href")}to bookmarks") }
+        links.forEach { Timber.d("""adding ${it.attr("href")}to bookmarks""") }
         return links
             .map { Bookmark(it.attr("href").toString()) }
     }
@@ -147,7 +144,7 @@ class JSONExporter(
 ) : BookmarkExportable {
     override fun export(bookmarks: List<Bookmark>) {
         val encodedBookmarks = Json.encodeToString(bookmarks)
-        Log.d("defter", "encoded bookmarks: $encodedBookmarks")
+        Timber.d("encoded bookmarks: $encodedBookmarks")
         outputStream.write(encodedBookmarks.toByteArray())
         outputStream.flush()
     }
@@ -158,7 +155,7 @@ class JSONImporter(
 ) : BookmarkImportable {
 
     override fun import(): List<Bookmark> {
-        return Json.decodeFromString<List<Bookmark>>(inputStream.readBytes().decodeToString())
+        return Json.decodeFromString(inputStream.readBytes().decodeToString())
     }
 }
 

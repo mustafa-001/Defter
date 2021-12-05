@@ -2,15 +2,16 @@ package com.ktdefter.defter.data
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
+import com.google.firebase.firestore.FirebaseFirestore
 import com.ktdefter.defter.util.getTitleAndFavicon
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,9 +21,25 @@ class BookmarksRepository @Inject constructor(
     private val bookmarksDao: BookmarkDao,
     private val tagDao: TagDao,
     private val bookmarkTagPairDao: BookmarkTagPairDao,
+    private val firestoreSync: FirestoreSync,
     @ApplicationContext private val context: Context
 ) {
+    init {
+    }
+
+    fun syncToRemote(lastSyncDate: Date) = firestoreSync.sync(lastSyncDate)
+
     fun getBookmarks(sortBy: SortBy, sortDirection: SortDirection): LiveData<List<Bookmark>> {
+        syncToRemote(
+            Date(
+                context.getSharedPreferences("SyncSettings", 0).getLong(
+                    "lastModificationTime",
+                    Date().time
+                )
+            )
+        )
+        context.getSharedPreferences("SyncSettings", 0).edit()
+            .putLong("lastModificationTime", Date().time).apply()
         return bookmarksDao.getBookmarks(sortBy, sortDirection)
 //        return bookmarksDao.getBookmarks().map {
 //            it.filter { it.favicon == null && false }
@@ -68,7 +85,7 @@ class BookmarksRepository @Inject constructor(
 
     fun insertBookmark(bookmark: Bookmark, fetchTitle: ShouldFetchTitle = ShouldFetchTitle.No) {
         bookmarksDao.insertBookmark(bookmark)
-        Log.d("Defter", "Inserting bookmark: $bookmark.url")
+        Timber.d("Inserting bookmark: $bookmark.url")
         if (fetchTitle == ShouldFetchTitle.Yes) {
             fetchTitle(bookmark)
         }
@@ -90,7 +107,7 @@ class BookmarksRepository @Inject constructor(
                 async { getTitleAndFavicon(context, Uri.parse(bookmark.url)) }.await()
             lD.postValue(b)
         }
-        return  lD
+        return lD
     }
 
     fun deleteBookmark(url: String) = bookmarksDao.deleteBookmark(url)

@@ -79,9 +79,11 @@ class BookmarksDatabaseTest {
     fun shouldUpdateBookmark() {
         insBm()
         bookmarkDao.getBookmark("test.com").let {
-            bookmarkDao
-                .insertBookmark(Bookmark(it!!.url, "New Title"))
-            assertEquals(bookmarkDao.getBookmark("test.com")!!.title, "New Title")
+            it.value.let {
+                bookmarkDao
+                    .insertBookmark(Bookmark(it!!.url, "New Title"))
+                assertEquals(bookmarkDao.getBookmark("test.com").value!!.title, "New Title")
+            }
         }
     }
 
@@ -92,7 +94,7 @@ class BookmarksDatabaseTest {
             Bookmark("test2.com", title = "test2title"))
         bookmarkDao.getBookmark("test2.com").let {
             assertNotNull(it)
-            assertEquals(it!!.title, "test2title")
+            assertEquals(it.value?.title, "test2title")
         }
     }
 
@@ -197,7 +199,7 @@ class BookmarksDatabaseTest {
         insPair("test2.com", "test_tag1")
         insPair("test3.com", "test_tag1")
         assertEquals(bookmarkTagPairDao
-            .getBookmarksWithTag("test_tag1")
+            .getBookmarksWithTag(Tag("test_tag1"))
             .getValueBlocking()
             ?.map { it.url }, listOf("test1.com", "test2.com", "test3.com"))
     }

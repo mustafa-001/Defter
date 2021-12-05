@@ -3,6 +3,9 @@ package com.ktdefter.defter
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.room.Room
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.MIGRATION_1_2
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
@@ -30,6 +33,11 @@ object DatabaseModule {
     ).allowMainThreadQueries()
         .addMigrations(MIGRATION_1_2)
         .build() // The reason we can construct a database for the repo
+
+    @Provides
+    @Singleton
+    fun provideFireStore() = Firebase.firestore
+
 
     @Singleton
     @Provides

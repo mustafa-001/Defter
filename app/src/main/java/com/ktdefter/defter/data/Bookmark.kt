@@ -19,11 +19,17 @@ data class Bookmark(
     val lastModification: Date = Date(),
     @Contextual
     val hostname: String = getHostname(url),
+    @field:JvmField
+    val isDeleted: Boolean = false
 ) {
 
     override fun toString() = url
     override fun equals(other: Any?): Boolean {
         return (other as Bookmark).url == this.url
+    }
+
+    override fun hashCode(): Int {
+        return url.hashCode()
     }
 
 

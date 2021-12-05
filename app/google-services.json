@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "221526171486",
+    "project_id": "defter-1edbd",
+    "storage_bucket": "defter-1edbd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221526171486:android:d12f654d8318068c13f9cf",
+        "android_client_info": {
+          "package_name": "com.ktdefter.defter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "221526171486-g72v4n3kc00chmjmoce3tk71nlr5armq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDja_-bZYA6SnvC5pz6vV5z3jrLQoEdJ3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "221526171486-g72v4n3kc00chmjmoce3tk71nlr5armq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
