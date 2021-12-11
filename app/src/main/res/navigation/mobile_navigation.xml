@@ -59,7 +59,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.ktdefter.defter.ui.login.LoginFragment"
+        android:name="com.ktdefter.defter.fragment.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" />
 

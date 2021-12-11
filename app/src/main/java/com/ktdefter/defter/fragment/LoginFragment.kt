@@ -1,4 +1,4 @@
-package com.ktdefter.defter.ui.login
+package com.ktdefter.defter.fragment
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,18 +11,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import com.ktdefter.defter.databinding.FragmentLoginBinding
 
 import com.ktdefter.defter.R
+import com.ktdefter.defter.ui.login.LoggedInUserView
+import com.ktdefter.defter.viewmodels.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private lateinit var loginViewModel: LoginViewModel
+    private val loginViewModel: LoginViewModel by activityViewModels<LoginViewModel>()
     private var _binding: FragmentLoginBinding? = null
 
     // This property is only valid between onCreateView and
@@ -44,8 +46,6 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
 
         val usernameEditText = binding.username
         val passwordEditText = binding.password

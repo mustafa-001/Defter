@@ -32,38 +32,46 @@ class BookmarksRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    fun getBookmarks(sortBy: SortBy, sortDirection: SortDirection): LiveData<List<Bookmark>> {
-
-
-        Firebase.auth.signInWithEmailAndPassword("mustafaalimutlu@googlemail.com", "qwerty")
+    fun syncBookmarks() {
+        //        Firebase.auth.signInWithEmailAndPassword("mustafaalimutlu@googlemail.com", "qwerty")
         //Use credential instead of password, ,its save to SharedPreferences by LoginViewModel
 //        Firebase.auth.signInWithCredential()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    Timber.d("authentication is complete user id: ${Firebase.auth.currentUser!!.uid}")
-                    val firestoreSync = FirestoreSync(
-                        this,
-                        Firebase.firestore,
-                        Firebase.auth.currentUser!!
+        if (Firebase.auth.currentUser != null) {
+            Timber.d("On BookmarksRepository, syncing bookmarks with signed in user: ${Firebase.auth.currentUser!!.uid}")
+            val firestoreSync = FirestoreSync(
+                this,
+                Firebase.firestore,
+                Firebase.auth.currentUser!!
+            )
+            firestoreSync.sync(
+                Date(
+                    context.getSharedPreferences("SyncSettings", 0).getLong(
+                        "lastModificationTime",
+                        0
                     )
-                    firestoreSync.sync(
-                        Date(
-                            context.getSharedPreferences("SyncSettings", 0).getLong(
-                                "lastModificationTime",
-                                0
-                            )
-                        )
-                    )
+                )
+            )
 
-                    context.getSharedPreferences(
-                        "SyncSettings", 0
-                    ).edit()
-                        .putLong("lastModificationTime", Date().time).apply()
-                } else {
-                    Timber.d("authentication is failed")
+            context.getSharedPreferences(
+                "SyncSettings", 0
+            ).edit()
+                .putLong("lastModificationTime", Date().time).apply()
+        } else {
+            Timber.d("authentication is failed")
 
-                }
-            }
+        }
+
+    }
+
+    fun resetLastSync(){
+        context.getSharedPreferences(
+            "SyncSettings", 0
+        ).edit()
+            .putLong("lastModificationTime", 0).apply()
+    }
+
+    fun getBookmarks(sortBy: SortBy, sortDirection: SortDirection): LiveData<List<Bookmark>> {
+
 
         return bookmarksDao.getBookmarks(sortBy, sortDirection)
 //        return bookmarksDao.getBookmarks().map {

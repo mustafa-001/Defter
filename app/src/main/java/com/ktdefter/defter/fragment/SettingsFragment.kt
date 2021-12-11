@@ -4,19 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.view.forEach
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.R
 import com.ktdefter.defter.R.xml.root_preferences
 import com.ktdefter.defter.data.Bookmark
-import com.ktdefter.defter.ui.login.LoginFragment
-import com.ktdefter.defter.ui.login.LoginViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import com.ktdefter.defter.viewmodels.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.serialization.decodeFromString
@@ -34,6 +35,7 @@ import java.util.*
 class SettingsFragment : PreferenceFragmentCompat() {
 
     val bookmarksViewModel: BookmarksViewModel by viewModels()
+    val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,7 +86,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(root_preferences, rootKey)
-        val prefs = findPreference<Preference>("export")
+        val prefs = findPreference<Preference>("sync") as SwitchPreferenceCompat
+        if (Firebase.auth.currentUser != null){
+            prefs.isChecked = true
+        }
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
@@ -122,8 +127,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 if ((preference as SwitchPreferenceCompat).isChecked){
                     findNavController().navigate(R.id.action_settingsFragment_to_loginFragment)
                 } else {
-                    val loginvm: LoginViewModel by activityViewModels<LoginViewModel>()
-//                    loginvm.logout()
+                    val loginvm: LoginViewModel by viewModels<LoginViewModel>()
+                    loginvm.logout()
                 }
             }
         }

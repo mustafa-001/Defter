@@ -39,6 +39,7 @@ import com.ktdefter.defter.fragment.AddBookmarkDialogFragment
 import com.ktdefter.defter.fragment.BookmarkListFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import com.ktdefter.defter.viewmodels.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.util.prefs.Preferences
