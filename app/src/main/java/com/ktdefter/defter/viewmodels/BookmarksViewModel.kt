@@ -1,19 +1,20 @@
 package com.ktdefter.defter.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.ktdefter.defter.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashMap
 
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksRepository) :
     ViewModel() {
     //This repetition is better than 60+ line, 4 MutableLiveData and addSource() mess.
     //That also means we Observe parameters we set, Which I think is schizophrenic.
+    init {
+        bookmarksRepository.syncBookmarks()
+    }
     private val queryParametersChanged = MutableLiveData(true)
     var sortBy: SortBy = SortBy.MODIFICATION_TIME
         set(value) {

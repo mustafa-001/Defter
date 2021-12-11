@@ -2,15 +2,24 @@ package com.ktdefter.defter.data
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.util.getTitleAndFavicon
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.time.Instant
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +31,48 @@ class BookmarksRepository @Inject constructor(
     private val bookmarkTagPairDao: BookmarkTagPairDao,
     @ApplicationContext private val context: Context
 ) {
+
+    fun syncBookmarks() {
+        //        Firebase.auth.signInWithEmailAndPassword("mustafaalimutlu@googlemail.com", "qwerty")
+        //Use credential instead of password, ,its save to SharedPreferences by LoginViewModel
+//        Firebase.auth.signInWithCredential()
+        if (Firebase.auth.currentUser != null) {
+            Timber.d("On BookmarksRepository, syncing bookmarks with signed in user: ${Firebase.auth.currentUser!!.uid}")
+            val firestoreSync = FirestoreSync(
+                this,
+                Firebase.firestore,
+                Firebase.auth.currentUser!!
+            )
+            firestoreSync.sync(
+                Date(
+                    context.getSharedPreferences("SyncSettings", 0).getLong(
+                        "lastModificationTime",
+                        0
+                    )
+                )
+            )
+
+            context.getSharedPreferences(
+                "SyncSettings", 0
+            ).edit()
+                .putLong("lastModificationTime", Date().time).apply()
+        } else {
+            Timber.d("authentication is failed")
+
+        }
+
+    }
+
+    fun resetLastSync(){
+        context.getSharedPreferences(
+            "SyncSettings", 0
+        ).edit()
+            .putLong("lastModificationTime", 0).apply()
+    }
+
     fun getBookmarks(sortBy: SortBy, sortDirection: SortDirection): LiveData<List<Bookmark>> {
+
+
         return bookmarksDao.getBookmarks(sortBy, sortDirection)
 //        return bookmarksDao.getBookmarks().map {
 //            it.filter { it.favicon == null && false }
@@ -68,7 +118,7 @@ class BookmarksRepository @Inject constructor(
 
     fun insertBookmark(bookmark: Bookmark, fetchTitle: ShouldFetchTitle = ShouldFetchTitle.No) {
         bookmarksDao.insertBookmark(bookmark)
-        Log.d("Defter", "Inserting bookmark: $bookmark.url")
+        Timber.d("Inserting bookmark: $bookmark.url")
         if (fetchTitle == ShouldFetchTitle.Yes) {
             fetchTitle(bookmark)
         }
@@ -90,7 +140,7 @@ class BookmarksRepository @Inject constructor(
                 async { getTitleAndFavicon(context, Uri.parse(bookmark.url)) }.await()
             lD.postValue(b)
         }
-        return  lD
+        return lD
     }
 
     fun deleteBookmark(url: String) = bookmarksDao.deleteBookmark(url)
@@ -118,6 +168,8 @@ class BookmarksRepository @Inject constructor(
         bookmarkTagPairDao.getBookmarksWithTag(tag, sortBy, sortDirection)
 
     fun getBookmarksOfTagSync(tag: String) = bookmarkTagPairDao.getBookmarksWithTagSync(tag)
+    fun getDeletedBookmarks() = bookmarksDao.getDeletedBookmarks()
+
 //
 //    companion object {
 //

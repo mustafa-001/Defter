@@ -26,14 +26,20 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
+import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.AddBookmarkDialogFragment
 import com.ktdefter.defter.fragment.BookmarkListFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import com.ktdefter.defter.viewmodels.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.util.prefs.Preferences
@@ -41,7 +47,7 @@ import java.util.prefs.Preferences
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
     SelectTagDialogFragment.OnFragmentInteractionListener,
-    BookmarkListFragment.OnFragmentInteractionListener, LifecycleOwner{
+    BookmarkListFragment.OnFragmentInteractionListener, LifecycleOwner {
     val bookmarksViewModel: BookmarksViewModel by viewModels<BookmarksViewModel>()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
@@ -49,9 +55,10 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
     private lateinit var drawer: DrawerLayout
     private val oldTagIds: MutableList<Int> = mutableListOf<Int>()
     private lateinit var tags: LiveData<List<Tag>>
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("useDarkTheme", false)){
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("useDarkTheme", false)) {
             setTheme(R.style.AppTheme)
             AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
         } else {
@@ -69,6 +76,13 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         navView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
 
+
+
+//        val task  = auth.signInWithEmailAndPassword("mustafaalimutlu@gmail.com", "qwerty")
+//            .addOnCompleteListener(this){
+//                Timber.d("authentication is complete")
+//
+//            }
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -84,7 +98,8 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
 //        }
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener(View.OnClickListener {
+        fab.setOnClickListener(View.OnClickListener
+        {
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
             addBookmarkDialogFragment.show(
                 this.supportFragmentManager,

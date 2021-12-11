@@ -22,11 +22,12 @@ interface BookmarkDao {
 
     //TODO Tidy up and nest these CASE's
     @Query(
-        "SELECT * FROM bookmark ORDER BY " +
+        "SELECT * FROM bookmark WHERE isDeleted = 0 ORDER BY " +
                 "CASE WHEN :sortBy = 'hostname' AND :sortDirection = 'asc'  THEN hostname END ASC," +
                 "CASE WHEN :sortBy = 'hostname' AND :sortDirection = 'desc'  THEN  hostname END DESC," +
-                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'asc'   THEN lastModification END ASC," +
-                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'desc'    THEN lastModification END DESC"
+                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'asc' THEN lastModification END ASC," +
+                "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'desc' THEN lastModification END DESC"
+
     )
     fun _getBookmarksImpl(sortBy: String, sortDirection: String): LiveData<List<Bookmark>>
 
@@ -37,8 +38,12 @@ interface BookmarkDao {
         return _getBookmarksImpl(sortBy.string, sortDirection.string)
     }
 
-    @Query("SELECT * FROM bookmark")
+    @Query("SELECT * FROM bookmark WHERE isDeleted = 0")
     fun getBookmarksSync(): List<Bookmark>
+
+    @Query("SELECT * FROM bookmark WHERE isDeleted = 1")
+    fun getDeletedBookmarks(): List<Bookmark>
+
 
     @Query("SELECT * FROM bookmark WHERE url = :url")
     fun getBookmark(url: String): LiveData<Bookmark?>

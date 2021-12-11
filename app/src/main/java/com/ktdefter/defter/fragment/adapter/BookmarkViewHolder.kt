@@ -124,7 +124,7 @@ class BookmarkViewHolder(v: View) :
             )
         } else {
             itemView.setBackgroundColor(
-//                ContextCompat.getColor(itemView.context, Color.WHITE)
+                ContextCompat.getColor(itemView.context, R.color.bookmark_background)
             )
         }
     }
