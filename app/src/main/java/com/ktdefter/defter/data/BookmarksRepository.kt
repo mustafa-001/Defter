@@ -4,13 +4,21 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.util.getTitleAndFavicon
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.Instant
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,25 +29,42 @@ class BookmarksRepository @Inject constructor(
     private val bookmarksDao: BookmarkDao,
     private val tagDao: TagDao,
     private val bookmarkTagPairDao: BookmarkTagPairDao,
-    private val firestoreSync: FirestoreSync,
     @ApplicationContext private val context: Context
 ) {
-    init {
-    }
-
-    fun syncToRemote(lastSyncDate: Date) = firestoreSync.sync(lastSyncDate)
 
     fun getBookmarks(sortBy: SortBy, sortDirection: SortDirection): LiveData<List<Bookmark>> {
-        syncToRemote(
-            Date(
-                context.getSharedPreferences("SyncSettings", 0).getLong(
-                    "lastModificationTime",
-                    Date().time
-                )
-            )
-        )
-        context.getSharedPreferences("SyncSettings", 0).edit()
-            .putLong("lastModificationTime", Date().time).apply()
+
+
+        Firebase.auth.signInWithEmailAndPassword("mustafaalimutlu@googlemail.com", "qwerty")
+        //Use credential instead of password, ,its save to SharedPreferences by LoginViewModel
+//        Firebase.auth.signInWithCredential()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Timber.d("authentication is complete user id: ${Firebase.auth.currentUser!!.uid}")
+                    val firestoreSync = FirestoreSync(
+                        this,
+                        Firebase.firestore,
+                        Firebase.auth.currentUser!!
+                    )
+                    firestoreSync.sync(
+                        Date(
+                            context.getSharedPreferences("SyncSettings", 0).getLong(
+                                "lastModificationTime",
+                                0
+                            )
+                        )
+                    )
+
+                    context.getSharedPreferences(
+                        "SyncSettings", 0
+                    ).edit()
+                        .putLong("lastModificationTime", Date().time).apply()
+                } else {
+                    Timber.d("authentication is failed")
+
+                }
+            }
+
         return bookmarksDao.getBookmarks(sortBy, sortDirection)
 //        return bookmarksDao.getBookmarks().map {
 //            it.filter { it.favicon == null && false }
@@ -135,6 +160,8 @@ class BookmarksRepository @Inject constructor(
         bookmarkTagPairDao.getBookmarksWithTag(tag, sortBy, sortDirection)
 
     fun getBookmarksOfTagSync(tag: String) = bookmarkTagPairDao.getBookmarksWithTagSync(tag)
+    fun getDeletedBookmarks() = bookmarksDao.getDeletedBookmarks()
+
 //
 //    companion object {
 //

@@ -2,22 +2,27 @@ package com.ktdefter.defter.data
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-class FirestoreSync @Inject constructor(
-    private val bookmarksDao: BookmarkDao,
-    private val tagDao: TagDao,
-    private val bookmarkTagPairDao: BookmarkTagPairDao,
-    private val firestoreDatabase: FirebaseFirestore
+class FirestoreSync  constructor(
+    private val bookmarksRepository: BookmarksRepository,
+    private val firestoreDatabase: FirebaseFirestore,
+    private val user: FirebaseUser
 ) {
+    val userBookmarksOnRemote: CollectionReference = firestoreDatabase.collection("defter").document(user.uid).collection("bookmarks")
 
     fun pushBookmark(bookmark: Bookmark): Task<Void> {
         Timber.d("Pushing bookmark ${bookmark.url} to Firestore")
-        return firestoreDatabase.collection("bookmarks")
+        return userBookmarksOnRemote
             .document(removeSlashes(bookmark.url)).set(bookmark)
     }
 
@@ -67,31 +72,31 @@ class FirestoreSync @Inject constructor(
         return BookmarkConflictResolution.DELETE_BOTH
     }
 
-    fun sync(lastSyncDate: Date) {
+    fun sync( lastSyncDate: Date) {
 
         Timber.d("on sync to Firestore with lastsynctime of $lastSyncDate")
         val bookmarksFromLocal = mutableSetOf<Bookmark>()
         bookmarksFromLocal.addAll(
-            bookmarksDao.getBookmarksSync().filter { it.lastModification > lastSyncDate })
+            bookmarksRepository.getBookmarksSync().filter { it.lastModification > lastSyncDate })
 
-        val deletedBookmarksOnLocal = bookmarksDao.getDeletedBookmarks().toSet()
+        val deletedBookmarksOnLocal = bookmarksRepository.getDeletedBookmarks().toSet()
 
         val deletedBookmarksOnRemote =
             taskToBookmarks(
-                firestoreDatabase.collection("bookmarks")
+                userBookmarksOnRemote
                     .whereGreaterThan("lastModification", Timestamp(lastSyncDate))
                     .whereEqualTo("isDeleted", true)
                     .get()
             ).toSet()
 //            .forEach { b ->
-//                firestoreDatabase.collection("bookmarks").document(removeSlashes(b.url))
+//                firestoreDatabase.collection(userBookmarkPath).document(removeSlashes(b.url))
 //                    .update("isDeleted", true)
 //                //No need to wait for response from Firestore, as it will mark it on local copy in case of
 //                // not having network connection.
 //            }
 
         val bookmarksFromRemote = mutableSetOf<Bookmark>()
-        val task = firestoreDatabase.collection("bookmarks")
+        val task = userBookmarksOnRemote
             .whereGreaterThan("lastModification", Timestamp(lastSyncDate))
             .whereEqualTo("isDeleted", false)
             .get()
@@ -110,7 +115,7 @@ class FirestoreSync @Inject constructor(
             .toMap()
 
         needToPull.forEach {
-            bookmarksDao.insertBookmark(it)
+            bookmarksRepository.insertBookmark(it)
             Timber.d("found new ${it.url} on remote, inserting to local")
         }
         needToPush.forEach {
@@ -121,13 +126,13 @@ class FirestoreSync @Inject constructor(
             val res = handleConflict(c1, c2)
             when (res) {
                 BookmarkConflictResolution.DELETE_BOTH -> {
-                    bookmarksDao.deleteBookmark(c1.url)
-                    firestoreDatabase.collection("bookmarks").document(removeSlashes(c2.url))
+                    bookmarksRepository.deleteBookmark(c1.url)
+                   userBookmarksOnRemote.document(removeSlashes(c2.url))
                         .update("isDeleted", true)
                 }
-                BookmarkConflictResolution.FIRST -> firestoreDatabase.collection("bookmarks")
+                BookmarkConflictResolution.FIRST -> userBookmarksOnRemote
                     .document(removeSlashes(c1.url)).set(c1)
-                BookmarkConflictResolution.SECOND -> bookmarksDao.updateBookmark(c2)
+                BookmarkConflictResolution.SECOND -> bookmarksRepository.updateBookmark(c2)
             }
             Timber.d("Bookmark sync ocnflict, url: ${c1.url},  resolving to $res")
         }

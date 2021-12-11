@@ -5,12 +5,17 @@ import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.forEach
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.ktdefter.defter.R
 import com.ktdefter.defter.R.xml.root_preferences
 import com.ktdefter.defter.data.Bookmark
+import com.ktdefter.defter.ui.login.LoginFragment
+import com.ktdefter.defter.ui.login.LoginViewModel
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -112,6 +117,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
+            }
+            "sync" -> run {
+                if ((preference as SwitchPreferenceCompat).isChecked){
+                    findNavController().navigate(R.id.action_settingsFragment_to_loginFragment)
+                } else {
+                    val loginvm: LoginViewModel by activityViewModels<LoginViewModel>()
+//                    loginvm.logout()
+                }
             }
         }
         return true
