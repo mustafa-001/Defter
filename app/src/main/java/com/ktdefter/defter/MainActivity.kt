@@ -1,13 +1,10 @@
 package com.ktdefter.defter
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -26,36 +23,28 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
-import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.AddBookmarkDialogFragment
 import com.ktdefter.defter.fragment.BookmarkListFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
-import com.ktdefter.defter.viewmodels.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import java.util.prefs.Preferences
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentInteractionListener,
     SelectTagDialogFragment.OnFragmentInteractionListener,
     BookmarkListFragment.OnFragmentInteractionListener, LifecycleOwner {
-    val bookmarksViewModel: BookmarksViewModel by viewModels<BookmarksViewModel>()
+    val bookmarksViewModel: BookmarksViewModel by viewModels()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var navView: NavigationView
     private lateinit var drawer: DrawerLayout
-    private val oldTagIds: MutableList<Int> = mutableListOf<Int>()
+    private val oldTagIds: MutableList<Int> = mutableListOf()
     private lateinit var tags: LiveData<List<Tag>>
-    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("useDarkTheme", false)) {
@@ -65,55 +54,37 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
             setTheme(R.style.AppTheme)
             AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
         }
+        Timber.plant(Timber.DebugTree())
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-
-        Timber.plant(Timber.DebugTree());
         drawer = findViewById(R.id.drawer_layout)
         navView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
-
-
-
-//        val task  = auth.signInWithEmailAndPassword("mustafaalimutlu@gmail.com", "qwerty")
-//            .addOnCompleteListener(this){
-//                Timber.d("authentication is complete")
-//
-//            }
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-
         tags = bookmarksViewModel.getTags()
         setDrawerTags()
 
-//        supportFragmentManager.commit {
-//            add<BookmarkListFragment>(R.id.nav_host_fragment)
-//            setReorderingAllowed(true)
-//            addToBackStack("nav_host")
-//        }
-
         val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener(View.OnClickListener
-        {
+        fab.setOnClickListener{
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
             addBookmarkDialogFragment.show(
                 this.supportFragmentManager,
                 "add_bookmark_fragment"
             )
-        })
-
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         when (intent?.action) {
             Intent.ACTION_SEND -> {
-                Timber.d("intent: " + intent.getStringExtra(Intent.EXTRA_TEXT))
+                Timber.d("on ACTION_SEND intent : " + intent.getStringExtra(Intent.EXTRA_TEXT))
                 bookmarksViewModel.addBookmark(Bookmark(intent.getStringExtra((Intent.EXTRA_TEXT))!!))
             }
         }

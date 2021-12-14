@@ -20,14 +20,13 @@ import java.io.File
 
 class EditBookmarkFragment : Fragment() {
 
-    private val viewModel: BookmarksViewModel by activityViewModels<BookmarksViewModel>()
+    private val viewModel: BookmarksViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val url = requireArguments().getString("url")!!
-        val tag = viewModel.getTagsOfBookmark(url)
         return inflater.inflate(R.layout.edit_bookmark_fragment, container, false).also { view ->
             val editText = view.findViewById<EditText>(R.id.editBookmarkFragment_url)
             editText.setText(url)
@@ -38,8 +37,8 @@ class EditBookmarkFragment : Fragment() {
                 if (url != editText.text.toString() || bookmark == null){
                     return@observe
                 }
-                titleText.setText(bookmark!!.title)
-                File(requireContext().filesDir, bookmark!!.hostname)?.let {
+                titleText.setText(bookmark.title)
+                File(requireContext().filesDir, bookmark.hostname).let {
                     faviconImageView.setImageURI(Uri.fromFile(it))
                 }
             }
@@ -53,8 +52,8 @@ class EditBookmarkFragment : Fragment() {
                     if (bookmark == null){
                         return@observe
                     }
-                    titleText.setText(bookmark!!.title)
-                    File(requireContext().filesDir, bookmark!!.hostname)?.let {
+                    titleText.setText(bookmark.title)
+                    File(requireContext().filesDir, bookmark.hostname).let {
                         faviconImageView.setImageURI(Uri.fromFile(it))
                     }
                 }
@@ -70,11 +69,6 @@ class EditBookmarkFragment : Fragment() {
             }
 
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        // TODO: Use the ViewModel
     }
 
 }
