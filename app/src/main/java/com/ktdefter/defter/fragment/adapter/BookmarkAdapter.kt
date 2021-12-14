@@ -31,14 +31,14 @@ class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: Bookm
     val bookmarks: MutableList<Bookmark> = mutableListOf()
 
     fun setBookmarks(value: List<Bookmark>) {
-            Timber.d("Bookmarks dataset changed.")
-            DiffUtil.calculateDiff(
-                BookmarkListDiffCallback(bookmarks, value)
-            )
-                .dispatchUpdatesTo(this)
-            bookmarks.clear()
-            bookmarks.addAll(value)
-        }
+        Timber.d("Bookmarks dataset changed.")
+        DiffUtil.calculateDiff(
+            BookmarkListDiffCallback(bookmarks, value)
+        )
+            .dispatchUpdatesTo(this)
+        bookmarks.clear()
+        bookmarks.addAll(value)
+    }
 
     inner class BookmarkViewHolder(v: View) :
         RecyclerView.ViewHolder(v) {
@@ -116,13 +116,14 @@ class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: Bookm
             }
 
             itemView.setOnClickListener {
-                if (itemView.findFragment<BookmarkListFragment>().bookmarksViewModel.bookmarksToShow.value?.filter { it.isSelected }?.any() == true) {
+                if (itemView.findFragment<BookmarkListFragment>().bookmarksViewModel.bookmarksToShow.value?.filter { it.isSelected }
+                        ?.any() == true) {
                     if (bookmark.isSelected) {
                         this@BookmarkAdapter.viewModel.markBookmarkUnselected(
                             bookmark
                         )
-                        if (this@BookmarkAdapter.viewModel.bookmarksToShow.value?.filter { it.isSelected }?.size!! == 1){
-                           itemView.findFragment<BookmarkListFragment>().disableMultipleSelection()
+                        if (this@BookmarkAdapter.viewModel.bookmarksToShow.value?.filter { it.isSelected }?.size!! == 1) {
+                            itemView.findFragment<BookmarkListFragment>().disableMultipleSelection()
                         }
                     } else {
                         this@BookmarkAdapter.viewModel.markBookmarkSelected(
@@ -140,7 +141,7 @@ class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: Bookm
             }
             if (bookmark.isSelected) {
                 itemView.setBackgroundColor(
-                    ContextCompat.getColor(itemView.context, R.color.primaryColor)
+                    ContextCompat.getColor(itemView.context, R.color.bookmarkSelectedColor)
                 )
             } else {
                 itemView.setBackgroundColor(
@@ -198,7 +199,13 @@ class BookmarkListDiffCallback(
             return false
         }
         if (oldList.get(oldItemPosition).isSelected != newList.get(newItemPosition).isSelected) {
-            Timber.d("Dedected a bookmark with different isSelected position ${oldList.get(oldItemPosition).url}")
+            Timber.d(
+                "Dedected a bookmark with different isSelected position ${
+                    oldList.get(
+                        oldItemPosition
+                    ).url
+                }"
+            )
             return false
         }
 

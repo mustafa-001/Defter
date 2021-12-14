@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#ffab91</color>
-    <color name="primaryLightColor">#ffddc1</color>
-    <color name="primaryDarkColor">#c97b63</color>
-    <color name="secondaryColor">#f57c00</color>
-    <color name="secondaryLightColor">#ffad42</color>
-    <color name="secondaryDarkColor">#bb4d00</color>
-    <color name="primaryTextColor">#000000</color>
+    <color name="primaryColor">#d81b60</color>
+    <color name="primaryLightColor">#ff5c8d</color>
+    <color name="primaryDarkColor">#a00037</color>
+    <color name="secondaryColor">#80cbc4</color>
+    <color name="secondaryLightColor">#b2fef7</color>
+    <color name="secondaryDarkColor">#4f9a94</color>
+    <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#000000</color>
     <color name="bookmark_background">#ffffff</color>
+    <color name="bookmarkSelectedColor">#70a49391</color>
 </resources>
