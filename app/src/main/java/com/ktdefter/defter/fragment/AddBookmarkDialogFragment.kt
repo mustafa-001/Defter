@@ -5,35 +5,21 @@ import android.app.Dialog
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ktdefter.defter.R
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_add_bookmark_dialog.view.*
+import timber.log.Timber
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [AddBookmarkDialogFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [AddBookmarkDialogFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 @AndroidEntryPoint
 class AddBookmarkDialogFragment : DialogFragment() {
-    // TODO: Rename and change types of parameters.
     private var listener: OnFragmentInteractionListener? = null
     val viewModel: BookmarksViewModel by viewModels()
 
@@ -46,14 +32,14 @@ class AddBookmarkDialogFragment : DialogFragment() {
 
                 setView(view)
                 setTitle("Add new bookmark")
-                setNegativeButton("Cancel",
-                    DialogInterface.OnClickListener { _, _ ->
-                        getDialog()?.cancel()
-                    })
-                setPositiveButton("Add",
-                    DialogInterface.OnClickListener { _, _ ->
-                        onPositiveClick(view.findViewById<EditText>(R.id.url_text)?.text.toString())
-                    })
+                setNegativeButton("Cancel"
+                ) { _, _ ->
+                    dialog?.cancel()
+                }
+                setPositiveButton("Add"
+                ) { _, _ ->
+                    onPositiveClick(view.findViewById<EditText>(R.id.url_text)?.text.toString())
+                }
                 view.paste_clipboard_button.setOnClickListener {
                     val clipboard = context?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                     if (clipboard.hasPrimaryClip()) {
@@ -69,20 +55,8 @@ class AddBookmarkDialogFragment : DialogFragment() {
     }
 
     private fun onPositiveClick(url: String) {
-        Log.d("Adding the url: ", url)
+        Timber.d(url)
         viewModel.addBookmark(Bookmark(url))
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // TODO Make sure this way of getting activity's ViewModel is safe and proper way.
-//        val bookmarksrepo = BookmarksRepository.getInstance(
-//            BookmarksDatabase.getInstance(requireContext()).bookmarkDao(),
-//            BookmarksDatabase.getInstance(requireContext()).tagDao(),
-//            BookmarksDatabase.getInstance(requireContext()).bookmarkTagPairDao(),
-//            requireContext()
-//        )
-//        bookmarksViewModel = BookmarksViewModelFactory(bookmarksrepo).create(BookmarksViewModel::class.java)
     }
 
     override fun onAttach(context: Context) {
@@ -90,7 +64,7 @@ class AddBookmarkDialogFragment : DialogFragment() {
         if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 

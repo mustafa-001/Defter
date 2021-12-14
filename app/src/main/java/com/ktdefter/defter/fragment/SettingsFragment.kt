@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.core.view.forEach
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -53,13 +52,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.forEach { it.setEnabled(false) }
+        menu.forEach { it.isEnabled = false }
     }
 
     private val getDocumentFileToExport =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) { it ->
+        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             Timber.d("on ActivityResultCallback, data: $it")
-
+            Timber.d("Callback name is getDocumentFileToExport")
             val contentResolver = requireActivity().applicationContext.contentResolver
             val outputStream = contentResolver.openOutputStream(it!!)
             val be = JSONExporter(outputStream!!)
@@ -67,9 +66,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             be.export(bookmarksViewModel.getBookmarksSync())// Perform operations on the document using its URI.
         }
     private val getDocumentFileToImport =
-        registerForActivityResult(ActivityResultContracts.OpenDocument()) { it ->
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
             Timber.d("on ActivityResultCallback, data: $it")
-
+            Timber.d("Callback name is getDocumentFileToImport")
             val contentResolver = requireActivity().applicationContext.contentResolver
             val inputStream = contentResolver.openInputStream(it!!)
             //Cannot read extension when file is opened from Documents directory.
@@ -97,12 +96,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         //Without this getDocumentFile.ActivityResultCallback requires bookmarksViewModel for
         // the first time. Activity is not fully restored/constructed when this callback is called.
         // This causes IllegalStateException to be thrown.
-        val dummy_variable = bookmarksViewModel.getBookmarksSync()
+        val dummyVariable = bookmarksViewModel.getBookmarksSync()
         when (preference.key) {
             "export" -> {
-                Timber.d("Clicked export preference")
-                val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
-                Timber.d("Export preference is clicked.")
+                val date = SimpleDateFormat(getString(R.string.export_file_datetime_format)).format(Date())
                 getDocumentFileToExport.launch("${date}_exported_defter.json")
 
             }
@@ -127,8 +124,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 if ((preference as SwitchPreferenceCompat).isChecked){
                     findNavController().navigate(R.id.action_settingsFragment_to_loginFragment)
                 } else {
-                    val loginvm: LoginViewModel by viewModels<LoginViewModel>()
-                    loginvm.logout()
+                    val loginViewModel: LoginViewModel by viewModels()
+                    loginViewModel.logout()
                 }
             }
         }
@@ -149,7 +146,6 @@ class HTMLImporter(
 ) : BookmarkImportable {
     override fun import(): List<Bookmark> {
         val doc = Jsoup.parse(inputStream, "UTF-8", "")
-        var bookmarks = mutableListOf<Bookmark>()
         val links = doc.select("a[href]")
         links.forEach { Timber.d("""adding ${it.attr("href")}to bookmarks""") }
         return links

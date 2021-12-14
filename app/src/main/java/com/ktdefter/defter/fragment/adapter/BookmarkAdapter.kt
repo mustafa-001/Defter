@@ -1,7 +1,6 @@
 package com.ktdefter.defter.fragment.adapter
 
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.findFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -26,7 +24,7 @@ import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import timber.log.Timber
 import java.io.File
 
-class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: BookmarksViewModel) :
+class BookmarkAdapter(val viewModel: BookmarksViewModel) :
     RecyclerView.Adapter<BookmarkAdapter.BookmarkViewHolder>() {
     val bookmarks: MutableList<Bookmark> = mutableListOf()
 
@@ -53,26 +51,21 @@ class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: Bookm
             Timber.d("multipleSelectionMode: $multipleSelectionMode")
             this.urlTextView.text = bookmark.hostname
             this.titleTextView.text = bookmark.title
-            val imageFile: File? = bookmark.hostname?.let {
-                File(this.itemView.context.filesDir, it)
-            }
+            val imageFile = File(this.itemView.context.filesDir, bookmark.hostname)
 
-            if (imageFile != null) {
+            if (imageFile.exists()) {
                 Timber.d("Favicon file for " + bookmark.url + " is found at " + bookmark.hostname)
                 this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
             } else {
                 this.faviconImageView.setImageResource(R.drawable.ic_broken_image_black_24dp)
-                Timber.d("Favicon file for " + bookmark.url + " should be at " + bookmark.hostname + " but not." + "\n" + " This should be unreachable!")
-                throw(Exception("Saved favicon cannot be found!"))
+                Timber.d("Favicon file for " + bookmark.url + " should be at " + bookmark.hostname + " but not.")
             }
 
-            tags.let { tags ->
                 this.tagsTextView.text = tags
                     .map { tag -> tag.tagName }
                     .fold("") { acc, nxt ->
                         "$acc$nxt  "
                     }
-            }
 
 
             itemView.setOnLongClickListener {
@@ -87,7 +80,7 @@ class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: Bookm
                 itemView.showContextMenu()
             }
 
-            itemView.setOnCreateContextMenuListener { menu, v, _ ->
+            itemView.setOnCreateContextMenuListener { menu, _, _ ->
                 menu.add("Delete").setOnMenuItemClickListener {
                     itemView.findFragment<BookmarkListFragment>().bookmarksViewModel.deleteBookmark(
                         bookmark.url
@@ -110,7 +103,7 @@ class BookmarkAdapter(val fragmentManager: FragmentManager, val viewModel: Bookm
                     itemView.findFragment<Fragment>().parentFragmentManager
                         .primaryNavigationFragment!!
                         .findNavController().navigate(R.id.editBookmarkFragment,
-                            Bundle().apply { putString("url", bookmark.url.toString()) })
+                            Bundle().apply { putString("url", bookmark.url) })
                     true
                 }
             }
@@ -190,15 +183,15 @@ class BookmarkListDiffCallback(
 ) : DiffUtil.Callback() {
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        if (oldList.get(oldItemPosition).title != newList.get(newItemPosition).title) {
-            Timber.d("Dedected a bookmark with different title ${oldList.get(oldItemPosition).url}")
+        if (oldList[oldItemPosition].title != newList[newItemPosition].title) {
+            Timber.d("Detected a bookmark with different title ${oldList[oldItemPosition].url}")
             return false
         }
-        if (oldList.get(oldItemPosition).favicon != newList.get(newItemPosition).favicon) {
+        if (oldList[oldItemPosition].favicon != newList[newItemPosition].favicon) {
             return false
         }
-        if (oldList.get(oldItemPosition).isSelected != newList.get(newItemPosition).isSelected) {
-            Timber.d("Dedected a bookmark with different isSelected position ${oldList.get(oldItemPosition).url}")
+        if (oldList[oldItemPosition].isSelected != newList[newItemPosition].isSelected) {
+            Timber.d("Detected a bookmark with different isSelected position ${oldList[oldItemPosition].url}")
             return false
         }
 
@@ -206,7 +199,7 @@ class BookmarkListDiffCallback(
     }
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList.get(oldItemPosition).url == newList.get(newItemPosition).url
+        return oldList[oldItemPosition].url == newList[newItemPosition].url
     }
 
     override fun getNewListSize(): Int {

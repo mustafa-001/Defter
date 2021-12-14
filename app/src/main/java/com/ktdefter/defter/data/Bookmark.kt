@@ -51,7 +51,7 @@ data class Bookmark(
 class Converters {
     @TypeConverter
     fun fromTimestamp(value: Long): Date {
-        return value.let { Date(it) }
+        return Date(value)
     }
 
     @TypeConverter
@@ -67,7 +67,7 @@ fun getHostname(url: String): String {
         .removePrefix("https://")
         .replaceAfter("/", "")
         .removePrefix("www.")
-        .dropLastWhile { it -> it == '/'.toChar() }
+        .dropLastWhile { it == '/' }
 }
 
 object DateSerializer : KSerializer<Date> {

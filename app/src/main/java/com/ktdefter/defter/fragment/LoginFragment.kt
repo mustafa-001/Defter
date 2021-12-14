@@ -1,9 +1,5 @@
 package com.ktdefter.defter.fragment
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.annotation.StringRes
-import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,10 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.ktdefter.defter.databinding.FragmentLoginBinding
-
-import com.ktdefter.defter.R
 import com.ktdefter.defter.ui.login.LoggedInUserView
 import com.ktdefter.defter.viewmodels.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +21,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private val loginViewModel: LoginViewModel by activityViewModels<LoginViewModel>()
+    private val loginViewModel: LoginViewModel by activityViewModels()
     private var _binding: FragmentLoginBinding? = null
 
     // This property is only valid between onCreateView and
@@ -35,7 +32,7 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         requireActivity().fab.hide()
@@ -116,7 +113,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome) + model.displayName
+        val welcome = "Logged in with account name: " + model.displayName
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
         Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()

@@ -3,12 +3,10 @@ package com.ktdefter.defter.fragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -27,22 +25,20 @@ import timber.log.Timber
 import java.util.*
 
 @AndroidEntryPoint
-class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
+class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
     MenuItem.OnMenuItemClickListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var bookmarksView: RecyclerView
     private lateinit var tag: Optional<Tag>
-    val bookmarksViewModel: BookmarksViewModel by activityViewModels<BookmarksViewModel>()
+    val bookmarksViewModel: BookmarksViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        super.onCreate(savedInstanceState)
-
         //Override back button and directly return to home list instead of returning to another bookmarks of tag list.
         tag = if (arguments?.getString("selectedTag") == null) {
             Optional.empty<Tag>()
         } else {
-            Optional.of(arguments?.getString("selectedTag")!!.let { Tag(it) })
+            Optional.of(Tag(arguments?.getString("selectedTag")!!))
         }
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (bookmarksViewModel.bookmarksToShow.value?.any { it.isSelected }!!) {
@@ -97,7 +93,6 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
             .apply {
                 val bookmarksListLayoutManager = LinearLayoutManager(requireContext())
                 val bookmarksListAdapter = BookmarkAdapter(
-                    requireActivity().supportFragmentManager,
                     bookmarksViewModel
                 )
                 bookmarksView =
@@ -106,18 +101,13 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
                         adapter = bookmarksListAdapter
                     }
 
-                // TODO Dont use notifyDataSetChanged(), use diffutils or something.
+                // TODO Don't use notifyDataSetChanged(), use diffutils or something.
                 // TODO is observing whole list is good or can we do better?
                 bookmarksViewModel.bookmarksToShow.observe(viewLifecycleOwner, { newBookmarks ->
                     bookmarksListAdapter.setBookmarks(newBookmarks)
                 })
                 return this
             }
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
     }
 
     override fun onAttach(context: Context) {
@@ -162,7 +152,7 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
         menu.findItem(R.id.action_delete).setOnMenuItemClickListener(this)
     }
 
-    fun onMultipleItemDelete() {
+    private fun onMultipleItemDelete() {
         bookmarksViewModel.bookmarksToShow.value
             ?.filter { it.isSelected }
             ?.forEach { bookmarksViewModel.deleteBookmark(it.url) }
@@ -198,20 +188,10 @@ class BookmarkListFragment() : Fragment(), SearchView.OnQueryTextListener,
             Optional.empty<String>()
         } else Optional.of(query)
         bookmarksViewModel.searchKeyword = newQuery
-        Log.d("defter", "SearchView.onTextSubmit() with query: $newQuery")
+        Timber.d("SearchView.onTextSubmit() with query: $newQuery")
         return true
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-    //     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
