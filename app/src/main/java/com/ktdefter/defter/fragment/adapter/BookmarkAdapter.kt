@@ -190,6 +190,7 @@ class BookmarkListDiffCallback(
         }
         if (oldList[oldItemPosition].favicon != newList[newItemPosition].favicon) {
             return false
+        }
         
         if (oldList[oldItemPosition].isSelected != newList[newItemPosition].isSelected) {
             Timber.d("Detected a bookmark with different isSelected position ${oldList[oldItemPosition].url}")
