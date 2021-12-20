@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bookmark_url_text"
         app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/bookmark_image"
+        app:layout_constraintStart_toEndOf="@+id/roundCardView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/date/day_of_week" />
 
@@ -40,50 +40,54 @@
         android:id="@+id/bookmark_url_text"
         android:layout_width="0dp"
         android:layout_height="18dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:ellipsize="middle"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:singleLine="true"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/bookmark_tags_text"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_title_text"
         app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
-        app:layout_constraintStart_toEndOf="@+id/bookmark_image"
+        app:layout_constraintStart_toEndOf="@+id/roundCardView"
         app:layout_constraintTop_toBottomOf="@+id/bookmark_title_text"
         tools:text="@tools:sample/date/ddmmyy" />
 
-    <ImageView
-        android:id="@+id/bookmark_image"
-        android:background="#ffffff"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/roundCardView"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:padding="@dimen/text_padding"
+        android:layout_margin="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:srcCompat="@tools:sample/avatars[2]" />
+        app:cardCornerRadius="10dp">
+
+        <ImageView
+            android:id="@+id/bookmark_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background= "@color/bookmark_background"
+            tools:srcCompat="@tools:sample/avatars[2]" />
+    </androidx.cardview.widget.CardView>
+
 
     <TextView
         android:id="@+id/bookmark_tags_text"
         android:layout_width="0dp"
         android:layout_height="15dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="4dp"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
+        android:paddingStart="19dp"
+        android:paddingEnd="10dp"
         android:text="bookmark doesn't have any tags"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_url_text"
         app:layout_constraintHorizontal_bias="0.479"
-        app:layout_constraintStart_toEndOf="@+id/bookmark_image"
+        app:layout_constraintStart_toEndOf="@+id/roundCardView"
         app:layout_constraintTop_toBottomOf="@+id/bookmark_url_text"
         app:layout_constraintVertical_bias="0.0" />
 
