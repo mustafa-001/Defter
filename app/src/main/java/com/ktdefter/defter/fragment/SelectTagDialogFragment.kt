@@ -5,7 +5,10 @@ import android.app.Dialog
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ArrayAdapter
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.ktdefter.defter.R
@@ -13,70 +16,100 @@ import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_select_tag_dialog.view.*
+import kotlinx.android.synthetic.main.fragment_login.*
 import timber.log.Timber
 
 @AndroidEntryPoint
 class SelectTagDialogFragment : DialogFragment() {
     private var listener: OnFragmentInteractionListener? = null
-    private  val bookmarksViewModel: BookmarksViewModel by viewModels()
+    private val bookmarksViewModel: BookmarksViewModel by viewModels()
     lateinit var selectedBookmark: Bookmark
     lateinit var tags: List<Tag>
+    val changes: MutableMap<String, Boolean> = mutableMapOf()
     private lateinit var allTags: List<Tag>
 
+    private inner class TagsListAdapter : BaseAdapter() {
+        override fun getCount(): Int {
+            return allTags.size
+        }
+
+        override fun getItem(position: Int): Any {
+            return allTags[position]
+        }
+
+        override fun getItemId(position: Int): Long {
+            return allTags[position].tagName.hashCode().toLong()
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            return layoutInflater.inflate(R.layout.tag, container, false).apply {
+                val checkBox = findViewById<CheckBox>(R.id.tag_checkbox)
+                checkBox.apply{
+                    isChecked = tags.any { it.tagName == allTags[position].tagName }
+                    setOnClickListener {
+                        changes[allTags[position].tagName] = isChecked
+                    }
+                }
+                findViewById<TextView>(R.id.tag_text).apply {
+                    text = allTags[position].tagName
+                }
+                findViewById<LinearLayout>(R.id.tag_selector).apply {
+                    setOnClickListener {
+                        checkBox.isChecked = !checkBox.isChecked
+                        changes[allTags[position].tagName] = checkBox.isChecked
+                    }
+                }
+
+            }
+        }
+    }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
-        return activity?.let {activity ->
+        return activity?.let { activity ->
+            allTags.map { tags.contains(it) }
+            Timber.d("all tags are: " + allTags.map { it.tagName + " " })
+            val view =
+                activity.layoutInflater.inflate(R.layout.fragment_select_tag_dialog, null)
+            val negativeButton = view.findViewById<Button>(R.id.new_tag_cancel)
+            negativeButton.setOnClickListener {
+                dialog!!.cancel()
 
-            val selectedTags = allTags.map { tags.contains(it) }
-            Timber.d("all tags are: " + allTags.map{it.tagName+" "})
-            val changes: MutableMap<String, Boolean> = mutableMapOf()
-            val view = activity.layoutInflater.inflate(R.layout.fragment_select_tag_dialog, null)
-            view.apply {
-                new_tag_text.setAdapter(
-                    ArrayAdapter(this.context,
-                        android.R.layout.simple_dropdown_item_1line,
-                        allTags.map { t -> t.tagName })
-                )
-                new_tag_text.threshold = 1
             }
+            val positiveBotton = view.findViewById<Button>(R.id.new_tag_add)
+            positiveBotton.setOnClickListener {
+                onPositiveClick(
+                    changes,
+                    view.findViewById<EditText>(R.id.new_tag_text).text.toString()
+                )
+                dialog!!.cancel()
+            }
+            val tagsList = view.findViewById<ListView>(R.id.tags_list_view)
+            tagsList.adapter = TagsListAdapter()
 
             AlertDialog.Builder(activity)
                 .setView(view)
-
-                .setMultiChoiceItems(allTags.map { it.tagName }.toTypedArray(),
-                    allTags.map { tags.contains(it) }.toBooleanArray()
-                ) { _, which, isChecked ->
-                    changes[allTags.map { it.tagName }[which]] = isChecked
-                }
-
-                .setTitle("Select new tag")
-
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    dialog.cancel()
-                }
-
-                .setPositiveButton("Add"
-                ) { _, _ ->
-                    changes.mapKeys {
-                        if (it.value) {
-                            bookmarksViewModel.addBookmarkTagPair(selectedBookmark.url, it.key)
-                        } else {
-                            bookmarksViewModel.deleteBookmarkTagPair(
-                                selectedBookmark.url,
-                                it.key
-                            )
-                        }
-                    }
-                    onPositiveClick(view.new_tag_text.text.toString())
-                }
                 .create()
+
         } ?: throw IllegalStateException("Main Activity cannot be null")
     }
 
-    private fun onPositiveClick(tag: String) {
-        if (tag != "") {
-            bookmarksViewModel.addBookmarkTagPair(selectedBookmark.url, tag)
+    private fun onPositiveClick(changes: MutableMap<String, Boolean>, newTag: String) {
+        changes.mapKeys {
+            if (it.value) {
+                bookmarksViewModel.addBookmarkTagPair(selectedBookmark.url, it.key)
+            } else {
+                bookmarksViewModel.deleteBookmarkTagPair(
+                    selectedBookmark.url,
+                    it.key
+                )
+            }
+        }
+        if (newTag != "") {
+            bookmarksViewModel.addBookmarkTagPair(
+                selectedBookmark.url,
+                newTag
+            )
+
         }
     }
 
