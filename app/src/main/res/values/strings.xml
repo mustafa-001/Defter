@@ -51,4 +51,6 @@
     <string name="export_file_datetime_format">yyyy-MM-dd\'T\'HH:mm:ssZ</string>
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
+    <string name="favicon_of_the_site">Favicon of the site</string>
+    <string name="bookmark_doesn_t_have_any_tags">bookmark doesn\'t have any tags</string>
 </resources>

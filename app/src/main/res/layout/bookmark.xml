@@ -56,21 +56,23 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/roundCardView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:padding="@dimen/text_padding"
         android:layout_margin="10dp"
+        android:background= "@color/bookmark_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="23dp">
 
         <ImageView
             android:id="@+id/bookmark_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
             android:background= "@color/bookmark_background"
-            tools:srcCompat="@tools:sample/avatars[2]" />
+            tools:srcCompat="@tools:sample/avatars[2]"
+            android:contentDescription="@string/favicon_of_the_site" />
     </androidx.cardview.widget.CardView>
 
 
@@ -82,7 +84,7 @@
         android:layout_marginBottom="4dp"
         android:paddingStart="19dp"
         android:paddingEnd="10dp"
-        android:text="bookmark doesn't have any tags"
+        android:text="@string/bookmark_doesn_t_have_any_tags"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_url_text"

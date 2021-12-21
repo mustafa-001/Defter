@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
@@ -91,6 +92,11 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
     }
 
     private fun setDrawerTags() {
+        navView.menu.findItem(R.id.drawer_settings).setOnMenuItemClickListener {
+            drawer.closeDrawer(GravityCompat.START, true)
+            findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment)
+            true
+        }
         this.tags.observe(this, { newTags ->
             oldTagIds.map {
                 navView.menu.removeItem(it)
