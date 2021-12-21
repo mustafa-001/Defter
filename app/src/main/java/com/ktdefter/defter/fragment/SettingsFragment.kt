@@ -86,7 +86,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(root_preferences, rootKey)
         val prefs = findPreference<Preference>("sync") as SwitchPreferenceCompat
-        if (Firebase.auth.currentUser != null){
+        if (Firebase.auth.currentUser != null) {
             prefs.isChecked = true
         }
     }
@@ -99,7 +99,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val dummyVariable = bookmarksViewModel.getBookmarksSync()
         when (preference.key) {
             "export" -> {
-                val date = SimpleDateFormat(getString(R.string.export_file_datetime_format)).format(Date())
+                val date =
+                    SimpleDateFormat(getString(R.string.export_file_datetime_format)).format(Date())
                 getDocumentFileToExport.launch("${date}_exported_defter.json")
 
             }
@@ -120,8 +121,25 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
             }
+            "downloadMetadataForAll" -> {
+                bookmarksViewModel.downloadMissingMetadataForAll()
+            }
+            "syncNow" -> {
+                bookmarksViewModel.bookmarksRepository.syncBookmarks()
+            }
+            "syncOnStart" -> {
+                val p = preference as SwitchPreferenceCompat
+                requireContext().getSharedPreferences(
+                    "SyncSettings", 0
+                ).edit()
+                    .putBoolean(
+                        "syncOnStart",
+                        p.isChecked
+                    ).apply()
+            }
+
             "sync" -> run {
-                if ((preference as SwitchPreferenceCompat).isChecked){
+                if ((preference as SwitchPreferenceCompat).isChecked) {
                     findNavController().navigate(R.id.action_settingsFragment_to_loginFragment)
                 } else {
                     val loginViewModel: LoginViewModel by viewModels()

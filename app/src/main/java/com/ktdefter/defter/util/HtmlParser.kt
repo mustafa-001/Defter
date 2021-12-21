@@ -6,13 +6,15 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import com.ktdefter.defter.data.Bookmark
+import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
+import timber.log.Timber
 import java.lang.Exception
 
 
-fun getTitleAndFavicon(context: Context, url: Uri): Bookmark {
+suspend fun getTitleAndFavicon(context: Context, url: Uri): Bookmark = coroutineScope {
     val newUrl = if (url.scheme == "http") {
         url.buildUpon().scheme("https").build()
     } else url
@@ -23,29 +25,29 @@ fun getTitleAndFavicon(context: Context, url: Uri): Bookmark {
             .followRedirects(true)
             .get()
     } catch (e: Exception) {
-        Log.d("defter", e.toString())
-        return Bookmark(url.toString(), null, null)
+        Timber.d(e.toString())
+        return@coroutineScope Bookmark(url.toString(), null, null)
     }
-    Log.d("Defter", "requesting: $url")
+    Timber.d("requesting: $url")
     val imageUrl: String? = doc.select("link[href~=.*\\.(ico|png)]").first()?.absUrl("href")
 
     val hostName = Bookmark(newUrl.toString()).hostname
 
     if (imageUrl == null) {
-        Log.d("Defter", "Failed to parse site favicon.")
+        Timber.d("Failed to parse site favicon.")
     } else {
-        Log.d("Defter", "Downloading image at: $imageUrl")
+        Timber.d("Downloading image at: $imageUrl")
         saveImage(context, hostName, imageUrl)
     }
 
-    return Bookmark(newUrl.toString(), doc.title(), hostName)
+    return@coroutineScope Bookmark(newUrl.toString(), doc.title(), hostName)
 }
 
 fun saveImage(context: Context, url: String, image_url: String): String? {
     val bitmap: Bitmap = try {
         downloadImage(image_url)
     } catch (e: java.lang.Exception) {
-        Log.d("Defter", "Cannot retrieve favicon from $image_url ${e.toString()}")
+        Timber.d("Cannot retrieve favicon from $image_url $e")
         return null
     }
 
@@ -64,7 +66,7 @@ fun downloadImage(url: String): Bitmap {
         .build()
 
     val response = client.newCall(request).execute()
-    return if (!response.isSuccessful) {
+    if (!response.isSuccessful) {
         throw okio.IOException("Error when downloading image: $response")
     } else {
         return response.body?.byteStream()

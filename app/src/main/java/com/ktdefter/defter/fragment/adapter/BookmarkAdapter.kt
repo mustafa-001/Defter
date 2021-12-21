@@ -48,8 +48,6 @@ class BookmarkAdapter(val viewModel: BookmarksViewModel) :
         private val moreOptionsMenu: Button = v.findViewById(R.id.bookmark_more_menu)
 
         fun onBindToAdapter(bookmark: Bookmark, tags: List<Tag>, multipleSelectionMode: Boolean) {
-            Timber.d("onBindToAdapter: " + bookmark.isSelected + "  " + bookmark.url)
-            Timber.d("multipleSelectionMode: $multipleSelectionMode")
             this.urlTextView.text = bookmark.hostname
             this.titleTextView.text = bookmark.title
             val imageFile = File(this.itemView.context.filesDir, bookmark.hostname)
@@ -59,7 +57,7 @@ class BookmarkAdapter(val viewModel: BookmarksViewModel) :
                 this.faviconImageView.setImageURI(Uri.fromFile(imageFile))
             } else {
                 this.faviconImageView.setImageResource(R.drawable.ic_broken_image_black_24dp)
-                Timber.d("Favicon file for " + bookmark.url + " should be at " + bookmark.hostname + " but not.")
+                Timber.d("Cannot  find local favicon file for " + bookmark.url + ", it should be at " + bookmark.hostname + " but not.")
             }
 
                 this.tagsTextView.text = tags

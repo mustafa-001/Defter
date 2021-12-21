@@ -12,9 +12,6 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
     ViewModel() {
     //This repetition is better than 60+ line, 4 MutableLiveData and addSource() mess.
     //That also means we Observe parameters we set, Which I think is schizophrenic.
-    init {
-        bookmarksRepository.syncBookmarks()
-    }
     private val queryParametersChanged = MutableLiveData(true)
     var sortBy: SortBy = SortBy.MODIFICATION_TIME
         set(value) {
@@ -75,6 +72,7 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
         } as List<Bookmark>
         bookmarksToShow.postValue(b)
     }
+
     fun markBookmarkUnselected(bookmark: Bookmark) {
         val b: List<Bookmark> = bookmarksToShow.value?.map {
             if (it.url == bookmark.url) {
@@ -87,7 +85,6 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
         } as List<Bookmark>
         bookmarksToShow.postValue(b)
     }
-
 
 
 /*  fun getBookmarks(
@@ -176,6 +173,13 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
                 it.tags = bookmarksRepository.getTagsOfBookmarkSync(it.url)
             }
         }
+    }
+
+    fun downloadMissingMetadataForAll() {
+        for (b in getBookmarksSync()) bookmarksRepository.updateBookmark(
+            b,
+            BookmarksRepository.ShouldFetchTitle.Yes
+        )
     }
 
     fun addBookmark(

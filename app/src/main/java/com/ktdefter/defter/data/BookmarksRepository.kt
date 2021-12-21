@@ -4,24 +4,20 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.util.getTitleAndFavicon
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.time.Instant
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.launch as launch1
 
 
 @Singleton
@@ -33,7 +29,6 @@ class BookmarksRepository @Inject constructor(
 ) {
 
     fun syncBookmarks() {
-        //        Firebase.auth.signInWithEmailAndPassword("mustafaalimutlu@googlemail.com", "qwerty")
         //Use credential instead of password, ,its save to SharedPreferences by LoginViewModel
 //        Firebase.auth.signInWithCredential()
         if (Firebase.auth.currentUser != null) {
@@ -63,7 +58,7 @@ class BookmarksRepository @Inject constructor(
 
     }
 
-    fun resetLastSync(){
+    fun resetLastSync() {
         context.getSharedPreferences(
             "SyncSettings", 0
         ).edit()
@@ -108,7 +103,7 @@ class BookmarksRepository @Inject constructor(
     ) {
         bookmarksDao.updateBookmark(bookmark)
         if (fetchTitle == ShouldFetchTitle.Yes || (bookmark.title == null && fetchTitle == ShouldFetchTitle.IfNeeded)) {
-            fetchTitle(bookmark)
+            CoroutineScope(Dispatchers.Default).launch1 {  fetchMetadataAndUpdateBookmarkAsync(bookmark)}
         }
     }
 
@@ -116,28 +111,34 @@ class BookmarksRepository @Inject constructor(
         Yes, No, IfNeeded
     }
 
-    fun insertBookmark(bookmark: Bookmark, fetchTitle: ShouldFetchTitle = ShouldFetchTitle.No) {
+    fun insertBookmark(bookmark: Bookmark, fetchTitle: ShouldFetchTitle = ShouldFetchTitle.Yes) {
         bookmarksDao.insertBookmark(bookmark)
         Timber.d("Inserting bookmark: $bookmark.url")
         if (fetchTitle == ShouldFetchTitle.Yes) {
-            fetchTitle(bookmark)
+            CoroutineScope(Dispatchers.Default).launch1(Dispatchers.Default) {
+                fetchMetadataAndUpdateBookmarkAsync(
+                    bookmark
+                )
+            }
         }
     }
 
-    private fun fetchTitle(bookmark: Bookmark) {
-        GlobalScope.launch {
-            val bookmark =
-                async { getTitleAndFavicon(context, Uri.parse(bookmark.url)) }.await()
-            bookmarksDao.updateBookmark(bookmark)
-        }
-
+    private suspend fun fetchMetadataAndUpdateBookmarkAsync(bookmark: Bookmark) = coroutineScope {
+        bookmarksDao.updateBookmark(
+            getTitleAndFavicon(context, Uri.parse(bookmark.url))
+        )
     }
 
     fun fetchMetadata(bookmark: Bookmark): LiveData<Bookmark> {
         val lD: MutableLiveData<Bookmark> = MutableLiveData()
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.Default).launch1 {
             val b =
-                async { getTitleAndFavicon(context, Uri.parse(bookmark.url)) }.await()
+                withContext(Dispatchers.Default) {
+                    getTitleAndFavicon(
+                        context,
+                        Uri.parse(bookmark.url)
+                    )
+                }
             lD.postValue(b)
         }
         return lD
