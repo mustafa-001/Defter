@@ -71,8 +71,15 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         tags = bookmarksViewModel.getTags()
         setDrawerTags()
 
+        if (getSharedPreferences("SyncSettings", 0).getBoolean(
+                "syncOnStart", false
+            )
+        ) {
+            bookmarksViewModel.bookmarksRepository.syncBookmarks()
+        }
+
         val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener{
+        fab.setOnClickListener {
             val addBookmarkDialogFragment = AddBookmarkDialogFragment()
             addBookmarkDialogFragment.show(
                 this.supportFragmentManager,

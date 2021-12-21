@@ -44,10 +44,10 @@ class EditBookmarkFragment : Fragment() {
             }
 
             view.findViewById<Button>(R.id.editBookmarkFragment_fetch).setOnClickListener {
-                viewModel.addBookmark(
-                    Bookmark(editText.text.toString()),
-                    BookmarksRepository.ShouldFetchTitle.Yes
-                )
+//                viewModel.addBookmark(
+//                    Bookmark(editText.text.toString()),
+//                    BookmarksRepository.ShouldFetchTitle.Yes
+//                )
                 viewModel.bookmarksRepository.fetchMetadata(Bookmark(editText.text.toString())).observe(viewLifecycleOwner) { bookmark ->
                     if (bookmark == null){
                         return@observe

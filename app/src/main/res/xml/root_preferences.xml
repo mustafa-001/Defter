@@ -15,14 +15,10 @@
             app:key="useDarkTheme"
             app:title="Use dark theme"
             />
-
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
+        <Preference
+            app:key="downloadMetadataForAll"
+            android:title="Download missing metadata"
+            />
 
     </PreferenceCategory>
 
@@ -34,11 +30,13 @@
 
         <SwitchPreferenceCompat
             app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
-
+            app:key="syncOnStart"
+            app:title="Sync bookmarks on startup" />
+        <Preference
+            app:dependency="sync"
+            app:title="Sync now"
+            app:key="syncNow"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>
