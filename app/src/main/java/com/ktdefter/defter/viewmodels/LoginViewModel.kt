@@ -87,6 +87,16 @@ class LoginViewModel @Inject constructor(val bookmarksRepository: BookmarksRepos
             _loginForm.value = LoginFormState(isDataValid = true)
         }
     }
+    fun registerDataChanged(username: String, firstPassword: String, secondPassword: String) {
+        if (!isUserNameValid(username)) {
+            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
+        } else if (!isPasswordValid(firstPassword) || !isPasswordValid(secondPassword)) {
+            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
+        } else {
+            _loginForm.value = LoginFormState(isDataValid = true)
+        }
+    }
+
 
     // A placeholder username validation check
     private fun isUserNameValid(username: String): Boolean {
