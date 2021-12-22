@@ -65,6 +65,8 @@ class SignupFragment : Fragment() {
             })
         loginViewModel.signupResult.observe(viewLifecycleOwner,
             Observer { signupResult ->
+                signupResult ?: return@Observer
+                loadingProgressBar.visibility = View.GONE
                 signupResult.error?.let {
                     showSignupFailed(it)
                 }
@@ -102,6 +104,7 @@ class SignupFragment : Fragment() {
                 usernameEditText.text.toString(),
                 binding.passwordSignup.text.toString()
             )
+            loadingProgressBar.visibility = View.GONE
         }
         binding.signupToLogin.setOnClickListener {
             findNavController().navigate(R.id.login_fragment)

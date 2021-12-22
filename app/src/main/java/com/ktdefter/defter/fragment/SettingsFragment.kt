@@ -85,9 +85,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(root_preferences, rootKey)
-        val prefs = findPreference<Preference>("sync") as SwitchPreferenceCompat
+        val syncSwitch = findPreference<Preference>("sync") as SwitchPreferenceCompat
         if (Firebase.auth.currentUser != null) {
-            prefs.isChecked = true
+            syncSwitch.isChecked = true
+            syncSwitch.summaryOn = Firebase.auth.currentUser!!.email.toString()
         }
     }
 
