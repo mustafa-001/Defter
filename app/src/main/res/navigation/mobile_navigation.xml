@@ -35,13 +35,13 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.ktdefter.defter.fragment.SettingsFragment"
-        android:label="SettingsFragment" >
+        android:label="@string/action_settings">
         <action
             android:id="@+id/action_settingsFragment_to_selectImportFileFragment"
             app:destination="@id/selectImportFileFragment" />
         <action
             android:id="@+id/action_settingsFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/login_fragment" />
     </fragment>
     <fragment
         android:id="@+id/selectImportFileFragment"
@@ -51,16 +51,28 @@
     <fragment
         android:id="@+id/editBookmarkFragment"
         android:name="com.ktdefter.defter.fragment.EditBookmarkFragment"
-        android:label="edit_bookmark_fragment"
-        tools:layout="@layout/edit_bookmark_fragment" >
+        android:label="Edit Bookmark"
+        tools:layout="@layout/edit_bookmark_fragment">
         <argument
             android:name="BookmarkUrl"
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/loginFragment"
+        android:id="@+id/login_fragment"
         android:name="com.ktdefter.defter.fragment.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_signupFragment"
+            app:destination="@id/signup_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signup_fragment"
+        android:name="com.ktdefter.defter.fragment.SignupFragment"
+        android:label="@string/register">
+        <action
+            android:id="@+id/action_signupFragment_to_loginFragment"
+            app:destination="@id/login_fragment" />
+    </fragment>
 
 </navigation>

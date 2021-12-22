@@ -16,6 +16,7 @@ import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_bookmark_list.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import timber.log.Timber
 
@@ -42,7 +43,7 @@ class SelectTagDialogFragment : DialogFragment() {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            return layoutInflater.inflate(R.layout.tag, container, false).apply {
+            return layoutInflater.inflate(R.layout.tag, bookmarks_list_fragment, false).apply {
                 val checkBox = findViewById<CheckBox>(R.id.tag_checkbox)
                 checkBox.apply{
                     isChecked = tags.any { it.tagName == allTags[position].tagName }
