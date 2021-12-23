@@ -26,7 +26,7 @@ interface BookmarkTagPairDao {
                 "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'asc'   THEN b.lastModification END ASC," +
                 "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'desc'    THEN b.lastModification END DESC"
     )
-    fun _getBookmarksWithTagImpl(
+    fun getBookmarksWithTagImpl(
         tag: String,
         sortBy: String,
         sortDirection: String
@@ -37,7 +37,7 @@ interface BookmarkTagPairDao {
         sortBy: SortBy = SortBy.MODIFICATION_TIME,
         sortDirection: SortDirection = SortDirection.DESC
     ): LiveData<List<Bookmark>> {
-        return _getBookmarksWithTagImpl(tag.tagName, sortBy.string, sortDirection.string)
+        return getBookmarksWithTagImpl(tag.tagName, sortBy.string, sortDirection.string)
     }
 
     @Query(

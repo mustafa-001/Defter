@@ -1,5 +1,6 @@
 package com.ktdefter.defter.fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle

@@ -63,5 +63,6 @@
     <string name="add_new_bookmark">Add new bookmark</string>
     <string name="new_title_for_bookmark">New title for Bookmark</string>
     <string name="new_url">New URL</string>
+    <string name="new_tag_to_select">New tag to select</string>
     <string name="bookmarks_favicon">Bookmarks favicon</string>
 </resources>

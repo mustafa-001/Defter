@@ -47,9 +47,11 @@ class SelectTagDialogFragment : DialogFragment() {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            return layoutInflater.inflate(R.layout.tag, bookmarks_list_fragment, false).apply {
+            val view =
+                convertView ?: layoutInflater.inflate(R.layout.tag, bookmarks_list_fragment, false)
+            return view.apply {
                 val checkBox = findViewById<CheckBox>(R.id.tag_checkbox)
-                checkBox.apply{
+                checkBox.apply {
                     isChecked = tags.any { it.tagName == allTags[position].tagName }
                     setOnClickListener {
                         changes[allTags[position].tagName] = isChecked
@@ -68,6 +70,7 @@ class SelectTagDialogFragment : DialogFragment() {
             }
         }
     }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
         return activity?.let { activity ->
@@ -114,7 +117,6 @@ class SelectTagDialogFragment : DialogFragment() {
                 selectedBookmark.url,
                 newTag
             )
-
         }
     }
 
@@ -123,7 +125,6 @@ class SelectTagDialogFragment : DialogFragment() {
         allTags = bookmarksViewModel.getTagsSync()
         tags = bookmarksViewModel.getTagsOfBookmarkSync(selectedBookmark.url)
     }
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

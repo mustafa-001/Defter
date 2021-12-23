@@ -37,6 +37,7 @@ class FirestoreSync  constructor(
 
     private fun taskToBookmarks(task: Task<QuerySnapshot>): List<Bookmark> {
         while (!task.isSuccessful) {
+            /* no-op */
         }
         return task.result!!.documents.map {
             Bookmark(

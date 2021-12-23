@@ -32,13 +32,13 @@ interface BookmarkDao {
                 "CASE WHEN :sortBy = 'lastModification' AND :sortDirection = 'desc' THEN lastModification END DESC"
 
     )
-    fun _getBookmarksImpl(sortBy: String, sortDirection: String): LiveData<List<Bookmark>>
+    fun getBookmarksImpl(sortBy: String, sortDirection: String): LiveData<List<Bookmark>>
 
     fun getBookmarks(
         sortBy: SortBy = SortBy.MODIFICATION_TIME,
         sortDirection: SortDirection = SortDirection.DESC
     ): LiveData<List<Bookmark>> {
-        return _getBookmarksImpl(sortBy.string, sortDirection.string)
+        return getBookmarksImpl(sortBy.string, sortDirection.string)
     }
 
     @Query("SELECT * FROM bookmark WHERE isDeleted = 0")

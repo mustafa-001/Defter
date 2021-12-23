@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:inputType="text"
         android:singleLine="true"
-        android:hint="New tag to select"
+        android:hint="@string/new_tag_to_select"
         android:text=""
         app:layout_constraintTop_toTopOf="parent" />
 

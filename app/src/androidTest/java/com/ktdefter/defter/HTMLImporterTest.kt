@@ -9,17 +9,17 @@ import java.io.InputStream
 
 class HTMLImporterTest {
 
-    private val HTMLStream: InputStream = BookmarksInHTML.byteInputStream()
+    private val hTMLStream: InputStream = BookmarksInHTML.byteInputStream()
 
     @Before
     fun setUp(){
 
     }
     @Test
-    fun DeserializeFromHTMLToBookmark(){
+    fun deserializeFromHTMLToBookmark(){
 
 
-        val bookmarks =   HTMLImporter(HTMLStream).import()
+        val bookmarks =   HTMLImporter(hTMLStream).import()
         Log.d("defter_test", bookmarks[1].url)
         assertTrue(bookmarks.map{it.url}.contains("http://www.righto.com/"))
     }
