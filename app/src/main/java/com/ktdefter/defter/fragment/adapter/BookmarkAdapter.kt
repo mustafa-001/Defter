@@ -44,7 +44,7 @@ class BookmarkAdapter(val viewModel: BookmarksViewModel) :
         private val urlTextView: TextView = v.findViewById(R.id.bookmark_url_text)
         private val tagsTextView: TextView = v.findViewById(R.id.bookmark_tags_text)
         private val faviconImageView: ImageView = v.findViewById(R.id.bookmark_image)
-        private val moreOptionsMenu: Button = v.findViewById(R.id.bookmark_more_menu)
+        private val openInBrowser: Button = v.findViewById(R.id.bookmark_open_in_browser)
 
         fun onBindToAdapter(bookmark: Bookmark, tags: List<Tag>, multipleSelectionMode: Boolean) {
             this.urlTextView.text = bookmark.hostname
@@ -74,8 +74,12 @@ class BookmarkAdapter(val viewModel: BookmarksViewModel) :
                 true
             }
 
-            moreOptionsMenu.setOnClickListener {
-                itemView.showContextMenu()
+            openInBrowser.setOnClickListener {
+                Intent().apply {
+                    action = Intent.ACTION_VIEW
+                    data = sanitizeURL(bookmark.url)
+                    itemView.context.startActivity(this)
+                }
             }
 
             itemView.setOnCreateContextMenuListener { menu, _, _ ->
@@ -122,11 +126,7 @@ class BookmarkAdapter(val viewModel: BookmarksViewModel) :
                         )
                     }
                 } else {
-                    Intent().apply {
-                        action = Intent.ACTION_VIEW
-                        data = sanitizeURL(bookmark.url)
-                        itemView.context.startActivity(this)
-                    }
+                    itemView.showContextMenu()
                 }
                 true
             }
