@@ -1,6 +1,5 @@
 package com.ktdefter.defter.fragment.adapter
 
-import android.app.ProgressDialog.show
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle

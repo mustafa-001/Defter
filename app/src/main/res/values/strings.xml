@@ -1,40 +1,40 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Defter</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" tools:keep="@string/navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close" tools:keep="@string/navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Defter</string>
     <string name="nav_header_subtitle">  </string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="add_bookmark_hint">Type the URL of bookmark.</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
+    <string name="menu_home" tools:keep="@string/menu_home">Home</string>
+    <string name="menu_gallery" tools:keep="@string/menu_gallery">Gallery</string>
+    <string name="menu_tools" tools:keep="@string/menu_tools">Tools</string>
+    <string name="menu_share" tools:keep="@string/menu_share">Share</string>
+    <string name="menu_send" tools:keep="@string/menu_send">Send</string>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
 
     <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+    <string name="signature_title" tools:keep="@string/signature_title">Your signature</string>
+    <string name="reply_title" tools:keep="@string/reply_title">Default reply action</string>
 
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    <string name="attachment_title" tools:keep="@string/attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on" tools:keep="@string/attachment_summary_on">Automatically download attachments for incoming emails
     </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="attachment_summary_off" tools:keep="@string/attachment_summary_off">Only download attachments when manually requested</string>
     <string name="export_bookmarks">Export bookmarks</string>
     <string name="import_bookmarks">Import bookmarks</string>
     <string name="enter_search_term">Enter search term</string>
     <string name="save">Save</string>
     <string name="fetch">Fetch</string>
-    <string name="sort_by">Sort By</string>
-    <string name="sort_direction">Sort Direction</string>
-    <string name="sort_by_time">Sort by last modification time</string>
+    <string name="sort_by" tools:keep="@string/sort_by">Sort By</string>
+    <string name="sort_direction" tools:keep="@string/sort_direction">Sort Direction</string>
+    <string name="sort_by_time" tools:keep="@string/sort_by_time">Sort by last modification time</string>
     <string name="sort_by_name">Sort by name</string>
     <string name="ascending_sort">Ascending Sort</string>
     <string name="title">Title</string>
@@ -42,9 +42,9 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in" tools:keep="@string/action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
+    <string name="welcome" tools:keep="@string/welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
@@ -60,4 +60,8 @@
     <string name="signin">Signin</string>
     <string name="repeat_password">Repeat password</string>
     <string name="search">Search</string>
+    <string name="add_new_bookmark">Add new bookmark</string>
+    <string name="new_title_for_bookmark">New title for Bookmark</string>
+    <string name="new_url">New URL</string>
+    <string name="bookmarks_favicon">Bookmarks favicon</string>
 </resources>

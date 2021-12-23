@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:importantForAutofill="no"
             android:inputType="textUri"
-            android:hint="New URL"
+            android:hint="@string/new_url"
             android:text="@string/enter_search_term"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -31,7 +31,7 @@
             android:layout_height="40dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editBookmarkFragment_url"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/bookmarks_favicon" />
 
         <EditText
             android:id="@+id/editBookmarkFragment_title"
@@ -41,7 +41,7 @@
             android:layout_marginTop="7dp"
             android:importantForAutofill="no"
             android:inputType="text"
-            android:hint="New title for Bookmark"
+            android:hint="@string/new_title_for_bookmark"
             android:text="@string/title"
             app:layout_constraintStart_toEndOf="@id/editBookmarkFragment_favicon"
             app:layout_constraintTop_toBottomOf="@+id/editBookmarkFragment_url" />

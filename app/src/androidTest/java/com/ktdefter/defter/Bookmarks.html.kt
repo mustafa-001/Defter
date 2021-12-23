@@ -1,4 +1,4 @@
-package com.ktdefter.defter.data
+package com.ktdefter.defter
 
 val BookmarksInHTML =
 """<!DOCTYPE NETSCAPE-Bookmark-file-1>

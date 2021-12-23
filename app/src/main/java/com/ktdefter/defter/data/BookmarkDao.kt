@@ -1,8 +1,11 @@
 package com.ktdefter.defter.data
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
-import javax.inject.Inject
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import javax.inject.Singleton
 
 /**

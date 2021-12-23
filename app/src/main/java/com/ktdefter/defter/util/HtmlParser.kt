@@ -4,15 +4,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import com.ktdefter.defter.data.Bookmark
 import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import timber.log.Timber
-import java.lang.Exception
-
 
 suspend fun getTitleAndFavicon(context: Context, url: Uri): Bookmark = coroutineScope {
     val newUrl = if (url.scheme == "http") {
@@ -46,7 +43,7 @@ suspend fun getTitleAndFavicon(context: Context, url: Uri): Bookmark = coroutine
 fun saveImage(context: Context, url: String, image_url: String): String? {
     val bitmap: Bitmap = try {
         downloadImage(image_url)
-    } catch (e: java.lang.Exception) {
+    } catch (e: Exception) {
         Timber.d("Cannot retrieve favicon from $image_url $e")
         return null
     }

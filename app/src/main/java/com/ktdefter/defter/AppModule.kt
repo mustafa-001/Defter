@@ -1,18 +1,14 @@
 package com.ktdefter.defter
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import androidx.room.Room
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ktdefter.defter.data.BookmarksDatabase
 import com.ktdefter.defter.data.MIGRATION_1_2
-import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton

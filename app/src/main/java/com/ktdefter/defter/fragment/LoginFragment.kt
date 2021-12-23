@@ -77,14 +77,14 @@ class LoginFragment : Fragment() {
                 }
             })
         loginViewModel.signupResult.observe(viewLifecycleOwner,
-        Observer { signupResult ->
-            signupResult.error?.let {
-                showSignupFailed(it)
-            }
-            signupResult.success?.let {
-                updateUiWithUser(it)
-            }
-        })
+            { signupResult ->
+                signupResult.error?.let {
+                    showSignupFailed(it)
+                }
+                signupResult.success?.let {
+                    updateUiWithUser(it)
+                }
+            })
 
         val afterTextChangedListener = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {

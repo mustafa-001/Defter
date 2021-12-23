@@ -1,12 +1,9 @@
 package com.ktdefter.defter
 
 import android.util.Log
-import com.ktdefter.defter.data.Bookmark
-import com.ktdefter.defter.data.BookmarksInHTML
 import com.ktdefter.defter.fragment.HTMLImporter
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import java.io.InputStream
 

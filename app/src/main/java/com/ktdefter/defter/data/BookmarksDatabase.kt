@@ -1,14 +1,13 @@
 package com.ktdefter.defter.data
 
 import android.content.Context
-import android.text.style.TtsSpan
-import androidx.room.*
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import java.util.*
-
+import java.util.Date
 
 @Database(entities = [Bookmark::class, Tag::class, BookmarkTagPair::class], version = 2,
     exportSchema = true)

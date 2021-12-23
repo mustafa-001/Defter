@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -32,7 +34,7 @@ class FirebaseTest {
         Bookmark("onlocal1.com"),
         Bookmark("deletedonlocalsincelastsync.com", isDeleted = true)
     )
-    val bookmarksOnFirestore = listOf<Bookmark>(
+    val bookmarksOnFirestore = listOf(
         Bookmark("onremote1"),
         Bookmark("onboth1.com", lastModification = aDayBeforeLastSync),
         Bookmark("onboth2.com"),
@@ -47,9 +49,10 @@ class FirebaseTest {
         ).build()
         tagDao = db.tagDao()
         bookmarkDao = db.bookmarkDao()
+        val mockFirestore = Firebase.firestore
         bookmarkTagPairDao = db.bookmarkTagPairDao()
-        syncer = FirestoreSync(db, mockFirestore)
-        when (mockFirestore.collection("bookmarks"))
+        // syncer = FirestoreSync(, mockFirestore)
+        // when (mockFirestore.collection("bookmarks"))
     }
 
 //        For writing future tests.
