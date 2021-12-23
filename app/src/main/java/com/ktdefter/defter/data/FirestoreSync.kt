@@ -11,8 +11,8 @@ import java.util.*
 
 class FirestoreSync  constructor(
     private val bookmarksRepository: BookmarksRepository,
-    private val firestoreDatabase: FirebaseFirestore,
-    private val user: FirebaseUser
+    firestoreDatabase: FirebaseFirestore,
+    user: FirebaseUser
 ) {
     private val userBookmarksOnRemote: CollectionReference = firestoreDatabase.collection("defter").document(user.uid).collection("bookmarks")
 
@@ -26,27 +26,18 @@ class FirestoreSync  constructor(
         return url.replace("/", "_slash_")
     }
 
-    fun getBookmarksFromLocalSince(lastSyncDate: Date) {
-
-    }
-
-    fun getBookmarksFromRemoteSince(lastSyncDate: Date) {
-
-
-    }
-
     private fun taskToBookmarks(task: Task<QuerySnapshot>): List<Bookmark> {
         while (!task.isSuccessful) {
             /* no-op */
         }
         return task.result!!.documents.map {
             Bookmark(
-                (it.data!!.get("url") as String),
+                (it.data!!["url"] as String),
                 lastModification = ((it.data?.get("lastModification")
                     ?: Timestamp(
                         Date()
                     )) as Timestamp).toDate(),
-                isDeleted = ((it.data!!.get("isDeleted") as Boolean))
+                isDeleted = ((it.data!!["isDeleted"] as Boolean))
             )
         }.toList()
     }
@@ -59,10 +50,10 @@ class FirestoreSync  constructor(
 
     private fun handleConflict(b1: Bookmark, b2: Bookmark): BookmarkConflictResolution {
         if (!b1.isDeleted || !b2.isDeleted) {
-            if (b1.lastModification > b2.lastModification) {
-                return if (b1.isDeleted) BookmarkConflictResolution.DELETE_BOTH else BookmarkConflictResolution.FIRST
+            return if (b1.lastModification > b2.lastModification) {
+                if (b1.isDeleted) BookmarkConflictResolution.DELETE_BOTH else BookmarkConflictResolution.FIRST
             } else {
-                return if (b2.isDeleted) BookmarkConflictResolution.DELETE_BOTH else BookmarkConflictResolution.SECOND
+                if (b2.isDeleted) BookmarkConflictResolution.DELETE_BOTH else BookmarkConflictResolution.SECOND
             }
         }
 
@@ -130,7 +121,7 @@ class FirestoreSync  constructor(
                     .document(removeSlashes(c1.url)).set(c1)
                 BookmarkConflictResolution.SECOND -> bookmarksRepository.updateBookmark(c2)
             }
-            Timber.d("Bookmark sync ocnflict, url: ${c1.url},  resolving to $res")
+            Timber.d("Bookmark sync conflict, url: ${c1.url},  resolving to $res")
         }
 
     }

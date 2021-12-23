@@ -15,44 +15,32 @@
     <TextView
         android:id="@+id/bookmark_title_text"
         android:layout_width="0dp"
-        android:layout_height="15dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="2dp"
-        android:ellipsize="middle"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
-        android:singleLine="true"
-        android:textSize="11sp"
+        android:maxLines="2"
+        android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@+id/bookmark_url_text"
         app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/roundCardView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/date/day_of_week" />
 
-    <!--        app:autoSizeTextType="uniform"-->
-    <!--        app:autoSizeMinTextSize="13dp"-->
-    <!--        app:autoSizeMaxTextSize="15dp"-->
-    <!--        app:autoSizeStepGranularity="2dp"-->
 
     <TextView
         android:id="@+id/bookmark_url_text"
         android:layout_width="0dp"
-        android:layout_height="18dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_height="wrap_content"
         android:ellipsize="middle"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         android:singleLine="true"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/bookmark_tags_text"
-        app:layout_constraintEnd_toEndOf="@+id/bookmark_title_text"
-        app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
-        app:layout_constraintStart_toEndOf="@+id/roundCardView"
+        android:layout_margin="8dp"
+        tools:text="@tools:sample/date/ddmmyy"
+        android:textSize="15sp"
         app:layout_constraintTop_toBottomOf="@+id/bookmark_title_text"
-        tools:text="@tools:sample/date/ddmmyy" />
+        app:layout_constraintStart_toEndOf="@+id/roundCardView"
+        app:layout_constraintEnd_toStartOf="@+id/bookmark_tags_text"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/roundCardView"
@@ -60,43 +48,45 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/text_padding"
         android:layout_margin="10dp"
-        android:background= "@color/bookmark_background"
+        android:background="@color/bookmark_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:cardCornerRadius="23dp">
+        app:cardCornerRadius="23dp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/bookmark_url_text"
+        android:layout_marginEnd="16dp">
 
         <ImageView
             android:id="@+id/bookmark_image"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:background= "@color/bookmark_background"
+            android:background="@color/bookmark_background"
             tools:srcCompat="@tools:sample/avatars[2]"
-            android:contentDescription="@string/favicon_of_the_site" />
+            android:contentDescription="@string/favicon_of_the_site"
+            tools:ignore="ImageContrastCheck" />
     </androidx.cardview.widget.CardView>
 
 
     <TextView
         android:id="@+id/bookmark_tags_text"
         android:layout_width="0dp"
-        android:layout_height="15dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="4dp"
-        android:paddingStart="19dp"
-        android:paddingEnd="10dp"
-        android:text="@string/bookmark_doesnt_have_any_tags"
-        android:textSize="11sp"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:layout_margin="8dp"
+        android:text="@string/bookmark_does_not_have_any_tags"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@+id/bookmark_title_text"
+        app:layout_constraintStart_toEndOf="@+id/bookmark_url_text"
+        app:layout_constraintEnd_toStartOf="@+id/bookmark_more_menu"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/bookmark_url_text"
-        app:layout_constraintHorizontal_bias="0.479"
-        app:layout_constraintStart_toEndOf="@+id/roundCardView"
-        app:layout_constraintTop_toBottomOf="@+id/bookmark_url_text"
-        app:layout_constraintVertical_bias="0.0" />
+        />
 
     <Button
         android:id="@+id/bookmark_more_menu"
-        android:layout_width="21dp"
-        android:layout_height="28dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/ic_baseline_more_vert_24"
         android:paddingStart="@dimen/text_padding"

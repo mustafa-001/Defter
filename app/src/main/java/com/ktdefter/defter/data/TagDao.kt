@@ -5,7 +5,7 @@ import androidx.room.*
 import javax.inject.Singleton
 
 /**
- * Data Access Objct for Tag class
+ * Data Access Object for Tag class
  */
 
 @Dao

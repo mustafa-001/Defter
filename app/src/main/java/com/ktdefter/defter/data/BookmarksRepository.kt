@@ -108,7 +108,7 @@ class BookmarksRepository @Inject constructor(
     }
 
     enum class ShouldFetchTitle {
-        Yes, No, IfNeeded
+        Yes, IfNeeded
     }
 
     fun insertBookmark(bookmark: Bookmark, fetchTitle: ShouldFetchTitle = ShouldFetchTitle.Yes) {
@@ -160,8 +160,6 @@ class BookmarksRepository @Inject constructor(
 
     fun deleteBookmarkTagPair(url: String, tag: String) =
         bookmarkTagPairDao.deletePair(url, tag)
-
-    fun getTagsOfBookmark(url: String) = bookmarkTagPairDao.getTagsWithBookmark(url)
 
     fun getTagsOfBookmarkSync(url: String) = bookmarkTagPairDao.getTagsWithBookmarkList(url)
 

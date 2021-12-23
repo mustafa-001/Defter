@@ -48,11 +48,11 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
                     } else {
                         bookmarksRepository.getBookmarks(sortBy, sortDirection)
                     }
-                    mlv.addSource(t) {
+                    mlv.addSource(t) { it1 ->
                         mlv.value =
                             if (searchKeyword.isPresent)
-                                it.filter { it.url.contains(searchKeyword.get()) }
-                            else it
+                                it1.filter { it2t -> it2t.url.contains(searchKeyword.get()) }
+                            else it1
 
                     }
                     queryParametersChanged.postValue(false)
@@ -219,8 +219,6 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
     fun getTags(): LiveData<List<Tag>> = bookmarksRepository.getTags()
 
     fun getTagsSync(): List<Tag> = bookmarksRepository.getTagsSync()
-
-    fun getTagsOfBookmark(url: String) = bookmarksRepository.getTagsOfBookmark(url)
 
     fun getTagsOfBookmarkSync(url: String) = bookmarksRepository.getTagsOfBookmarkSync(url)
 

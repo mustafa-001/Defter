@@ -80,9 +80,9 @@ val rule = InstantTaskExecutorRule()
     fun shouldUpdateBookmark() {
         insBm()
         bookmarkDao.getBookmark("test.com").let {
-            it.value.let {
+            it.value.let { it1 ->
                 bookmarkDao
-                    .insertBookmark(Bookmark(it!!.url, "New Title"))
+                    .insertBookmark(Bookmark(it1!!.url, "New Title"))
                 assertEquals(bookmarkDao.getBookmark("test.com").value!!.title, "New Title")
             }
         }
@@ -117,7 +117,7 @@ val rule = InstantTaskExecutorRule()
             .let {
             assertNotNull(it)
             assertTrue(it is List<Tag>)
-            assertTrue(it!!.map { it.tagName }.contains("tag2"))
+            assertTrue(it!!.map { it1 -> it1.tagName }.contains("tag2"))
         }
     }
 

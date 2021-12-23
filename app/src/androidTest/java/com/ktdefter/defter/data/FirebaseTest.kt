@@ -28,7 +28,7 @@ class FirebaseTest {
     private val lastSyncTime = Date()
     private val aDayBeforeLastSync: Date =
         Date.from(lastSyncTime.toInstant().plusMillis(-1000 * 60 * 60 * 24))
-    val bookmarksOnLocal = listOf<Bookmark>(
+    val bookmarksOnLocal = listOf(
         Bookmark("onboth1.com", lastModification = aDayBeforeLastSync),
         Bookmark("onboth2.com"),
         Bookmark("onlocal1.com"),

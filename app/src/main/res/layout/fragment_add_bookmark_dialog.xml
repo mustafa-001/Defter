@@ -24,6 +24,8 @@
         android:hint="@string/add_bookmark_hint"
         android:inputType="textUri"
         android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding" />
+        android:paddingEnd="@dimen/text_padding"
+        android:importantForAutofill="no"
+        android:autofillHints="" />
 
 </LinearLayout>

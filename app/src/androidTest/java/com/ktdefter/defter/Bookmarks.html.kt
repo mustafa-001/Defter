@@ -1,6 +1,6 @@
 package com.ktdefter.defter
 
-val BookmarksInHTML =
+const val BookmarksInHTML =
 """<!DOCTYPE NETSCAPE-Bookmark-file-1>
 <!-- This is an automatically generated file.
 It will be read and overwritten.

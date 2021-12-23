@@ -83,8 +83,8 @@ class SelectTagDialogFragment : DialogFragment() {
                 dialog!!.cancel()
 
             }
-            val positiveBotton = view.findViewById<Button>(R.id.new_tag_add)
-            positiveBotton.setOnClickListener {
+            val positiveButton = view.findViewById<Button>(R.id.new_tag_add)
+            positiveButton.setOnClickListener {
                 onPositiveClick(
                     changes,
                     view.findViewById<EditText>(R.id.new_tag_text).text.toString()
