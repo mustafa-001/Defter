@@ -18,7 +18,7 @@ class FirestoreSync  constructor(
     private val firestoreDatabase: FirebaseFirestore,
     private val user: FirebaseUser
 ) {
-    val userBookmarksOnRemote: CollectionReference = firestoreDatabase.collection("defter").document(user.uid).collection("bookmarks")
+    private val userBookmarksOnRemote: CollectionReference = firestoreDatabase.collection("defter").document(user.uid).collection("bookmarks")
 
     fun pushBookmark(bookmark: Bookmark): Task<Void> {
         Timber.d("Pushing bookmark ${bookmark.url} to Firestore")
@@ -26,7 +26,7 @@ class FirestoreSync  constructor(
             .document(removeSlashes(bookmark.url)).set(bookmark)
     }
 
-    fun removeSlashes(url: String): String {
+    private fun removeSlashes(url: String): String {
         return url.replace("/", "_slash_")
     }
 
@@ -39,7 +39,7 @@ class FirestoreSync  constructor(
 
     }
 
-    fun taskToBookmarks(task: Task<QuerySnapshot>): List<Bookmark> {
+    private fun taskToBookmarks(task: Task<QuerySnapshot>): List<Bookmark> {
         while (!task.isSuccessful) {
         }
         return task.result!!.documents.map {
@@ -54,13 +54,13 @@ class FirestoreSync  constructor(
         }.toList()
     }
 
-    enum class BookmarkConflictResolution() {
+    enum class BookmarkConflictResolution {
         FIRST,
         SECOND,
         DELETE_BOTH
     }
 
-    fun handleConflict(b1: Bookmark, b2: Bookmark): BookmarkConflictResolution {
+    private fun handleConflict(b1: Bookmark, b2: Bookmark): BookmarkConflictResolution {
         if (!b1.isDeleted || !b2.isDeleted) {
             if (b1.lastModification > b2.lastModification) {
                 return if (b1.isDeleted) BookmarkConflictResolution.DELETE_BOTH else BookmarkConflictResolution.FIRST
@@ -109,8 +109,7 @@ class FirestoreSync  constructor(
             (bookmarksFromLocal.subtract(bookmarksFromRemote)).subtract(deletedBookmarksOnLocal)
         val conflicts: Map<Bookmark, Bookmark> = bookmarksFromLocal.intersect(bookmarksFromRemote)
             .map { fromLocal ->
-                return@map (fromLocal to bookmarksFromRemote.filter { it.url == fromLocal.url }
-                    .first())
+                return@map (fromLocal to bookmarksFromRemote.first { it.url == fromLocal.url })
             }
             .toMap()
 

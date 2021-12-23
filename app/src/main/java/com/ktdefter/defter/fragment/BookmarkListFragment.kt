@@ -68,12 +68,14 @@ class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
         }
     }
 
+    @SuppressLint("RestrictedApi")
     fun activateMultipleSelection() {
         val act = requireActivity() as AppCompatActivity
         act.supportActionBar?.invalidateOptionsMenu()
         Timber.d("onEnableMultipleSelection")
     }
 
+    @SuppressLint("RestrictedApi")
     fun disableMultipleSelection() {
         val act = requireActivity() as AppCompatActivity
         act.supportActionBar?.invalidateOptionsMenu()

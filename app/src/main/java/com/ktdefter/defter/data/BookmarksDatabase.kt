@@ -33,12 +33,6 @@ abstract class BookmarksDatabase : RoomDatabase() {
             return Room.databaseBuilder(context, BookmarksDatabase::class.java, "bookmarks.db")
                 .addMigrations(MIGRATION_1_2)
                 .addCallback(object : RoomDatabase.Callback() {
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        super.onCreate(db)
-                        // getInstance(context).bookmarksDao().insertBookmark(Bookmark("buzlarcozulmeden.com"))
-//                        val request = OneTimeWorkRequestBuilder<SeedDatabaseWorker>().build()
-//                        WorkManager.getInstance(context).enqueue(request)
-                    }
                 })
                 .allowMainThreadQueries()
                 .build()

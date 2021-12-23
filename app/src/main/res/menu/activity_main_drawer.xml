@@ -12,7 +12,7 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/drawer_settings"
-            android:title="Settings" />
+            android:title="@string/settings" />
     </group>
 </menu>
 

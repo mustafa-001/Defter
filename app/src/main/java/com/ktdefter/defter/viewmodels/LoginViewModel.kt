@@ -1,14 +1,11 @@
 package com.ktdefter.defter.viewmodels
 
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.util.Patterns
-import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-
 import com.ktdefter.defter.R
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.ui.login.LoggedInUserView
@@ -66,17 +63,14 @@ class LoginViewModel @Inject constructor(val bookmarksRepository: BookmarksRepos
                     Timber.d("authentication is failed")
 
                     _loginResult.value = LoginResult(error = R.string.login_failed)
-
                 }
             }
-
     }
 
     fun logout() {
         Firebase.auth.signOut()
         bookmarksRepository.resetLastSync()
     }
-
 
     fun loginDataChanged(username: String, password: String) {
         if (!isUserNameValid(username)) {
@@ -87,6 +81,7 @@ class LoginViewModel @Inject constructor(val bookmarksRepository: BookmarksRepos
             _loginForm.value = LoginFormState(isDataValid = true)
         }
     }
+
     fun registerDataChanged(username: String, firstPassword: String, secondPassword: String) {
         if (!isUserNameValid(username)) {
             _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
@@ -96,7 +91,6 @@ class LoginViewModel @Inject constructor(val bookmarksRepository: BookmarksRepos
             _loginForm.value = LoginFormState(isDataValid = true)
         }
     }
-
 
     // A placeholder username validation check
     private fun isUserNameValid(username: String): Boolean {

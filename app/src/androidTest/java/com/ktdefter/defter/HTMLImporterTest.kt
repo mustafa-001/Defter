@@ -12,7 +12,7 @@ import java.io.InputStream
 
 class HTMLImporterTest {
 
-    val HTMLStream: InputStream = BookmarksInHTML.byteInputStream()
+    private val HTMLStream: InputStream = BookmarksInHTML.byteInputStream()
 
     @Before
     fun setUp(){

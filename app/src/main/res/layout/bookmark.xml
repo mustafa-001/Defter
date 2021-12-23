@@ -84,7 +84,7 @@
         android:layout_marginBottom="4dp"
         android:paddingStart="19dp"
         android:paddingEnd="10dp"
-        android:text="@string/bookmark_doesn_t_have_any_tags"
+        android:text="@string/bookmark_doesnt_have_any_tags"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bookmark_url_text"

@@ -15,7 +15,8 @@ class BookmarksDatabaseTest {
 //    A JUnit Test Rule that swaps the background executor used by the Architecture Components
 //    with a different one which executes each task synchronously.
     @Rule
-    @JvmField public val rule = InstantTaskExecutorRule()
+    @JvmField
+val rule = InstantTaskExecutorRule()
 
     private lateinit var bookmarkDao: BookmarkDao
     private lateinit var tagDao: TagDao

@@ -4,19 +4,11 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.type.DateTime
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
-import java.sql.Time
-import java.time.Instant
-import java.util.*
+import java.util.Date
 
 class FirebaseTest {
 
@@ -24,14 +16,13 @@ class FirebaseTest {
 //    with a different one which executes each task synchronously.
     @Rule
     @JvmField
-    public val rule = InstantTaskExecutorRule()
+    val rule = InstantTaskExecutorRule()
 
     private lateinit var bookmarkDao: BookmarkDao
     private lateinit var tagDao: TagDao
     private lateinit var bookmarkTagPairDao: BookmarkTagPairDao
     private lateinit var db: BookmarksDatabase
     private lateinit var syncer: FirestoreSync
-    private val mockFirestore: FirebaseFirestore = mock(FirebaseFirestore.class, "mockFirestore")
     private val lastSyncTime = Date()
     private val aDayBeforeLastSync: Date =
         Date.from(lastSyncTime.toInstant().plusMillis(-1000 * 60 * 60 * 24))

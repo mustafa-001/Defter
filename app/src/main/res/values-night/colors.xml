@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="primaryColor">#d81b60</color>
-    <color name="primaryLightColor">#ff5c8d</color>
-    <color name="primaryDarkColor">#a00037</color>
-    <color name="secondaryColor">#80cbc4</color>
-    <color name="secondaryLightColor">#b2fef7</color>
-    <color name="secondaryDarkColor">#4f9a94</color>
-    <color name="primaryTextColor">#ffffff</color>
-    <color name="secondaryTextColor">#000000</color>
+    <color name="primaryLightColor" tools:keep="@color/primaryLightColor">#ff5c8d</color>
+    <color name="primaryDarkColor" tools:keep="@color/primaryDarkColor">#a00037</color>
+    <color name="secondaryColor" tools:keep="@color/secondaryColor">#80cbc4</color>
+    <color name="secondaryLightColor" tools:keep="@color/secondaryLightColor">#b2fef7</color>
+    <color name="secondaryDarkColor" tools:keep="@color/secondaryDarkColor">#4f9a94</color>
+    <color name="primaryTextColor" tools:keep="@color/primaryTextColor">#ffffff</color>
+    <color name="secondaryTextColor" tools:keep="@color/secondaryTextColor">#000000</color>
     <color name="bookmark_background">#000000</color>
     <color name="bookmarkSelectedColor">#70a49391</color>
 </resources>

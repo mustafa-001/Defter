@@ -28,7 +28,9 @@ class AddBookmarkDialogFragment : DialogFragment() {
             AlertDialog.Builder(it).run {
                 val view = requireActivity()
                     .layoutInflater
-                    .inflate(R.layout.fragment_add_bookmark_dialog, null)
+                    .inflate(R.layout.fragment_add_bookmark_dialog,
+                        view?.findViewById(R.id.bookmarks_list_fragment)
+                    )
 
                 setView(view)
                 setTitle("Add new bookmark")

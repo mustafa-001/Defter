@@ -225,5 +225,5 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
     fun getTagsOfBookmarkSync(url: String) = bookmarksRepository.getTagsOfBookmarkSync(url)
 
 
-    fun getBookmarksOfTagSync(tag: String) = bookmarksRepository.getBookmarksOfTagSync(tag)
+    private fun getBookmarksOfTagSync(tag: String) = bookmarksRepository.getBookmarksOfTagSync(tag)
 }

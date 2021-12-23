@@ -101,7 +101,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         when (preference.key) {
             "export" -> {
                 val date =
-                    SimpleDateFormat(getString(R.string.export_file_datetime_format)).format(Date())
+                    SimpleDateFormat(getString(R.string.export_file_datetime_format), Locale.US).format(Date())
                 getDocumentFileToExport.launch("${date}_exported_defter.json")
 
             }
