@@ -34,7 +34,8 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ):
+        View {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         requireActivity().fab.hide()
@@ -42,6 +43,7 @@ class LoginFragment : Fragment() {
         return binding.root
 
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -122,6 +124,7 @@ class LoginFragment : Fragment() {
             )
         }
         binding.loginToSignup.setOnClickListener {
+            findNavController().popBackStack()
             findNavController().navigate(R.id.signup_fragment)
         }
     }

@@ -105,6 +105,7 @@ class SignupFragment : Fragment() {
             loadingProgressBar.visibility = View.GONE
         }
         binding.signupToLogin.setOnClickListener {
+            findNavController().popBackStack()
             findNavController().navigate(R.id.login_fragment)
         }
     }
