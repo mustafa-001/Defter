@@ -59,7 +59,6 @@ class BookmarksRepository @Inject constructor(
             Timber.d("authentication is failed")
 
         }
-
     }
 
     fun resetLastSync() {

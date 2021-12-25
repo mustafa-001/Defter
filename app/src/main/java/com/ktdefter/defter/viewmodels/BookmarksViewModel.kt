@@ -68,8 +68,9 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
 
     data class DownloadStatus(
         var isDowloading: Boolean = false,
-        var maxDownloads: Int = 0,
-        var currentDownloads: Int = 0
+        var max: Int = 0,
+        var successful: Int = 0,
+        var failed: Int = 0
     )
 
     val downloadStatus = MutableLiveData<DownloadStatus>()
@@ -177,7 +178,12 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
             return
         }
 
-        CoroutineScope(Dispatchers.Default).launch {  bookmarksRepository.updateBookmark(newBookmark, fetchTitle)}
+        CoroutineScope(Dispatchers.Default).launch {
+            bookmarksRepository.updateBookmark(
+                newBookmark,
+                fetchTitle
+            )
+        }
     }
 
     fun getBookmarksSync(): List<Bookmark> {
@@ -190,29 +196,45 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
 
     fun downloadMissingMetadataForAll() {
         val bookmarksToDownload = getBookmarksSync()
-        downloadStatus.value = DownloadStatus(true, bookmarksToDownload.size, 0)
+        // downloadStatus.value = DownloadStatus(true, bookmarksToDownload.size, 0)
         var maxD = 0
-        var currentD = 0
-        for ((idx, b) in bookmarksToDownload.withIndex()) {
+        var successfulD = 0
+        var failedD = 0
+        bookmarksToDownload.forEach { b ->
             CoroutineScope(Dispatchers.Default).launch {
                 val job = bookmarksRepository.updateBookmark(
                     b,
                     BookmarksRepository.ShouldFetchTitle.IfNeeded
                 )
-                if (job.isPresent){
-                    if (b.title != null){
+                if (job.isPresent) {
+                    if (b.title != null) {
                         throw Exception("Should be unreachable")
                     }
                     Timber.d("Got a Update Bookmark Info Job with $b, adding it to downloadStatus")
-                    maxD +=1
-                    downloadStatus.postValue( DownloadStatus(true, maxD, currentD))
+                    maxD++
                     job.get().invokeOnCompletion {
-                        if (bookmarksRepository.getBookmarkSync(b.url)!!.title == null){
+                        if (bookmarksRepository.getBookmarkSync(b.url)!!.title == null) {
                             Timber.d("Bookmark info failed to be  updated $b")
+                            failedD++
+                            downloadStatus.postValue(
+                                DownloadStatus(
+                                    true,
+                                    maxD,
+                                    successfulD,
+                                    failedD
+                                )
+                            )
                         } else {
                             Timber.d("Bookmark info is updated for $b")
-                            currentD += 1
-                            downloadStatus.postValue( DownloadStatus(true, maxD, currentD))
+                            successfulD++
+                            downloadStatus.postValue(
+                                DownloadStatus(
+                                    true,
+                                    maxD,
+                                    successfulD,
+                                    failedD
+                                )
+                            )
                         }
                     }
                 } else {

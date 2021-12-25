@@ -123,15 +123,16 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
             }
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    fun showNotification(status: BookmarksViewModel.DownloadStatus){
-            val notification = Notification.Builder(this, CHANNEL_ID)
-                .setOngoing(true)
-                .setSmallIcon(R.drawable.ic_baseline_open_in_browser_24)
-                .setContentTitle("Progress")
-                .setContentText("Downloaded info for ${status.currentDownloads} from ${status.maxDownloads}")
-                .setProgress(status.maxDownloads, status.currentDownloads, false)
-                .build()
+    fun showNotification(status: BookmarksViewModel.DownloadStatus) {
+        val notification = Notification.Builder(this, CHANNEL_ID)
+            .setOngoing(status.failed+status.successful != status.max)
+            .setSmallIcon(R.drawable.ic_baseline_open_in_browser_24)
+            .setContentTitle("Download bookmark info")
+            .setContentText("Downloadeding info for ${status.successful}  from ${status.max} bookmark, ${status.failed} failed ")
+            .setProgress(status.max, status.failed + status.successful, false)
+            .build()
         notificationManager.notify(100, notification)
     }
 
