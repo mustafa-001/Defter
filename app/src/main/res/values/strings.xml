@@ -62,8 +62,9 @@
     <string name="add_new_bookmark">Add new bookmark</string>
     <string name="new_title_for_bookmark">New title for Bookmark</string>
     <string name="new_url">New URL</string>
-    <string name="new_tag_to_select">New tag to select</string>
     <string name="bookmarks_favicon">Bookmarks favicon</string>
     <string name="channel_name">download_notifications</string>
     <string name="channel_description">download_notifications</string>
+    <string name="select_a_tag_or_enter_a_new_one">Select a tag or enter a new one</string>
+    <string name="reverse_sort">Reverse Sort</string>
 </resources>

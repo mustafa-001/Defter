@@ -63,6 +63,7 @@
         />
 
     <Button
+        style="@style/DefterButtom"
         android:id="@+id/signup_to_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -78,6 +79,7 @@
         />
 
     <Button
+        style="@style/DefterButtom"
         android:id="@+id/signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

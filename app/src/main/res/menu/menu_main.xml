@@ -22,7 +22,7 @@
         <item
             android:id="@+id/sortDirection"
             android:checkable="true"
-            android:title="@string/ascending_sort" />
+            android:title="@string/reverse_sort" />
 
     </group>
     <group

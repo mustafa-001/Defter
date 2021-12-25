@@ -50,16 +50,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 (parentFragment!!.activity as MainActivity).showNotification(it)
             }
         }
-        //     val notification = Notification.Builder(this, CHANNEL_ID)
-        //         .setOngoing(true)
-        //         .setSmallIcon(R.drawable.ic_baseline_open_in_browser_24)
-        //         .setContentTitle("Progress")
-        //         .setContentText("Progress details")
-        //         .setProgress(it.maxDownloads, it.currentDownloads, false)
-        //         .build()
-        //
-        //     requireActivity().getSystemService(NOTIF).notify(100, notification)
-        // }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -110,7 +100,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
-
         //Without this getDocumentFile.ActivityResultCallback requires bookmarksViewModel for
         // the first time. Activity is not fully restored/constructed when this callback is called.
         // This causes IllegalStateException to be thrown.

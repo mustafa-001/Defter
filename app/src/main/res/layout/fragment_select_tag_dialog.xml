@@ -10,12 +10,13 @@
     <!-- TODO: Update blank fragment layout -->
 
     <AutoCompleteTextView
+        style="@style/Widget.AppCompat.EditText"
         android:id="@+id/new_tag_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:singleLine="true"
-        android:hint="@string/new_tag_to_select"
+        android:hint="@string/select_a_tag_or_enter_a_new_one"
         android:text=""
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +27,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintTop_toBottomOf="@+id/new_tag_text"
-        tools:layout_editor_absoluteX="0dp" />
+        />
 
     <LinearLayout
         android:id="@+id/frameLayout"

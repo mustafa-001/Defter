@@ -89,7 +89,7 @@ class BookmarkAdapter(val viewModel: BookmarksViewModel) :
                     )
                     true
                 }
-                menu.add("Choose tags").setOnMenuItemClickListener {
+                menu.add("Choose Tags").setOnMenuItemClickListener {
                     val selectTagDialogFragment = SelectTagDialogFragment()
                     selectTagDialogFragment.apply {
                         selectedBookmark = bookmark
@@ -100,7 +100,7 @@ class BookmarkAdapter(val viewModel: BookmarksViewModel) :
                     }
                     true
                 }
-                menu.add("Edit Fragment").setOnMenuItemClickListener {
+                menu.add("Edit Bookmark").setOnMenuItemClickListener {
 //                this@BookmarkAdapter.fragme<ntManager
                     itemView.findFragment<Fragment>().parentFragmentManager
                         .primaryNavigationFragment!!

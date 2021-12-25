@@ -16,6 +16,7 @@
         tools:ignore="SpeakableTextPresentCheck" />
 
     <EditText
+        style="@style/Widget.AppCompat.EditText"
         android:id="@+id/url_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

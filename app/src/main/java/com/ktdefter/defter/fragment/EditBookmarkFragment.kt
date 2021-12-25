@@ -15,6 +15,7 @@ import com.ktdefter.defter.R
 import com.ktdefter.defter.data.Bookmark
 import com.ktdefter.defter.data.BookmarksRepository
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import java.io.File
 
@@ -26,6 +27,8 @@ class EditBookmarkFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        requireActivity().fab.hide()
         val url = requireArguments().getString("url")!!
         return inflater.inflate(R.layout.edit_bookmark_fragment, container, false).also { view ->
             val editText = view.findViewById<EditText>(R.id.editBookmarkFragment_url)
@@ -69,6 +72,11 @@ class EditBookmarkFragment : Fragment() {
             }
 
         }
+    }
+
+    override fun onDestroy() {
+        requireActivity().fab.show()
+        super.onDestroy()
     }
 
 }

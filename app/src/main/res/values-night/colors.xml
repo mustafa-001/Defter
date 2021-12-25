@@ -8,6 +8,7 @@
     <color name="secondaryDarkColor" tools:keep="@color/secondaryDarkColor">#4f9a94</color>
     <color name="primaryTextColor" tools:keep="@color/primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor" tools:keep="@color/secondaryTextColor">#000000</color>
+    <color name="buttonColor" tools:keep="@color/secondaryColor" />
     <color name="bookmark_background">#000000</color>
     <color name="bookmarkSelectedColor">#70a49391</color>
 </resources>

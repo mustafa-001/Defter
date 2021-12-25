@@ -149,8 +149,10 @@ class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
         } else if (item.itemId == R.id.sortByName) {
             if (item.isChecked) {
                 bookmarksViewModel.sortBy = SortBy.MODIFICATION_TIME
+                bookmarksViewModel.sortDirection = SortDirection.DESC
             } else {
                 bookmarksViewModel.sortBy = SortBy.HOSTNAME
+                bookmarksViewModel.sortDirection = SortDirection.ASC
             }
             item.isChecked = item.isChecked.not()
             return true

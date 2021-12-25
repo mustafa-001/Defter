@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
             .setOngoing(status.failed+status.successful != status.max)
             .setSmallIcon(R.drawable.ic_baseline_open_in_browser_24)
             .setContentTitle("Download bookmark info")
-            .setContentText("Downloadeding info for ${status.successful}  from ${status.max} bookmark, ${status.failed} failed ")
+            .setContentText("Downloading info for ${status.successful}  from ${status.max} bookmark, ${status.failed} failed ")
             .setProgress(status.max, status.failed + status.successful, false)
             .build()
         notificationManager.notify(100, notification)
@@ -185,10 +185,7 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> {
-                Toast.makeText(this.applicationContext, "settings selected", Toast.LENGTH_SHORT)
-                    .show()
                 findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment)
-
                 true
             }
             R.id.action_search -> {

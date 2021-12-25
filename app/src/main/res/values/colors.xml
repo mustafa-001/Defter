@@ -8,6 +8,7 @@
     <color name="secondaryDarkColor" tools:ignore="UnusedResources">#4f9a94</color>
     <color name="primaryTextColor" tools:ignore="UnusedResources">#ffffff</color>
     <color name="secondaryTextColor" tools:ignore="UnusedResources">#000000</color>
+    <color name="buttonColor" tools:keep="@color/secondaryColor" />
     <color name="bookmark_background">#ffffff</color>
     <color name="bookmarkSelectedColor">#70a49391</color>
 </resources>

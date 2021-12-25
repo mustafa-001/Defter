@@ -8,8 +8,11 @@
         <item name="windowNoTitle">true</item>
 <!--        <item name="colorPrimary">@color/primaryColor</item>-->
 <!--        <item name="colorPrimaryDark">@color/primaryDarkColor</item>-->
-        <!--?xml version="1.0" encoding="UTF-8"?-->
+        <item name="colorAccent">@color/primaryColor</item>       <!--?xml version="1.0" encoding="UTF-8"?-->
 
+    </style>
+    <style name="DefterButtom" parent="Widget.AppCompat.Button.Colored">
+        <item name="color">@color/secondaryColor</item>
     </style>
 
 
