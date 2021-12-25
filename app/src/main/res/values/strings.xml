@@ -67,4 +67,5 @@
     <string name="channel_description">download_notifications</string>
     <string name="select_a_tag_or_enter_a_new_one">Select a tag or enter a new one</string>
     <string name="reverse_sort">Reverse Sort</string>
+    <string name="scroll_to_top">scroll to top</string>
 </resources>

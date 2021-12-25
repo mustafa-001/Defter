@@ -13,8 +13,12 @@
         android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom" />
+    <item
+        android:id="@+id/action_scroll_to_top"
+        android:icon="@drawable/ic_baseline_arrow_upward_24"
+        android:title="@string/scroll_to_top"
+        app:showAsAction="collapseActionView|ifRoom" />
     <group android:id="@+id/sort">
-
         <item
             android:id="@+id/sortByName"
             android:checkable="true"
@@ -22,6 +26,7 @@
         <item
             android:id="@+id/sortDirection"
             android:checkable="true"
+            android:checked="true"
             android:title="@string/reverse_sort" />
 
     </group>

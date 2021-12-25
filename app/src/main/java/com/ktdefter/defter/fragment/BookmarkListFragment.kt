@@ -156,6 +156,8 @@ class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
             }
             item.isChecked = item.isChecked.not()
             return true
+        } else if (item.itemId == R.id.action_scroll_to_top) {
+            bookmarksView.scrollToPosition(0)
         }
         return super.onOptionsItemSelected(item)
     }
