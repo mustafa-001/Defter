@@ -1,12 +1,24 @@
-A browser agnostic bookmark manager attempt. For now it's in prototyping phase.
+A browser manager for Android. Mainly for personal usage and experimentation with Android's API's.
 
-To do list for features.
+List of features 
 
--Fetch Bookmark's title and favicon.
--Implement tagging system.
--Parse bookmarks from browsers bookmark database.
--Implement folder system.
--Implement themes and coloring for tags.
--Sync for desktop or backup to cloud.
--Add notes to bookmarks.
+- Import/export bookmarks from JSON or HTML file
+- Group bookmarks by Tag's-
+- Create an remote account and sync. (Remote bookmarks aren't encrypted!)
+- Parse bookmarks from browsers bookmark database.
 
+TODO List  
+- Encrypt remote bookmarks
+- Implement folder system.
+- Create a desktop sync tool.
+- Add notes to bookmarks.
+
+Technologies used 
+
+- Android Navigation
+- Dagger
+- OkHTTP3
+- Firebase Auth
+  Firebase Firestore
+- Android Room
+- Kotlin Koroutines
