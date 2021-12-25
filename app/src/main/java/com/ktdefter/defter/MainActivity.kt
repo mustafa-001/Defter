@@ -1,12 +1,18 @@
 package com.ktdefter.defter
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
@@ -31,6 +37,7 @@ import com.ktdefter.defter.data.Tag
 import com.ktdefter.defter.fragment.AddBookmarkDialogFragment
 import com.ktdefter.defter.fragment.BookmarkListFragment
 import com.ktdefter.defter.fragment.SelectTagDialogFragment
+import com.ktdefter.defter.fragment.SettingsFragment
 import com.ktdefter.defter.viewmodels.BookmarksViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -46,7 +53,10 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
     private lateinit var drawer: DrawerLayout
     private val oldTagIds: MutableList<Int> = mutableListOf()
     private lateinit var tags: LiveData<List<Tag>>
+    private lateinit var notificationManager: NotificationManager
+    val CHANNEL_ID = "Download URL Data"
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("useDarkTheme", false)) {
             setTheme(R.style.AppTheme)
@@ -63,11 +73,26 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         setSupportActionBar(toolbar)
         drawer = findViewById(R.id.drawer_layout)
         navView = findViewById(R.id.nav_view)
-        val navHost = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHost =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHost.navController
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawer)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        notificationManager =
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel =
+                NotificationChannel(CHANNEL_ID, name, importance).apply {
+                    description = descriptionText
+                }
+            notificationManager.createNotificationChannel(channel)
+        }
+
 
         tags = bookmarksViewModel.getTags()
         setDrawerTags()
@@ -97,6 +122,18 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
                 bookmarksViewModel.addBookmark(Bookmark(intent.getStringExtra((Intent.EXTRA_TEXT))!!))
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun showNotification(status: BookmarksViewModel.DownloadStatus) {
+        val notification = Notification.Builder(this, CHANNEL_ID)
+            .setOngoing(status.failed+status.successful != status.max)
+            .setSmallIcon(R.drawable.ic_baseline_open_in_browser_24)
+            .setContentTitle("Download bookmark info")
+            .setContentText("Downloadeding info for ${status.successful}  from ${status.max} bookmark, ${status.failed} failed ")
+            .setProgress(status.max, status.failed + status.successful, false)
+            .build()
+        notificationManager.notify(100, notification)
     }
 
     private fun setDrawerTags() {
@@ -129,7 +166,6 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
                 }
             }
         })
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -137,7 +173,6 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
@@ -166,6 +201,4 @@ class MainActivity : AppCompatActivity(), AddBookmarkDialogFragment.OnFragmentIn
     override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
-
-
 }

@@ -64,4 +64,6 @@
     <string name="new_url">New URL</string>
     <string name="new_tag_to_select">New tag to select</string>
     <string name="bookmarks_favicon">Bookmarks favicon</string>
+    <string name="channel_name">download_notifications</string>
+    <string name="channel_description">download_notifications</string>
 </resources>

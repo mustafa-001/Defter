@@ -53,6 +53,9 @@ interface BookmarkDao {
 
     @Query("DELETE FROM bookmark WHERE url = :url")
     fun deleteBookmark(url: String)
+
+    @Query("SELECT * FROM bookmark WHERE url = :url")
+    fun getBookmarkSync(url: String):Bookmark?
 }
 
 enum class SortDirection(val string: String) {

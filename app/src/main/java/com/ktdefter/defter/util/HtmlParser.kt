@@ -5,13 +5,17 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import com.ktdefter.defter.data.Bookmark
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import timber.log.Timber
 
-suspend fun getTitleAndFavicon(context: Context, url: Uri): Bookmark = coroutineScope {
+fun getTitleAndFaviconAsync(context: Context, url: Uri): Deferred<Bookmark> = CoroutineScope(Dispatchers.Default).async {
     val newUrl = if (url.scheme == "http") {
         url.buildUpon().scheme("https").build()
     } else url
@@ -23,7 +27,7 @@ suspend fun getTitleAndFavicon(context: Context, url: Uri): Bookmark = coroutine
             .get()
     } catch (e: Exception) {
         Timber.d(e.toString())
-        return@coroutineScope Bookmark(url.toString(), null, null)
+        return@async Bookmark(url.toString(), null, null)
     }
     Timber.d("requesting: $url")
     val imageUrl: String? = doc.select("link[href~=.*\\.(ico|png)]").first()?.absUrl("href")
@@ -37,7 +41,7 @@ suspend fun getTitleAndFavicon(context: Context, url: Uri): Bookmark = coroutine
         saveImage(context, hostName, imageUrl)
     }
 
-    return@coroutineScope Bookmark(newUrl.toString(), doc.title(), hostName)
+    return@async Bookmark(newUrl.toString(), doc.title(), hostName)
 }
 
 fun saveImage(context: Context, url: String, image_url: String): String? {
