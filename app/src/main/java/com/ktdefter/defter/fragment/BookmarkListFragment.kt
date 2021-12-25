@@ -1,13 +1,19 @@
 package com.ktdefter.defter.fragment
 
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.ProgressBar
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -50,7 +56,6 @@ class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
                 })
                 disableMultipleSelection()
                 return@addCallback
-
             }
             if (findNavController().currentDestination?.id != findNavController().graph.startDestination) {
                 Timber.d("onBackPressedCallback when currentDestination is not startDestination")
@@ -81,7 +86,6 @@ class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
         val act = requireActivity() as AppCompatActivity
         act.supportActionBar?.invalidateOptionsMenu()
         Timber.d("onDisableMultipleSelection")
-
     }
 
     override fun onCreateView(
@@ -90,10 +94,16 @@ class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
+
         bookmarksViewModel.tag = tag
         // Inflate the layout for this fragment
         inflater.inflate(R.layout.fragment_bookmark_list, container, false)
             .apply {
+
+                val progressBar = findViewById<ProgressBar>(R.id.bookmark_list_progress)
+                progressBar.visibility = View.VISIBLE
+
+                // Register the channel with the system
                 val bookmarksListLayoutManager = LinearLayoutManager(requireContext())
                 val bookmarksListAdapter = BookmarkAdapter(
                     bookmarksViewModel
@@ -206,5 +216,4 @@ class BookmarkListFragment : Fragment(), SearchView.OnQueryTextListener,
         }
         return true
     }
-
 }

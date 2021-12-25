@@ -1,6 +1,8 @@
 package com.ktdefter.defter.fragment
 
+import android.app.Notification
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,6 +14,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.ktdefter.defter.MainActivity
 import com.ktdefter.defter.R
 import com.ktdefter.defter.R.xml.root_preferences
 import com.ktdefter.defter.data.Bookmark
@@ -29,7 +32,6 @@ import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -43,6 +45,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
     ): View? {
         requireActivity().fab.hide()
         setHasOptionsMenu(true)
+        bookmarksViewModel.downloadStatus.observe(this) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                (parentFragment!!.activity as MainActivity).showNotification(it)
+            }
+        }
+        //     val notification = Notification.Builder(this, CHANNEL_ID)
+        //         .setOngoing(true)
+        //         .setSmallIcon(R.drawable.ic_baseline_open_in_browser_24)
+        //         .setContentTitle("Progress")
+        //         .setContentText("Progress details")
+        //         .setProgress(it.maxDownloads, it.currentDownloads, false)
+        //         .build()
+        //
+        //     requireActivity().getSystemService(NOTIF).notify(100, notification)
+        // }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -101,9 +118,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         when (preference.key) {
             "export" -> {
                 val date =
-                    SimpleDateFormat(getString(R.string.export_file_datetime_format), Locale.US).format(Date())
+                    SimpleDateFormat(
+                        getString(R.string.export_file_datetime_format),
+                        Locale.US
+                    ).format(Date())
                 getDocumentFileToExport.launch("${date}_exported_defter.json")
-
             }
             "import" -> {
                 getDocumentFileToImport.launch(arrayOf("text/html", "application/json"))
@@ -112,7 +131,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 val p = preference as SwitchPreferenceCompat
                 if (p.isChecked) {
                     Timber.d("dark theme selected")
-
                 }
                 val intent: Intent =
                     requireActivity().baseContext.packageManager.getLaunchIntentForPackage(

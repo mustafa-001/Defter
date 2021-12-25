@@ -4,13 +4,17 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.ktdefter.defter.util.getTitleAndFavicon
+import com.ktdefter.defter.util.getTitleAndFaviconAsync
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -97,14 +101,16 @@ class BookmarksRepository @Inject constructor(
     fun getBookmarksSync(): List<Bookmark> = bookmarksDao.getBookmarksSync()
     fun getBookmark(url: String): LiveData<Bookmark?> = bookmarksDao.getBookmark(url)
 
-    fun updateBookmark(
+    suspend fun updateBookmark(
         bookmark: Bookmark,
         fetchTitle: ShouldFetchTitle = ShouldFetchTitle.IfNeeded
-    ) {
+    ): Optional<Job>
+    {
         bookmarksDao.updateBookmark(bookmark)
         if (fetchTitle == ShouldFetchTitle.Yes || (bookmark.title == null && fetchTitle == ShouldFetchTitle.IfNeeded)) {
-            CoroutineScope(Dispatchers.Default).launch1 {  fetchMetadataAndUpdateBookmarkAsync(bookmark)}
-        }
+                val r = getTitleAndFaviconAsync(context, Uri.parse(bookmark.url))
+            return Optional.of(CoroutineScope(Dispatchers.Default).launch1 {  bookmarksDao.updateBookmark(r.await())})
+        } else return Optional.empty()
     }
 
     enum class ShouldFetchTitle {
@@ -124,9 +130,10 @@ class BookmarksRepository @Inject constructor(
     }
 
     private suspend fun fetchMetadataAndUpdateBookmarkAsync(bookmark: Bookmark) = coroutineScope {
-        bookmarksDao.updateBookmark(
-            getTitleAndFavicon(context, Uri.parse(bookmark.url))
-        )
+        val r = getTitleAndFaviconAsync(context, Uri.parse(bookmark.url))
+        return@coroutineScope launch1 {
+            bookmarksDao.updateBookmark(r.await())
+        }
     }
 
     fun fetchMetadata(bookmark: Bookmark): LiveData<Bookmark> {
@@ -134,12 +141,12 @@ class BookmarksRepository @Inject constructor(
         CoroutineScope(Dispatchers.Default).launch1 {
             val b =
                 withContext(Dispatchers.Default) {
-                    getTitleAndFavicon(
+                    getTitleAndFaviconAsync(
                         context,
                         Uri.parse(bookmark.url)
                     )
                 }
-            lD.postValue(b)
+            lD.postValue(b.await())
         }
         return lD
     }
@@ -168,6 +175,7 @@ class BookmarksRepository @Inject constructor(
 
     fun getBookmarksOfTagSync(tag: String) = bookmarkTagPairDao.getBookmarksWithTagSync(tag)
     fun getDeletedBookmarks() = bookmarksDao.getDeletedBookmarks()
+    fun getBookmarkSync(url: String): Bookmark? = bookmarksDao.getBookmarkSync(url)
 
 //
 //    companion object {

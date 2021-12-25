@@ -6,6 +6,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
@@ -119,7 +122,7 @@ class FirestoreSync  constructor(
                 }
                 BookmarkConflictResolution.FIRST -> userBookmarksOnRemote
                     .document(removeSlashes(c1.url)).set(c1)
-                BookmarkConflictResolution.SECOND -> bookmarksRepository.updateBookmark(c2)
+                BookmarkConflictResolution.SECOND -> CoroutineScope(Dispatchers.Default).launch {  bookmarksRepository.updateBookmark(c2)}
             }
             Timber.d("Bookmark sync conflict, url: ${c1.url},  resolving to $res")
         }

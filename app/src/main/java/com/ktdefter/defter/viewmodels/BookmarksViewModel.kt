@@ -3,7 +3,13 @@ package com.ktdefter.defter.viewmodels
 import androidx.lifecycle.*
 import com.ktdefter.defter.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.sql.Time
 import java.util.*
 import javax.inject.Inject
 
@@ -60,6 +66,14 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
             }
         }
 
+    data class DownloadStatus(
+        var isDowloading: Boolean = false,
+        var maxDownloads: Int = 0,
+        var currentDownloads: Int = 0
+    )
+
+    val downloadStatus = MutableLiveData<DownloadStatus>()
+
     fun markBookmarkSelected(bookmark: Bookmark) {
         val b: List<Bookmark> = bookmarksToShow.value?.map {
             if (it.url == bookmark.url) {
@@ -85,7 +99,6 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
         } as List<Bookmark>
         bookmarksToShow.postValue(b)
     }
-
 
 /*  fun getBookmarks(
       sortBy: MutableLiveData<SortBy> = MutableLiveData(SortBy.MODIFICATION_TIME),
@@ -164,7 +177,7 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
             return
         }
 
-        bookmarksRepository.updateBookmark(newBookmark, fetchTitle)
+        CoroutineScope(Dispatchers.Default).launch {  bookmarksRepository.updateBookmark(newBookmark, fetchTitle)}
     }
 
     fun getBookmarksSync(): List<Bookmark> {
@@ -176,17 +189,44 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
     }
 
     fun downloadMissingMetadataForAll() {
-        for (b in getBookmarksSync()) bookmarksRepository.updateBookmark(
-            b,
-            BookmarksRepository.ShouldFetchTitle.Yes
-        )
+        val bookmarksToDownload = getBookmarksSync()
+        downloadStatus.value = DownloadStatus(true, bookmarksToDownload.size, 0)
+        var maxD = 0
+        var currentD = 0
+        for ((idx, b) in bookmarksToDownload.withIndex()) {
+            CoroutineScope(Dispatchers.Default).launch {
+                val job = bookmarksRepository.updateBookmark(
+                    b,
+                    BookmarksRepository.ShouldFetchTitle.IfNeeded
+                )
+                if (job.isPresent){
+                    if (b.title != null){
+                        throw Exception("Should be unreachable")
+                    }
+                    Timber.d("Got a Update Bookmark Info Job with $b, adding it to downloadStatus")
+                    maxD +=1
+                    downloadStatus.postValue( DownloadStatus(true, maxD, currentD))
+                    job.get().invokeOnCompletion {
+                        if (bookmarksRepository.getBookmarkSync(b.url)!!.title == null){
+                            Timber.d("Bookmark info failed to be  updated $b")
+                        } else {
+                            Timber.d("Bookmark info is updated for $b")
+                            currentD += 1
+                            downloadStatus.postValue( DownloadStatus(true, maxD, currentD))
+                        }
+                    }
+                } else {
+
+                    Timber.d("No Job returned from updateBookmark with $b")
+                }
+            }
+        }
     }
 
     fun addBookmark(
         bookmark: Bookmark,
         fetchTitle: BookmarksRepository.ShouldFetchTitle = BookmarksRepository.ShouldFetchTitle.Yes
     ) = bookmarksRepository.insertBookmark(bookmark, fetchTitle)
-
 
     fun deleteBookmark(url: String) {
         bookmarksRepository.deleteBookmark(url)
@@ -221,7 +261,6 @@ class BookmarksViewModel @Inject constructor(val bookmarksRepository: BookmarksR
     fun getTagsSync(): List<Tag> = bookmarksRepository.getTagsSync()
 
     fun getTagsOfBookmarkSync(url: String) = bookmarksRepository.getTagsOfBookmarkSync(url)
-
 
     private fun getBookmarksOfTagSync(tag: String) = bookmarksRepository.getBookmarksOfTagSync(tag)
 }
